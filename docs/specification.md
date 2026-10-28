@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.4 (první Discovery management increment)
+**Verze dokumentu:** 0.5 (Interactive Discovery increment)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; implementovány k revizi pouze operace `new`, `open`, `validate`, zbytek popisuje plánovanou funkčnost
+**Stav:** návrhový dokument pro PoC a case study; Discovery management implementován, Interactive Discovery implementováno k revizi, ostatní fáze zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -55,6 +55,7 @@ project/
 │   └── REQ-0001-price-alerts/
 │       ├── metadata.yaml
 │       ├── idea.md
+│       ├── discovery.yaml            # volitelná autoritativní historie Discovery
 │       ├── business.md
 │       ├── decisions.md
 │       ├── specification.md           # epic-wide, jen když potřeba
@@ -79,6 +80,8 @@ project/
 **[D]** `metadata.yaml` = aktuální stavy a odkazy; `decisions.md` = důvody a historie rozhodnutí; Git = verze skutečného obsahu. Nezdvojovat autoritativní text FR/AC současně v YAML a Markdownu. Použít strojově čitelné identifikátory/front matter či jinou jednoznačnou strukturu v jednom zdroji pravdy. `tasks.md` v původní specifikaci se v novější dohodě konkretizuje jako `implementation-plan.md`; při implementaci zajistit jeden autoritativní název nebo migraci/alias.
 
 **[D/P]** Minimální schéma Epic Discovery `0.1`, relativní odkaz na nápad a kontrakt prvních operací popisuje [Discovery operation contract](../orchestrator/scripts/README.md). Verze schématu je nezávislá na verzi orchestrátoru. ID v metadatech je autoritativní i po přejmenování složky.
+
+**[D/P]** Increment 2 zachovává metadata schéma a původní `idea.md`. Volitelný `discovery.yaml` je samostatně verzovaná autoritativní historie typovaných záznamů a jejich provenience. Přehled Discovery se odvozuje z této historie. Skripty spravují ID záznamů, reference, atomický zápis, lokální zámek, revize a idempotenci; význam požadavků a další otázku určuje skill. Kontrakt, příklady a omezení uvádí [Interactive Discovery](interactive-discovery.md).
 
 **[O]** Finální status enumy pro další fáze, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
@@ -148,7 +151,7 @@ flowchart TD
 
 ### 6.1 Idea & Discovery — Requester
 
-**[D/P] První implementovaný increment:** pouze deterministické `new`, `open`, `validate` a tenká vstupní instrukce skillu. `new` automaticky přiděluje nejvyšší existující lokální číselné ID + 1 a zakládá stav `discovery`; zachované zrušené Epicy rezervují svá ID. Duplicitní ID a strukturálně nekonzistentní záznamy operaci zablokují. `open` a `validate` jsou read-only. Konverzační zpřesňování, následné ukládání obsahu, potvrzení Requesterem a přechod do `ready_for_refinement` jsou až další increment; následující odstavce popisují plánovaný celý workflow.
+**[D/P] Implementované incrementy:** `new` automaticky přiděluje nejvyšší existující lokální číselné ID + 1 a zakládá stav `discovery`; zachované zrušené Epicy rezervují svá ID. Duplicitní ID a strukturálně nekonzistentní záznamy operaci zablokují. `open` a `validate` zůstávají read-only a přijímají i starší Epicy bez historie. Increment 2 přidává adaptivní konverzační zpřesňování a `discovery-update`: původní nápad nemění, ukládá typované výroky uživatele, AI předpoklady, otázky a explicitní lidská rozhodnutí do `discovery.yaml`. Rozlišuje nezodpovězené, neznámé a odložené otázky. Potvrzení celého Discovery a přechod do `ready_for_refinement` nejsou implementovány; následující odstavce popisují plánovaný celý workflow.
 
 **[D]** `$sdlc new` ihned vytvoří *lokální* pracovní Epic (`metadata.yaml`, `idea.md`). Přirozená konverzace pokrývá problém, cílové uživatele, hodnotu, cíle, počáteční scope, success criteria, předpoklady, otevřené otázky a hypotézy dotčených oblastí. Žádný závazný design ani automatická dekompozice na Stories.
 

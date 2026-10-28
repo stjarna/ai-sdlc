@@ -5,18 +5,22 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
+import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import sys
+import tempfile
 import unicodedata
 
 import yaml
+import discovery_history as history
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.1.0"
+ORCHESTRATOR_VERSION = "0.2.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 SECTIONS = (
@@ -102,11 +106,16 @@ class Epic:
     metadata: dict = field(default_factory=dict)
     idea: str | None = None
     diagnostics: list[Diagnostic] = field(default_factory=list)
+    revision: str | None = None
+    discovery: dict | None = None
+    discovery_state: dict | None = None
 
     def payload(self) -> dict:
         return {
             "directory": str(self.directory), "metadata": self.metadata,
             "idea": self.idea,
+            "revision": self.revision, "discovery": self.discovery,
+            "discovery_state": self.discovery_state,
         }
 
 
@@ -135,7 +144,8 @@ def read_epic(directory: Path) -> Epic:
         ))
         return epic
     try:
-        data = yaml.load(metadata_path.read_text(encoding="utf-8"), Loader=StrictLoader)
+        metadata_bytes = metadata_path.read_bytes()
+        data = yaml.load(metadata_bytes.decode("utf-8"), Loader=StrictLoader)
     except yaml.YAMLError as exc:
         mark = getattr(exc, "problem_mark", None)
         epic.diagnostics.append(Diagnostic(
@@ -191,6 +201,7 @@ def read_epic(directory: Path) -> Epic:
             relative.is_absolute() or ".." in relative.parts
             or not idea_path.is_relative_to(directory.resolve())
             or idea_path == metadata_path.resolve()
+            or idea_path == (directory / "discovery.yaml").resolve()
         ):
             epic.diagnostics.append(error(
                 "E_ARTIFACT_PATH", metadata_path, "The idea artifact must stay inside its Epic directory."
@@ -199,11 +210,42 @@ def read_epic(directory: Path) -> Epic:
         if not idea_path.is_file():
             epic.diagnostics.append(error("E_ARTIFACT_FILE", idea_path, "The idea artifact must be an existing file."))
             return epic
-        epic.idea = idea_path.read_text(encoding="utf-8")
+        idea_bytes = idea_path.read_bytes()
+        epic.idea = idea_bytes.decode("utf-8")
     except (OSError, UnicodeError, ValueError, RuntimeError) as exc:
         epic.diagnostics.append(error("E_READ", idea_path, str(exc)))
         return epic
     epic.diagnostics.extend(business_warnings(idea_path, epic.idea))
+    discovery_path = directory / "discovery.yaml"
+    discovery_bytes = None
+    if discovery_path.is_symlink() or (discovery_path.exists() and not discovery_path.is_file()):
+        epic.diagnostics.append(error("E_DISCOVERY_FILE", discovery_path, "Expected a regular nonsymlink Discovery file."))
+        return epic
+    if discovery_path.exists():
+        try:
+            discovery_bytes = discovery_path.read_bytes()
+            epic.discovery = yaml.load(discovery_bytes.decode("utf-8"), Loader=StrictLoader)
+            epic.discovery_state = history.project(epic.discovery, data.get("id"))
+        except yaml.YAMLError as exc:
+            mark = getattr(exc, "problem_mark", None)
+            epic.diagnostics.append(Diagnostic(
+                "error", "E_YAML", str(discovery_path), getattr(exc, "problem", None) or "Invalid YAML.",
+                mark.line + 1 if mark else None,
+            ))
+            return epic
+        except history.HistoryError as exc:
+            epic.diagnostics.append(error(exc.code, discovery_path, str(exc)))
+            return epic
+        except (OSError, UnicodeError) as exc:
+            epic.diagnostics.append(error("E_READ", discovery_path, str(exc)))
+            return epic
+        except RecursionError:
+            epic.diagnostics.append(error("E_YAML", discovery_path, "YAML nesting is too deep."))
+            return epic
+    # Hash the exact bytes read, including missing history, independently of folder names.
+    contents = [metadata_bytes, idea_bytes, discovery_bytes]
+    fingerprints = [hashlib.sha256(content).hexdigest() if content is not None else None for content in contents]
+    epic.revision = hashlib.sha256(json.dumps(fingerprints).encode()).hexdigest()
     return epic
 
 
@@ -257,13 +299,13 @@ def result(operation: str, diagnostics: list[Diagnostic], **payload) -> dict:
 
 
 @contextmanager
-def creation_lock(root: Path):
+def project_lock(root: Path):
     """Fail closed if another local writer holds the transient lock."""
     lock = root / ".sdlc-discovery.lock"
     try:
         lock.mkdir()
     except FileExistsError:
-        raise Rejected([error("E_PROJECT_BUSY", lock, "Another creation may be running; inspect the lock before retrying.")]) from None
+        raise Rejected([error("E_PROJECT_BUSY", lock, "Another write may be running; inspect the lock before retrying.")]) from None
     try:
         yield
     finally:
@@ -279,7 +321,7 @@ def new_epic(project: Path, title: str, idea: str = "") -> dict:
     root = project_path(project)
     if not valid_title(title):
         raise Rejected([error("E_TITLE", root, "Title must be nonempty, single-line text.")])
-    with creation_lock(root):
+    with project_lock(root):
         epics, diagnostics = scan(root)
         require_valid(diagnostics)
         next_number = max((int(epic.metadata["id"][4:]) for epic in epics), default=0) + 1
@@ -340,6 +382,94 @@ def inspect_epics(project: Path, operation: str, epic_id: str | None = None) -> 
     ])
 
 
+def atomic_history_write(path: Path, content: str) -> None:
+    """Publish a complete history and its idempotency ledger in one replacement."""
+    temporary = None
+    published = False
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n", prefix=".discovery-", suffix=".tmp", dir=path.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            if path.exists():
+                os.fchmod(stream.fileno(), path.stat().st_mode & 0o777)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+        published = True
+        descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        if published:
+            raise Rejected([error("E_WRITE_UNCERTAIN", path, "History was published but durability could not be confirmed; retry with the same operation ID and payload.")]) from exc
+        raise
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def discovery_update(project: Path, epic_id: str, expected_revision: str, operation_id: str, records: list) -> dict:
+    root = project_path(project)
+    if not valid_id(epic_id):
+        raise Rejected([error("E_EPIC_ID", root / "requirements", "Expected REQ-0001 through REQ-9999.")])
+    if not history.valid_revision(expected_revision) or not history.valid_operation_id(operation_id):
+        raise Rejected([error("E_UPDATE_INPUT", root, "A SHA-256 revision and an operation ID (1–128 letters, digits, . _ : -) are required.")])
+    if not isinstance(records, list):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Update records must be a list.")])
+    with project_lock(root):
+        epics, diagnostics = scan(root)
+        require_valid(diagnostics)
+        selected = [epic for epic in epics if epic.metadata["id"] == epic_id]
+        if not selected:
+            raise Rejected([error("E_EPIC_NOT_FOUND", root / "requirements", f"Epic {epic_id} was not found.")])
+        epic = selected[0]
+        path = epic.directory / "discovery.yaml"
+        if epic.metadata["status"] != "discovery":
+            raise Rejected([error("E_STATUS", epic.directory / "metadata.yaml", "Only discovery requests can be updated.")])
+        document = epic.discovery if epic.discovery is not None else history.empty(epic_id)
+        for existing in document["operations"]:
+            if existing["id"] == operation_id:
+                if existing["base_revision"] != expected_revision or history.requested_records(existing) != records:
+                    raise Rejected([error("E_IDEMPOTENCY", path, "Operation ID was already used with different content or a different base revision.")])
+                return result("discovery-update", epic.diagnostics, epic=epic.payload(), replayed=True, record_ids=[record["id"] for record in existing["records"]])
+        if expected_revision != epic.revision:
+            raise Rejected([error("E_REVISION_CONFLICT", path, "Request artifacts changed; reopen and reconcile before sending a new operation.")])
+        try:
+            candidate, operation = history.append(document, epic_id, operation_id, expected_revision, records)
+        except history.HistoryError as exc:
+            raise Rejected([error(exc.code, path, str(exc))]) from exc
+        content = yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True)
+        # Cooperating writers share the lock; catch manual edits observed since the scan.
+        checked = read_epic(epic.directory)
+        require_valid(checked.diagnostics)
+        if checked.revision != expected_revision:
+            raise Rejected([error("E_REVISION_CONFLICT", path, "Request artifacts changed while preparing the update.")])
+        atomic_history_write(path, content)
+        updated = read_epic(epic.directory)
+        require_valid(updated.diagnostics)
+        return result("discovery-update", updated.diagnostics, epic=updated.payload(), replayed=False, record_ids=[record["id"] for record in operation["records"]])
+
+
+def read_changes(path: Path) -> list:
+    def mapping(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"Duplicate JSON key: {key}")
+            result[key] = value
+        return result
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=mapping)
+    except (OSError, UnicodeError, ValueError, RecursionError) as exc:
+        raise Rejected([Diagnostic("error", "E_UPDATE_INPUT", str(path), str(exc), getattr(exc, "lineno", None))]) from exc
+    if not isinstance(data, dict) or set(data) != {"records"} or not isinstance(data["records"], list):
+        raise Rejected([error("E_UPDATE_INPUT", path, "Changes must contain exactly one records list.")])
+    return data["records"]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", action="version", version=ORCHESTRATOR_VERSION)
@@ -350,10 +480,17 @@ def main(argv: list[str] | None = None) -> int:
     create.add_argument("--idea", default="", help="Initial business description; stored as content only")
     commands.add_parser("open", help="Read an Epic by stable ID").add_argument("id")
     commands.add_parser("validate", help="Validate one Epic or all local Epics").add_argument("id", nargs="?")
+    update = commands.add_parser("discovery-update", help="Atomically append typed Discovery records")
+    update.add_argument("id")
+    update.add_argument("--expected-revision", required=True)
+    update.add_argument("--operation-id", required=True)
+    update.add_argument("--changes-file", required=True, type=Path)
     args = parser.parse_args(argv)
     try:
         if args.operation == "new":
             output = new_epic(args.project, args.title, args.idea)
+        elif args.operation == "discovery-update":
+            output = discovery_update(args.project, args.id, args.expected_revision, args.operation_id, read_changes(args.changes_file))
         else:
             output = inspect_epics(args.project, args.operation, args.id)
     except Rejected as exc:

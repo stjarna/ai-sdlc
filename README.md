@@ -1,8 +1,9 @@
 # AI-SDLC
 
-**Status:** initial Discovery management increment implemented for review. `new`,
-`open`, and `validate` are available; conversational refinement, the remaining
-SDLC workflow, and the To-Do demonstration are not yet implemented.
+**Status:** Discovery management is implemented; Interactive Discovery Increment 2
+is implemented for review. The skill guides clarification and persists typed history
+through `discovery-update`. Lifecycle progression, later SDLC stages and the To-Do
+application demonstration remain planned.
 
 A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
@@ -12,6 +13,8 @@ A reusable Git-native AI-powered SDLC orchestration capability for existing soft
 - [Architecture decision register](docs/decisions/architecture-decisions.md) — rationale, rejected/deferred approaches and open implementation questions.
 - [PoC scope decision](docs/decisions/0001-repository-and-poc-scope.md).
 - [Codex instructions](AGENTS.md) — required reading and safe implementation workflow.
+- [Interactive Discovery](docs/interactive-discovery.md) — start, persist, resume and
+  review a conversation; includes a fictional demonstration and manual evaluation guide.
 
 ## Repository layout
 
@@ -26,8 +29,10 @@ Implement **Task Due Date Management** in an existing minimal To-Do application.
 ## Development approach
 
 Read `AGENTS.md`, the specification, and the decision register before changes.
-The approved first increment covers local Discovery management only; new Epics
-start in `discovery` and no lifecycle transitions are implemented.
+New Epics start in `discovery` and no lifecycle transitions are implemented.
+Increment 2 adds a separate authoritative `discovery.yaml`; the initial idea and
+metadata remain intact during conversational updates. Existing requests without
+history remain valid.
 
 See [the operation contract](orchestrator/scripts/README.md) for environment setup,
 the minimal schema, CLI examples, diagnostics, and limitations; see

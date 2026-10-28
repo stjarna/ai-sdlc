@@ -13,11 +13,12 @@ Read these before changing code. Flag conflicting requirements instead of silent
 ## Boundaries
 - `orchestrator/`: generic orchestration skill, templates, workflows, deterministic scripts, tests. No To-Do, Node.js or due-date logic here.
 - `examples/todo-app/`: future minimal existing in-memory Node.js app to demonstrate Task Due Date Management and a date-only to date-and-time change.
-- `docs/`: durable architecture and decisions. The initial Discovery management increment (`new`, `open`, `validate`) is implemented for review; the remaining lifecycle is still in design.
+- `docs/`: durable architecture and decisions. Discovery management is implemented; Interactive Discovery (`discovery-update`) is implemented for review. The remaining lifecycle is still in design.
 
 ## Working rules
 - Inspect repository and documentation first; propose a small implementation slice with files and acceptance checks before major coding.
 - Git/Markdown/YAML are authoritative, not chat history. **No separate checkpoint.md subsystem.**
+- Interactive Discovery keeps identity/lifecycle in `metadata.yaml`, the original idea in `idea.md`, and authoritative append-only history in `discovery.yaml`. Use deterministic updates with revisions and operation IDs; preserve source evidence and do not reinterpret AI assumptions as user facts.
 - Stable Epic/Story/Release IDs; deterministic scripts for paths, state and schema mutation; explicit impact review on changes.
 - Human approval is required for business refinement, design and implementation plan, QA scenarios and automation review, human code review and release approval. Never fabricate approvals or test results.
 - QA test design runs independently and in parallel with engineering work, joining at verification.

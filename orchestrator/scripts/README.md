@@ -3,6 +3,8 @@
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
 The conversational entrypoint is [SKILL.md](../skill/SKILL.md).
+Interactive updates, provenance rules, recovery and the manual evaluation guide are
+documented in [Interactive Discovery](../../docs/interactive-discovery.md).
 
 From the orchestrator repository root:
 
@@ -70,10 +72,18 @@ business correctness or readiness for approval or implementation.
   Repository-wide structural errors are always reported, including duplicate IDs.
   A repository with no Epic records is structurally valid. Missing business information
   is a warning; missing `idea.md` is a structural error.
+- `discovery-update ID --expected-revision SHA256 --operation-id ID --changes-file JSON`:
+  append typed records to a separate `discovery.yaml` with optimistic concurrency,
+  a shared local write lock and operation idempotency. The changes file contains
+  exactly `{"records": [...]}`. An empty list initializes history. This operation
+  never changes metadata or the original idea; existing requests without history
+  remain valid. See the linked guide for the record schema and examples.
 
 All output is JSON on stdout. `ok` describes structural success only, accompanied
-by `operation`, `diagnostics`, and either `epic` (new/open) or `validated_ids`
-(validate). Each diagnostic has `severity`, `code`, `file`, `message`, and optional
+by `operation`, `diagnostics`, and either `epic` (new/open/update) or `validated_ids`
+(validate). Epic views add `revision`, optional `discovery` history and derived
+`discovery_state` without changing the existing fields. Updates also return `replayed`
+and assigned `record_ids`. Each diagnostic has `severity`, `code`, `file`, `message`, and optional
 YAML `line`. Exit status is 0 for success (including warnings), 1 for operational or
 validation failure, and 2 for argparse usage errors (which use stderr).
 
@@ -89,13 +99,17 @@ validation failure, and 2 for argparse usage errors (which use stderr).
 | `E_PROJECT_BUSY` | Transient local creation lock already exists |
 | `W_DISCOVERY_INCOMPLETE` | Missing/empty business section; not a structural error |
 
-Creation uses a transient `.sdlc-discovery.lock/` directory at the project root;
+History/update-specific diagnostics are listed in the Interactive Discovery guide.
+
+Creation and updates use a transient `.sdlc-discovery.lock/` directory at the project root;
 cooperating concurrent local writers fail closed. The lock is removed after normal
 completion or a handled exception and is not a context checkpoint. Independent-clone
 coordination, hard process termination/power-loss recovery, and hostile concurrent
 filesystem mutation are not covered. A stale lock requires inspection before manual
 removal. Retain cancelled records: physically deleted records cannot reserve IDs
 because this increment reads existing files only and never consults Git history.
+For atomic update publication, idempotent retry and inspected stale-lock recovery,
+see the guide. Creation's hard-termination limits remain unchanged.
 
 The CLI never invokes Git or changes approval/readiness states. Unsupported schemas
 and inconsistent existing records block creation/opening rather than being repaired.
