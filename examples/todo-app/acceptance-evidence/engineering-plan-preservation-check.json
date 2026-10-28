@@ -1,0 +1,10 @@
+{
+  "qa_review_unchanged": true,
+  "qa_metadata_unchanged": true,
+  "engineering_history_append_only": true,
+  "application_source_unchanged": true,
+  "no_application_files_created": true,
+  "design_approval_valid": true,
+  "plan_approval_valid": false,
+  "checks_executed": false
+}

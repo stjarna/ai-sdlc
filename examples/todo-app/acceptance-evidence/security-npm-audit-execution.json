@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "npm",
+    "audit",
+    "--package-lock-only",
+    "--ignore-scripts",
+    "--json"
+  ],
+  "cwd": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/qa",
+  "exit_code": 0,
+  "stderr": ""
+}

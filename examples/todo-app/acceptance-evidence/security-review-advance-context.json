@@ -1,0 +1,1040 @@
+{
+  "operation": "command-context",
+  "ok": true,
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Users' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Expected value' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Initial scope' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Success criteria' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Assumptions' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Open questions' is missing or empty; clarification may be needed.",
+      "line": null
+    }
+  ],
+  "routing": {
+    "command": "advance",
+    "stage": "verification",
+    "review_operation": "engineering-review",
+    "write_operation": "engineering-advance",
+    "kind": "verification",
+    "read_only": true,
+    "requires_human_decision": true,
+    "explanation": "Sequential engineering only; approval, advancement and starting work are separate.",
+    "track": "engineering",
+    "required_role": "Engineering Lead",
+    "initialization_required": false
+  },
+  "review": {
+    "active": true,
+    "stage": "verification",
+    "current": true,
+    "final_report": null,
+    "approvals": {
+      "design": {
+        "valid": true
+      },
+      "plan": {
+        "valid": true
+      },
+      "implementation": {
+        "valid": true
+      }
+    },
+    "revision": "889fc56176748e1c0f9f257ee0e93601313730363bde36fdc20b2205d5fa5eb0",
+    "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+    "analysis_baseline": "0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598",
+    "analysis_handoff": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927",
+    "drafts": {
+      "design": {
+        "baseline_id": "97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d",
+        "operation_id": "working-app-design-draft-68bf4fea-8ffb-499a-8022-8c38e5dcf55b",
+        "payload": {
+          "_request": {
+            "coverage": {
+              "AC-001": {
+                "disposition": "implemented",
+                "reason": "Plan exact-date assertions through domain state, real HTTP read and browser interaction."
+              },
+              "AC-002": {
+                "disposition": "implemented",
+                "reason": "Plan assertions for null date value and permitted undated task state."
+              },
+              "FR-001": {
+                "disposition": "implemented",
+                "reason": "Proposed domain/API/browser path for initial assignment of the supplied future calendar date; no rule for past dates or existing-date changes."
+              },
+              "FR-002": {
+                "disposition": "implemented",
+                "reason": "Represent absent due date as null and show an undated task; a date is optional."
+              },
+              "FR-003": {
+                "disposition": "blocked",
+                "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+              }
+            },
+            "unresolved": [
+              {
+                "id": "U-001",
+                "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+              },
+              {
+                "id": "AQ-001",
+                "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+              },
+              {
+                "id": "FR-003",
+                "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+              },
+              {
+                "id": "AQ-002",
+                "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+              }
+            ]
+          },
+          "coverage": {
+            "AC-001": {
+              "disposition": "implemented",
+              "reason": "Plan exact-date assertions through domain state, real HTTP read and browser interaction."
+            },
+            "AC-002": {
+              "disposition": "implemented",
+              "reason": "Plan assertions for null date value and permitted undated task state."
+            },
+            "FR-001": {
+              "disposition": "implemented",
+              "reason": "Proposed domain/API/browser path for initial assignment of the supplied future calendar date; no rule for past dates or existing-date changes."
+            },
+            "FR-002": {
+              "disposition": "implemented",
+              "reason": "Represent absent due date as null and show an undated task; a date is optional."
+            },
+            "FR-003": {
+              "disposition": "blocked",
+              "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+            }
+          },
+          "unresolved": [
+            {
+              "id": "U-001",
+              "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+            },
+            {
+              "id": "AQ-001",
+              "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+            },
+            {
+              "id": "FR-003",
+              "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+            },
+            {
+              "id": "AQ-002",
+              "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+            }
+          ],
+          "content": "# Technical Design \u2014 Task Due Date Management acceptance application\n\nStatus: proposed for human review; not approved. This is an acceptance demonstrator,\nnot a complete personal task manager or a production deployment design.\n\n## Approved authority and observations\n\nConsume the exact approved and explicitly advanced Functional Analysis baseline selected\nby the current handoff. Its approved Business dependency and Discovery history remain\nauthoritative. The original requirement is unchanged. FR-001/AC-001 specify assigning\na supplied future calendar date to an undated task; FR-002/AC-002 permit an undated task.\nFR-003 remains blocked. U-001/AQ-001 and AQ-002 remain unresolved, despite acknowledgement.\nNo business rule for past dates or changing/clearing an assigned date is established.\n\nInspection: the disposable project contains requirements artifacts only. There is no\nexisting application, repository stack, schema or build convention to extend. Seeded\ntask records are demonstration fixtures satisfying the use-case precondition that a\ntask is available; they are not a new task-creation requirement.\n\n## Proposed architecture\n\nUse one local process serving a small browser UI and a same-origin JSON API. Separate:\n1. Domain module: Task {id, title, dueDate: null | YYYY-MM-DD}; initial-date assignment\n   and undated-task representation. Store the date as a calendar string, not an instant.\n2. In-memory task repository: fixed seeded task fixtures; no database, accounts or synchronization.\n3. HTTP adapter: explicit route allowlist and JSON input/output; no arbitrary filesystem access.\n4. Browser adapter: list seeded tasks, clearly show an absent date, and provide a labelled\n   initial future-date assignment form for undated tasks. Render returned values as text.\n\nRequest flow: browser -> same-origin API -> domain service -> in-memory repository ->\nJSON result -> browser renders the persisted-in-process task state. An independent API\nread must return the assigned date, so this is working application state rather than\nonly a client-side display change.\n\n## Proposed technology and alternatives\n\nUse the already installed Node.js v25.9.0, built-in HTTP modules, and plain HTML/CSS/\nJavaScript. This is a local acceptance environment observation, not a production runtime\nsupport recommendation. Avoid a frontend framework, database, runtime dependencies or\nbuild bundler for this small scope. No runtime or package is installed at the design stage.\nUse Node's built-in test runner for domain and HTTP integration checks. Propose Playwright\nas a pinned development-only dependency for an actual browser UI runner, using installed\nChrome. Chrome is present; Playwright is not currently resolvable from this project.\nDependency/version resolution, browser launch and executable test commands belong to the\nsubsequent reviewed Plan; no browser test is claimed executed now.\n\nAlternative: a browser-only local-storage application would be smaller but would not\nexercise a real HTTP/component boundary and would add an unapproved persistence choice.\nA framework/database stack adds unnecessary installation and configuration for two\napproved acceptance paths. The proposed in-memory process is intentionally disposable.\n\n## Scope boundaries and explicit technical proposals\n\nDue-date entry is calendar-only, with strict real-calendar YYYY-MM-DD parsing; preserve\nexact day/month/year through the API and UI. Invalid encoding/shape/non-calendar values\nare structural input errors, not a decision about valid past dates.\n\nDemonstrate initial assignment of future dates and tasks remaining undated. Do not add\ntask creation/deletion/completion, reminders/notifications, date clearing or date editing.\nOnce assigned, show the assigned date without edit/clear controls; this means those\ncapabilities are absent from the demonstrator, not prohibited by an approved product rule.\n\nFor attempts outside specified behavior (a valid past/today date or reassigning/clearing\nan existing date), return an explicit not-implemented-in-this-demonstrator response,\nnot a business validation message claiming that past dates or edits are forbidden.\nThese paths have no product acceptance criteria and remain blocked/open. This technical\nboundary is proposed for review; it must not be represented as resolving U-001/AQ-001,\nFR-003 or AQ-002. The final report must state the application demonstrates only the\nspecified subset, even if its executable checks pass.\n\nFor reproducible tests, inject a reference calendar day. In the live demo, display the\nserver UTC reference day explicitly and use it only to identify the demonstrated future\npath. No production per-user timezone or today-date policy is inferred. The UI must\nidentify this as an acceptance demonstration with incomplete date policies.\n\nIn-memory data resets when the process restarts. This is a proposed test-environment\nlimitation, not a user-approved retention requirement. No sensitive production data,\nexternal services, network deployment or authenticated user behavior is introduced.\n\n## Security-by-design contribution\n\nAssets are seeded task titles/dates, local process integrity, and integrity of the test\nand SDLC artifacts. Treat browser input and HTTP requests as untrusted. Bind the server\nto loopback on an ephemeral port; make no internet-facing deployment claim. Use explicit\nroutes and fixed static assets; no path-to-file concatenation, executable input, eval,\ndynamic shell or external content. Bound request sizes and validate content type, object\nkeys, task identity and calendar syntax; return controlled JSON errors without stack traces.\n\nUse same-origin UI/API, reject foreign origins for mutating requests, do not enable\npermissive CORS, and use proportionate response headers (nosniff and a local-content CSP).\nRender untrusted text through textContent, with no untrusted HTML insertion. Do not log\nrequest bodies or credentials. There is no authentication because this is an isolated\nseeded-data local demonstration; authentication and multi-user authorization are not\nclaimed or silently added as product requirements. Loopback alone is not a universal\nsecurity boundary; localhost misuse and dependency risks remain review concerns.\n\nKeep the application server away from requirements/, approval artifacts, local identity\nfiles and test evidence. Serve only the declared public assets. Source and tests remain\nwithin the later approved Plan paths. Playwright is development-only, pinned with a\nlockfile, and reviewed before use; inspect actual dependency/advisory evidence when available.\nThese are proposed design controls from Security 1.0.0, not an executed Security Review,\nvulnerability scan, human signoff or certification.\n\n## Verification seams and traceability\n\nFR-001 -> domain initial-date assignment -> JSON endpoint -> browser form -> AC-001:\nassert exact selected future YYYY-MM-DD in the returned task, subsequent HTTP read and\nrendered browser state. FR-002 -> nullable dueDate -> JSON null and explicit undated UI\nstate -> AC-002. FR-003 stays blocked; never add a test asserting acceptance or business\nrejection of past dates. Tests may check that the demo reports an unsupported path as\nunimplemented, but must not relabel that as the missing product rule.\n\nPlan unit checks for calendar parsing, state mutation and optionality; integration checks\nfor real HTTP requests, returned/read state, structural errors and route boundaries;\nand actual browser tests that open the running UI, leave a fixture undated, assign a\nselected future date through its form and assert the resulting display/state. Include\nappropriate security-negative checks for the proposed controls. Test scenarios and\ncommands will be reviewed in the Plan; generated automation and code require later human\nreview. This document records design intent only; no tests or implementation have run.\n\n## Review and handoff\n\nArchitecture 1.0.0 and Security 1.0.0 instruction pins are recorded by the orchestrator.\nAll stack, component, environment and control choices above are proposals until explicit\nhuman Design approval. That approval must acknowledge both unresolved business topics;\nit neither resolves them nor authorizes coding. After approval, wait for separate\nadvancement before Implementation Planning. No assignment or next-stage work is automatic.\n"
+        },
+        "skills": {
+          "architecture": {
+            "digest": "5e5671bd828e3a8f6f129712e8b73764884790c2bc52de8dd60e85dcce719cdb",
+            "version": "1.0.0"
+          },
+          "security": {
+            "digest": "173822e3f5067f71292f1b724354077103b307373f6c1bc97945f33346254e5e",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "plan": {
+        "baseline_id": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "operation_id": "working-app-engineering-only-plan-be1027d1-c10d-439b-a87d-2bf81de39582",
+        "payload": {
+          "_request": {
+            "checks": [
+              {
+                "argv": [
+                  "node",
+                  "scripts/check.mjs",
+                  "unit"
+                ],
+                "category": "unit",
+                "cwd": ".",
+                "id": "C-UNIT",
+                "requirements": [
+                  "AC-001",
+                  "AC-002"
+                ],
+                "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+                "timeout": 60
+              },
+              {
+                "argv": [
+                  "node",
+                  "scripts/check.mjs",
+                  "build"
+                ],
+                "category": "build",
+                "cwd": ".",
+                "id": "C-BUILD",
+                "requirements": [
+                  "AC-001",
+                  "AC-002"
+                ],
+                "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+                "timeout": 60
+              }
+            ],
+            "coverage": {
+              "AC-001": {
+                "disposition": "implemented",
+                "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+              },
+              "AC-002": {
+                "disposition": "implemented",
+                "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+              },
+              "FR-001": {
+                "disposition": "implemented",
+                "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+              },
+              "FR-002": {
+                "disposition": "implemented",
+                "reason": "Planned nullable date state and undated display; no clearing capability."
+              },
+              "FR-003": {
+                "disposition": "blocked",
+                "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+              }
+            },
+            "tasks": [
+              {
+                "depends_on": [],
+                "description": "Prepare dependency-free Node package scripts, unit/build check runner and local run instructions. No package installation.",
+                "id": "T-001",
+                "paths": [
+                  "package.json",
+                  "scripts/",
+                  "README.md"
+                ],
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ]
+              },
+              {
+                "depends_on": [
+                  "T-001"
+                ],
+                "description": "Implement strict calendar parsing, seeded in-memory task repository and initial-assignment domain operations together with isolated unit tests.",
+                "id": "T-002",
+                "paths": [
+                  "src/domain.mjs",
+                  "src/repository.mjs",
+                  "test/unit.test.mjs"
+                ],
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ]
+              },
+              {
+                "depends_on": [
+                  "T-002"
+                ],
+                "description": "Implement loopback HTTP and fixed static-asset adapters with bounded JSON, controlled errors, same-origin mutation and response headers. No QA integration automation.",
+                "id": "T-003",
+                "paths": [
+                  "src/http.mjs",
+                  "src/server.mjs"
+                ],
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ]
+              },
+              {
+                "depends_on": [
+                  "T-003"
+                ],
+                "description": "Implement plain browser UI for undated tasks and initial future-date assignment, exact date display and safe text rendering. No QA/browser automation.",
+                "id": "T-004",
+                "paths": [
+                  "public/"
+                ],
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ]
+              },
+              {
+                "depends_on": [
+                  "T-004"
+                ],
+                "description": "Complete syntax/assets/import checks and run named unit/build checks through the orchestrator; present actual source changes and task evidence for separate human code review.",
+                "id": "T-005",
+                "paths": [
+                  "scripts/",
+                  "README.md",
+                  "test/unit.test.mjs"
+                ],
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ]
+              }
+            ],
+            "unresolved": [
+              {
+                "id": "U-001",
+                "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+              },
+              {
+                "id": "AQ-001",
+                "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+              },
+              {
+                "id": "FR-003",
+                "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+              },
+              {
+                "id": "AQ-002",
+                "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+              }
+            ]
+          },
+          "checks": [
+            {
+              "argv": [
+                "node",
+                "scripts/check.mjs",
+                "unit"
+              ],
+              "category": "unit",
+              "cwd": ".",
+              "id": "C-UNIT",
+              "requirements": [
+                "AC-001",
+                "AC-002"
+              ],
+              "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+              "timeout": 60
+            },
+            {
+              "argv": [
+                "node",
+                "scripts/check.mjs",
+                "build"
+              ],
+              "category": "build",
+              "cwd": ".",
+              "id": "C-BUILD",
+              "requirements": [
+                "AC-001",
+                "AC-002"
+              ],
+              "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+              "timeout": 60
+            }
+          ],
+          "coverage": {
+            "AC-001": {
+              "disposition": "implemented",
+              "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+            },
+            "AC-002": {
+              "disposition": "implemented",
+              "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+            },
+            "FR-001": {
+              "disposition": "implemented",
+              "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+            },
+            "FR-002": {
+              "disposition": "implemented",
+              "reason": "Planned nullable date state and undated display; no clearing capability."
+            },
+            "FR-003": {
+              "disposition": "blocked",
+              "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+            }
+          },
+          "tasks": [
+            {
+              "depends_on": [],
+              "description": "Prepare dependency-free Node package scripts, unit/build check runner and local run instructions. No package installation.",
+              "id": "T-001",
+              "paths": [
+                "package.json",
+                "scripts/",
+                "README.md"
+              ],
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ]
+            },
+            {
+              "depends_on": [
+                "T-001"
+              ],
+              "description": "Implement strict calendar parsing, seeded in-memory task repository and initial-assignment domain operations together with isolated unit tests.",
+              "id": "T-002",
+              "paths": [
+                "src/domain.mjs",
+                "src/repository.mjs",
+                "test/unit.test.mjs"
+              ],
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ]
+            },
+            {
+              "depends_on": [
+                "T-002"
+              ],
+              "description": "Implement loopback HTTP and fixed static-asset adapters with bounded JSON, controlled errors, same-origin mutation and response headers. No QA integration automation.",
+              "id": "T-003",
+              "paths": [
+                "src/http.mjs",
+                "src/server.mjs"
+              ],
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ]
+            },
+            {
+              "depends_on": [
+                "T-003"
+              ],
+              "description": "Implement plain browser UI for undated tasks and initial future-date assignment, exact date display and safe text rendering. No QA/browser automation.",
+              "id": "T-004",
+              "paths": [
+                "public/"
+              ],
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ]
+            },
+            {
+              "depends_on": [
+                "T-004"
+              ],
+              "description": "Complete syntax/assets/import checks and run named unit/build checks through the orchestrator; present actual source changes and task evidence for separate human code review.",
+              "id": "T-005",
+              "paths": [
+                "scripts/",
+                "README.md",
+                "test/unit.test.mjs"
+              ],
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ]
+            }
+          ],
+          "unresolved": [
+            {
+              "id": "U-001",
+              "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+            },
+            {
+              "id": "AQ-001",
+              "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+            },
+            {
+              "id": "FR-003",
+              "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+            },
+            {
+              "id": "AQ-002",
+              "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+            }
+          ],
+          "content": "# Engineering Implementation Plan \u2014 Task Due Date Management\n\nStatus: replacement draft for explicit human Engineering Plan review. Not approved.\nThis draft responds to `$sdlc start engineering` after authorized work-track adoption.\nIt authorizes neither lifecycle advancement nor coding, installation or test execution.\n\n## Authority and preserved history\n\nApproved Technical Design: 97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d\nApproved Functional Analysis: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598\nAnalysis handoff: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927\nHistorical unapproved combined Plan: a3edcd499adfe7464a0beb524121eee26296247f51b7af32d0a72ac0e363a4e7\n\nThe approved Design, decisions and original combined Plan remain immutable evidence.\nThe current approved Design governs technical choices despite its original draft-status\nwording. This replacement separates Engineering duties from independent QA; it does not\namend Design or approve any QA artifact. Development 1.1.0 is resolved from the approved\ncatalog; the immutable instruction digest is recorded by the CLI.\n\n## Inspected context and runtime\n\nThe disposable project currently contains only requirements artifacts: no application,\nbuild configuration or existing source conventions. Node v25.9.0 is installed. Use its\nbuilt-in HTTP and node:test modules plus plain HTML/CSS/JavaScript, matching the approved\nDesign. No third-party Engineering dependencies, package installation, browser download,\nglobal tools, external infrastructure or orchestrator changes are needed. package.json\nwill contain local start/unit/build scripts. There is no dependency tree to install.\nThis observed runtime is a local acceptance environment, not a production recommendation.\n\nPlaywright, any QA-specific manifest/lockfile, HTTP/browser automation and their runners\nbelong to the separately reviewed QA automation under reserved qa/. This Plan selects\nno QA dependency version or QA installation. The old combined Plan's proposed Playwright\npin is historical only; it is not carried forward as authorization. The Design's browser\nverification intent remains and must be fulfilled by QA before integrated verification.\n\n## Implemented subset and uncertainty\n\nFR-001/AC-001: initial assignment of a supplied future calendar date to an existing\nundated seeded task, preserving the exact day/month/year in state and display.\nFR-002/AC-002: an existing task may remain undated; dueDate is null and the UI makes the\nabsence clear. Coverage dispositions denote planned implementation, not completed work.\nSeeded tasks meet the existing-task precondition, not a new task-creation requirement.\nNo task CRUD/completion, reminders, notifications, accounts, synchronization or persistence.\n\nU-001/AQ-001 stay deferred pending support consultation. FR-003 remains blocked: no\nproduct acceptance or rejection policy for past dates. AQ-002 remains undefined:\nchanging or clearing an assigned date is not an implied capability or prohibition.\nAs approved in Design, outside-subset attempts (past/today or reassignment/clear) receive\nan explicit demonstrator-not-implemented response with unchanged state. This technical\nboundary must never be presented as the unresolved product rule or FR-003 coverage.\nDo not proceed with a task that requires selecting a missing business decision.\n\n## Ordered tasks, source boundary and outcomes\n\nT-001 \u2014 Create package.json, scripts/ and README.md with local startup and named check\ncommands. Outcome: dependency-free application/check entry points; no install.\n\nT-002 \u2014 After T-001, implement src/domain.mjs, src/repository.mjs and test/unit.test.mjs.\nOutcome: strict real-calendar strings, seeded isolated in-memory tasks, nullable dates\nand initial assignment with exact preservation, accompanied by isolated unit assertions.\n\nT-003 \u2014 After T-002, implement src/http.mjs and src/server.mjs. Outcome: an ephemeral\n127.0.0.1 listener, GET /api/tasks, narrow initial-assignment mutation and fixed static\nroutes. Export isolated server construction for later independent QA. Bound body sizes,\nvalidate content type/keys/task identity, reject foreign origins on mutation, provide\ncontrolled errors without stack leakage, CSP and nosniff. Never expose requirements/,\nidentity, evidence or arbitrary paths. Do not create integration automation in Engineering.\n\nT-004 \u2014 After T-003, implement public/ assets. Outcome: labelled date input for an\nundated task, exact assigned date display, explicit undated state, safe textContent\nrendering and controlled feedback. No edit/clear control for assigned dates. Display\nserver UTC reference day as the accepted testing convention, not a timezone/product rule.\nNo browser runner or QA automation is included in this task.\n\nT-005 \u2014 After T-004, finish scripts/, README.md and test/unit.test.mjs. Outcome: complete\nunit/build runner, real results and source diff ready for human Engineering code review.\nEvery task links FR-001, FR-002, AC-001 and AC-002; detailed safe paths and dependencies\nare in the structured contract. The union of those paths is the full Engineering source\nboundary. Leave reserved qa/ and requirements artifacts untouched by application edits.\n\n## Interfaces and demonstration limitations\n\nTask records have id, seeded title and dueDate null or YYYY-MM-DD. Keep calendar strings\nunchanged rather than converting them into instants; reject impossible calendar values\nwithout JavaScript rollover. Isolate reference-day injection for deterministic unit tests.\nThe server and browser exchange same-origin JSON and display actual in-process state.\nA later independent read must see the selected date. Fixed static routes serve only\npublic assets. In-memory data resets on process restart: demo limitation, no retention rule.\nNo sensitive or real-user data, remote deployment or authentication claim is introduced.\n\n## Named Engineering checks \u2014 planned, not run\n\nC-UNIT: literal argv [node, scripts/check.mjs, unit], cwd '.', timeout 60 seconds.\nUse node:test with isolated fixtures/reference-day injection. Assert exact calendar date\npreservation, permitted absence, real-calendar validity and task isolation; include\napplicable month/year/leap-day examples as test data, not new business range rules.\nCheck controlled demonstrator unsupported responses without asserting a product policy.\n\nC-BUILD: literal argv [node, scripts/check.mjs, build], cwd '.', timeout 60 seconds.\nSyntax-check JS/MJS and verify fixed asset/import references and package script targets.\nThis is a dependency-free validation build, not a bundling, HTTP or browser result.\n\nRun these only during separately authorized Development, through check-run to preserve\nactual exit status, output, requirement links and current source fingerprint. Nonzero,\nunavailable or unexecuted checks never count as passing. Keep outputs out of hashed\nsource and preserve each orchestrator evidence record. No checks have run for this Plan.\n\n## Human gates and independent QA join\n\nFirst obtain explicit Plan approval, acknowledging all inherited uncertainty. Approval\nleaves Engineering in Implementation Planning. Wait for separate readiness advancement,\nthen separate explicit Development start before changing application files. Engineering\nownership remains David Krzystek pending separate assignment; no transfer is inferred.\n\nAfter implementation, present actual diff, task completion and current unit/build evidence\nfor separate human source-bound code approval. Self-review is not independent review.\nCode approval does not approve QA automation; lifecycle advancement remains separate.\nQA strategy/scenarios remain drafts until their own human decision, and automation has\nits own review gate. This Plan neither edits those artifacts nor defines their oracle.\n\nIntegrated verification requires current approved Engineering implementation, separately\napproved QA strategy/scenarios and automation, actual integration and browser evidence,\nand explicit QA completion. Missing QA blocks the join. No passing unit/build result\nsubstitutes for working application acceptance or Security Review. Later Security Review\nmust inspect actual source and evidence; findings require explicit linked remediation,\nrelevant renewed reviews/checks and retained prior results. Final verification binds the\nexact baselines, source, QA and Security evidence and still preserves unresolved topics.\nNo release, deployment, Git operation or security certification is authorized.\n\n## Decision requested\n\nApprove this Engineering-only Plan with past-date behavior deferred/blocked and changing\nor clearing assigned dates undefined. QA approval is a separate decision. No coding,\ndependency installation, advancement or automatic next-stage work follows this approval.\n"
+        },
+        "skills": {
+          "development": {
+            "digest": "1faa7a9542959a3c2766481c63aab762b6b51cd3f6f592a2d9df10f00d3e5894",
+            "version": "1.1.0"
+          }
+        }
+      },
+      "implementation": {
+        "baseline_id": "e3195b832a823c3b6412752f88b8187e8e91af254b464ad7be881931d6c97e2a",
+        "operation_id": "working-app-focus-remediation-review-fc440376-c647-4738-b875-75083dbd3bba",
+        "payload": {
+          "_request": {
+            "completed_tasks": [
+              "T-001",
+              "T-002",
+              "T-003",
+              "T-004",
+              "T-005"
+            ],
+            "coverage": {
+              "AC-001": {
+                "disposition": "implemented",
+                "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+              },
+              "AC-002": {
+                "disposition": "implemented",
+                "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+              },
+              "FR-001": {
+                "disposition": "implemented",
+                "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+              },
+              "FR-002": {
+                "disposition": "implemented",
+                "reason": "Planned nullable date state and undated display; no clearing capability."
+              },
+              "FR-003": {
+                "disposition": "blocked",
+                "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+              }
+            },
+            "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+            "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+            "unresolved": [
+              {
+                "id": "U-001",
+                "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+              },
+              {
+                "id": "AQ-001",
+                "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+              },
+              {
+                "id": "FR-003",
+                "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+              },
+              {
+                "id": "AQ-002",
+                "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+              }
+            ]
+          },
+          "completed_tasks": [
+            "T-001",
+            "T-002",
+            "T-003",
+            "T-004",
+            "T-005"
+          ],
+          "coverage": {
+            "AC-001": {
+              "disposition": "implemented",
+              "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+            },
+            "AC-002": {
+              "disposition": "implemented",
+              "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+            },
+            "FR-001": {
+              "disposition": "implemented",
+              "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+            },
+            "FR-002": {
+              "disposition": "implemented",
+              "reason": "Planned nullable date state and undated display; no clearing capability."
+            },
+            "FR-003": {
+              "disposition": "blocked",
+              "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+            }
+          },
+          "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+          "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+          "unresolved": [
+            {
+              "id": "U-001",
+              "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+            },
+            {
+              "id": "AQ-001",
+              "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+            },
+            {
+              "id": "FR-003",
+              "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+            },
+            {
+              "id": "AQ-002",
+              "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+            }
+          ],
+          "content": "# Engineering implementation review \u2014 focus remediation QA-F-001\n\nStatus: source remediation prepared for renewed human code approval. Not approved.\nHuman explicitly authorized Engineering remediation, regression tests and renewed code\nreview while preserving QA evidence. verification-remediate links the actual failed\nQA-UI check and returns Engineering to Development; old decisions/baselines remain.\nThe approved Technical Design and Engineering-only Plan are unchanged. Development\n1.1.0 instruction pin is recorded by the CLI. All T-001..T-005 remain complete.\n\n## Scope and changes\n\nOnly public/app.js and test/unit.test.mjs changed from the last approved source.\nQA-F-001: disabling a focused submit button moved focus before render checked whether\nto restore it. The prior DOM test double did not model that behavior. Its updated disabled\nsetter now models this blur and reproduced the exact focus assertion failure: 39 of 40\nunit tests passed, 1 failed, before modifying application behavior. Evidence retained.\n\nThe submit button now remains focusable during the pending request and exposes\naria-disabled=true. The existing row.busy guard rejects duplicate submissions before\nany mutation. On successful assignment, the existing renderer restores focus to the\ntask heading if focus is still inside that form, and preserves user focus on another\ntask. After failure, busy/ARIA state resets; an unknown save outcome still actually\ndisables retries until reload. No event bypass creates a second mutation.\n\nThe original focus-removal and other-task-draft tests remain. A new gated pending-request\nregression verifies focused-button retention, ARIA state, duplicate-submit suppression\nand eventual heading focus. Other save-reconciliation regressions remain unchanged.\nThese controller tests execute the actual browser script with DOM/fetch doubles, not a\nreal browser. Real Chrome confirmation is pending; QA-F-001 is not declared closed.\n\n## Actual current Engineering verification\n\nC-UNIT passed, exit 0: 41 tests, 41 passed, 0 failed/skipped/cancelled.\nC-BUILD passed, exit 0: syntax of seven JS/MJS files, local imports, fixed assets and\npackage scripts. Both ran through check-run against this exact source fingerprint.\nEarlier reproduction failure and all prior successful/failing evidence are retained.\nIncremental actual diff: evidence/engineering-focus-remediation.patch.\n\n## Preserved functionality, authority and boundaries\n\nThe small dependency-free local HTTP/browser application implements initial exact\nfuture-calendar-date assignment and permitted undated tasks only, as in the approved\nAnalysis/Design/Plan. Seeded data is in-memory and resets on server restart. No CRUD,\ncompletion, reminders, notifications, persistence, accounts or synchronization are added.\nThe accepted UTC reference day remains a testing convention, not a product business rule.\nPast-date behavior (U-001/AQ-001, FR-003) stays deferred/blocked pending support consultation.\nChanging or clearing assigned dates (AQ-002) remains undefined. Demonstrator unsupported\nresponses define no product acceptance/rejection policy. No business question is resolved.\n\nQA source, scenario/automation approvals, ownership and append-only QA history/evidence\nare unchanged. The previous integration pass and UI failure belong to the earlier source;\nthey cannot serve as verification of this changed source. No QA check was rerun. Preserve\nthose outputs and obtain renewed source-bound QA execution only after fresh human code\napproval and separate Engineering advancement. QA stays ready for Verification, incomplete.\nNo dependencies, Engineering Plan, QA automation or orchestrator implementation changes.\nNo Git stage/commit/push, automatic advancement or Security/final readiness claim.\n\n## Human review requested\n\nReview the exact source diff and current Engineering evidence. Obtain fresh explicit\nimplementation approval with both unresolved topics acknowledged. Approval leaves\nEngineering in Development; subsequent Verification advancement is a separate decision.\nQA failure remains historical evidence, and real browser re-verification remains required.\n"
+        },
+        "skills": {
+          "development": {
+            "digest": "1faa7a9542959a3c2766481c63aab762b6b51cd3f6f592a2d9df10f00d3e5894",
+            "version": "1.1.0"
+          }
+        }
+      }
+    },
+    "decisions": [
+      {
+        "operation_id": "human-working-app-design-approve-54f990f2-7da2-4137-8946-ffd2201f3f2f",
+        "action": "approve",
+        "kind": "design",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "decision": "I approve the proposed Technical Design for the PoC.\nI acknowledge that past-date behavior and changing or clearing existing due dates remain unresolved.\nThe UTC reference date is acceptable for reproducible testing, but must not introduce a new business rule.\nPlease record the approval, verify the baseline and keep the current lifecycle state unchanged.\nDo not advance automatically. Wait for my separate authorization to proceed to Implementation Planning.",
+        "expected_revision": "acabf22dfcd4b4f24d079888583a8267d94c836d56bba49d2f46009ae705a32b",
+        "timestamp": "2026-10-28T20:14:54Z",
+        "baseline_id": "eb923f53fc6e24948599d3e8f3d060491400fbe3959c44729bf12eced70892d0",
+        "cycle": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927"
+      },
+      {
+        "operation_id": "human-working-app-engineering-plan-approve-8008ee74-6ee2-4495-aab8-f9be842f4a77",
+        "action": "approve",
+        "kind": "plan",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "decision": "Approved. I acknowledge both unresolved topics and accept the Engineering Plan as proposed.",
+        "expected_revision": "0f9b92652161a6f9b7bdeff9633e56f872cf097b39217e217fd04eac25e15ea1",
+        "timestamp": "2026-10-28T21:21:42Z",
+        "baseline_id": "e8369aaf2ac3216dde6d06cc2d1af2ef90cb355e5fabfa0e576816d549824440",
+        "cycle": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927"
+      },
+      {
+        "operation_id": "human-working-app-ui-changes-077a0fcc-6780-471f-ac33-e9074e7b64a0",
+        "action": "request_changes",
+        "kind": "implementation",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "decision": "Yes, fix both findings, add regression tests and rerun verification. Present the results for review before approval.",
+        "expected_revision": "1905389f7320004772f6a62c596feffb457839a5a5de148491e0d43cd7db83a6",
+        "timestamp": "2026-10-28T21:33:47Z",
+        "baseline_id": "70b0f25e2300309b75946bf892634c123c5af85be05061bb6e78c46a1bad6002",
+        "cycle": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927"
+      },
+      {
+        "operation_id": "human-working-app-code-v2-approve-c7b0c098-104c-4dc5-a63b-1098ea7220b8",
+        "action": "approve",
+        "kind": "implementation",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "decision": "Approved. I acknowledge both unresolved business topics. Keep them open and proceed only to the next authorized lifecycle state.",
+        "expected_revision": "adc6e356baafe857675231fc37862bd8c6d1f3ccfd8fcf708dd2f53577809288",
+        "timestamp": "2026-10-28T21:37:16Z",
+        "baseline_id": "4da716e0506e5db5f60d9fe8bdb343caeadcc59103f52abb29293739209e157f",
+        "cycle": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927"
+      },
+      {
+        "operation_id": "human-working-app-focus-code-approve-a866883a-689e-4cad-b35a-7e3f7ddd08e5",
+        "action": "approve",
+        "kind": "implementation",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "decision": "Approved. Both unresolved business topics remain acknowledged. Proceed with the existing QA remediation and verification workflow.",
+        "expected_revision": "936689bfd3237b164048cc5456495263b4e211d82879643cb026b18246c398f6",
+        "timestamp": "2026-10-28T21:51:49Z",
+        "baseline_id": "0b4ad07ce04ff3f96e740dd50f19fb640cb38ecf415d16334c1302f6c6bd4fdf",
+        "cycle": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927"
+      }
+    ],
+    "evidence": [
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 0,
+        "output": "\u2714 real calendar date 2026-12-31 (1.131084ms)\n\u2714 real calendar date 2027-01-01 (0.120708ms)\n\u2714 real calendar date 2028-02-29 (0.058917ms)\n\u2714 real calendar date 2000-02-29 (0.047708ms)\n\u2714 real calendar date 0001-01-01 (0.055041ms)\n\u2714 real calendar date 9999-12-31 (0.055084ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.063917ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.039833ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.056042ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.096083ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.058667ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.048875ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.034875ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.025417ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.022541ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.045875ms)\n\u2714 reject non-calendar value null (0.027792ms)\n\u2714 reject non-calendar value 20261028 (0.022084ms)\n\u2714 reject non-calendar value {} (0.026208ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.022708ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.962792ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.100375ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.034208ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.03175ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.051ms)\n\u2714 repositories isolate independent fixtures (0.041292ms)\n\u2714 invalid structural input leaves state unchanged (0.260916ms)\n\u2714 unknown target returns controlled error without mutation (0.0855ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078125ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.090291ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.060209ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.088042ms)\n\u2139 tests 32\n\u2139 suites 0\n\u2139 pass 32\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 128.478875\n",
+        "output_sha256": "c9d7b07a9a84fd5e614f8c383f659ae4736931571c2a1de558d12eb70989c56e",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "b48dd3a4e871af24da3989dc69914653b59a70d7a0e7cdc081316c00990f5798",
+        "status": "passed",
+        "content": "\u2714 real calendar date 2026-12-31 (1.131084ms)\n\u2714 real calendar date 2027-01-01 (0.120708ms)\n\u2714 real calendar date 2028-02-29 (0.058917ms)\n\u2714 real calendar date 2000-02-29 (0.047708ms)\n\u2714 real calendar date 0001-01-01 (0.055041ms)\n\u2714 real calendar date 9999-12-31 (0.055084ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.063917ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.039833ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.056042ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.096083ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.058667ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.048875ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.034875ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.025417ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.022541ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.045875ms)\n\u2714 reject non-calendar value null (0.027792ms)\n\u2714 reject non-calendar value 20261028 (0.022084ms)\n\u2714 reject non-calendar value {} (0.026208ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.022708ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.962792ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.100375ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.034208ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.03175ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.051ms)\n\u2714 repositories isolate independent fixtures (0.041292ms)\n\u2714 invalid structural input leaves state unchanged (0.260916ms)\n\u2714 unknown target returns controlled error without mutation (0.0855ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078125ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.090291ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.060209ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.088042ms)\n\u2139 tests 32\n\u2139 suites 0\n\u2139 pass 32\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 128.478875\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-BUILD"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "build"
+          ],
+          "category": "build",
+          "cwd": ".",
+          "id": "C-BUILD",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+          "timeout": 60
+        },
+        "check_id": "C-BUILD",
+        "exit_code": 0,
+        "output": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n",
+        "output_sha256": "1a6c6b4b47fc94c3740e0a8fc8b6786354d9ad851bc6ebb212b83cd0b7372b96",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "b48dd3a4e871af24da3989dc69914653b59a70d7a0e7cdc081316c00990f5798",
+        "status": "passed",
+        "content": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 1,
+        "output": "\u2714 real calendar date 2026-12-31 (1.129833ms)\n\u2714 real calendar date 2027-01-01 (0.14625ms)\n\u2714 real calendar date 2028-02-29 (0.050125ms)\n\u2714 real calendar date 2000-02-29 (0.047292ms)\n\u2714 real calendar date 0001-01-01 (0.052708ms)\n\u2714 real calendar date 9999-12-31 (0.2305ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.182083ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.058875ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.107167ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.172875ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.144334ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.126125ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.063125ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.087958ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.049542ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.042666ms)\n\u2714 reject non-calendar value null (0.046459ms)\n\u2714 reject non-calendar value 20261028 (0.032083ms)\n\u2714 reject non-calendar value {} (0.029917ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.024083ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.938791ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.10225ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.032292ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.032208ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.050875ms)\n\u2714 repositories isolate independent fixtures (0.047541ms)\n\u2714 invalid structural input leaves state unchanged (0.233625ms)\n\u2714 unknown target returns controlled error without mutation (0.086292ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078125ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.254791ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.0775ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.121583ms)\n\u2716 UI regression: saving one task preserves another draft and its focused input (15.293709ms)\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (4.332ms)\n\u2716 UI regression: lost successful save response reconciles readback without another mutation (2.083917ms)\n\u2716 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.293459ms)\n\u2716 UI regression: readback proving no save permits a manual retry and retains the draft (1.368917ms)\n\u2716 UI regression: known successful save survives a failed subsequent refresh (1.008625ms)\n\u2139 tests 38\n\u2139 suites 0\n\u2139 pass 32\n\u2139 fail 6\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 145.981541\n\n\u2716 failing tests:\n\ntest at test/unit.test.mjs:123:1\n\u2716 UI regression: saving one task preserves another draft and its focused input (15.293709ms)\n  AssertionError [ERR_ASSERTION]: Expected \"actual\" to be reference-equal to \"expected\":\n  + actual - expected\n  ... Skipped lines\n  \n    <ref *1> Element {\n      children: [\n        Element {\n          children: [],\n          disabled: false,\n  ...\n          type: 'date',\n  +       value: ''\n  -       value: '2028-02-29'\n        },\n        Element {\n          children: [],\n          disabled: false,\n          listeners: {},\n  ...\n        listeners: {},\n  +     parent: <ref *4> Element {\n  +       children: [\n  +         <ref *3> Element {\n  +           children: [\n  +             Element {\n  +               children: [],\n  +               disabled: false,\n  +               listeners: {},\n  +               parent: [Circular *3],\n  +               tag: 'h2',\n  +               textContent: 'First task',\n  +               value: ''\n  +             },\n  +             Element {\n  +               children: [],\n  +               disabled: false,\n  +               listeners: {},\n  +               parent: [Circular *3],\n  +               tag: 'p',\n  +               textContent: 'Due date: 2027-01-01',\n  +               value: ''\n  +             }\n  +           ],\n  +           disabled: false,\n  +           listeners: {},\n  +           parent: [Circular *4],\n  +           tag: 'li',\n  +           value: ''\n  +         },\n  +         [Circular *2]\n  +       ],\n  +       disabled: false,\n  +       listeners: {},\n  +       parent: null,\n  +       tag: 'div',\n  +       value: ''\n  +     },\n  -     parent: null,\n        tag: 'li',\n        value: ''\n      },\n      tag: 'form',\n      value: ''\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:130:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: [Element],\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:135:1\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (4.332ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + null\n  - <ref *1> Element {\n  -   children: [],\n  -   disabled: false,\n  -   listeners: {},\n  -   parent: <ref *2> Element {\n  -     children: [\n  -       [Circular *1],\n  -       Element {\n  -         children: [],\n  -         disabled: false,\n  -         listeners: {},\n  -         parent: [Circular *2],\n  -         tag: 'p',\n  -         textContent: 'Due date: 2027-01-01',\n  -         value: ''\n  -       }\n  -     ],\n  -     disabled: false,\n  -     listeners: {},\n  -     parent: <ref *5> Element {\n  -       children: [\n  -         [Circular *2],\n  -         <ref *3> Element {\n  -           children: [\n  -             Element {\n  -               children: [],\n  -               disabled: false,\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'h2',\n  -               textContent: 'Second task',\n  -               value: ''\n  -             },\n  -             Element {\n  -               children: [],\n  -               disabled: false,\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'p',\n  -               textContent: 'No due date',\n  -               value: ''\n  -             },\n  -             <ref *4> Element {\n  -               children: [\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   htmlFor: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'label',\n  -                   textContent: 'Initial due date for Second task',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   id: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   required: true,\n  -                   tag: 'input',\n  -                   type: 'date',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'button',\n  -                   textContent: 'Assign due date',\n  -                   type: 'submit',\n  -                   value: ''\n  -                 }\n  -               ],\n  -               disabled: false,\n  -               listeners: {\n  -                 submit: [AsyncFunction (anonymous)]\n  -               },\n  -               parent: [Circular *3],\n  -               tag: 'form',\n  -               value: ''\n  -             }\n  -           ],\n  -           disabled: false,\n  -           listeners: {},\n  -           parent: [Circular *5],\n  -           tag: 'li',\n  -           value: ''\n  -         }\n  -       ],\n  -       disabled: false,\n  -       listeners: {},\n  -       parent: null,\n  -       tag: 'div',\n  -       value: ''\n  -     },\n  -     tag: 'li',\n  -     value: ''\n  -   },\n  -   tag: 'h2',\n  -   textContent: 'First task',\n  -   value: ''\n  - }\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:140:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: null,\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:143:1\n\u2716 UI regression: lost successful save response reconciles readback without another mutation (2.083917ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /2027-01-01/. Input:\n  \n  'No due date'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:147:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'No due date',\n    expected: /2027-01-01/,\n    operator: 'match',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:153:1\n\u2716 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.293459ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  false !== true\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:157:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:161:1\n\u2716 UI regression: readback proving no save permits a manual retry and retains the draft (1.368917ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /still undated.*try again/i. Input:\n  \n  'Response lost'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:168:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'Response lost',\n    expected: /still undated.*try again/i,\n    operator: 'match',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:170:1\n\u2716 UI regression: known successful save survives a failed subsequent refresh (1.008625ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /2027-01-01/. Input:\n  \n  'No due date'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:176:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'No due date',\n    expected: /2027-01-01/,\n    operator: 'match',\n    diff: 'simple'\n  }\n",
+        "output_sha256": "1b698183d70203f1f60de2d3d9c1347eabb9a1e235cd64df2e3e3765f2f682c3",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "45bfee79ae3f3d4339cbb561e1132118782f5ffd0f11c99e8497228ed2bc6801",
+        "status": "failed",
+        "content": "\u2714 real calendar date 2026-12-31 (1.129833ms)\n\u2714 real calendar date 2027-01-01 (0.14625ms)\n\u2714 real calendar date 2028-02-29 (0.050125ms)\n\u2714 real calendar date 2000-02-29 (0.047292ms)\n\u2714 real calendar date 0001-01-01 (0.052708ms)\n\u2714 real calendar date 9999-12-31 (0.2305ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.182083ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.058875ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.107167ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.172875ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.144334ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.126125ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.063125ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.087958ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.049542ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.042666ms)\n\u2714 reject non-calendar value null (0.046459ms)\n\u2714 reject non-calendar value 20261028 (0.032083ms)\n\u2714 reject non-calendar value {} (0.029917ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.024083ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.938791ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.10225ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.032292ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.032208ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.050875ms)\n\u2714 repositories isolate independent fixtures (0.047541ms)\n\u2714 invalid structural input leaves state unchanged (0.233625ms)\n\u2714 unknown target returns controlled error without mutation (0.086292ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078125ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.254791ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.0775ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.121583ms)\n\u2716 UI regression: saving one task preserves another draft and its focused input (15.293709ms)\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (4.332ms)\n\u2716 UI regression: lost successful save response reconciles readback without another mutation (2.083917ms)\n\u2716 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.293459ms)\n\u2716 UI regression: readback proving no save permits a manual retry and retains the draft (1.368917ms)\n\u2716 UI regression: known successful save survives a failed subsequent refresh (1.008625ms)\n\u2139 tests 38\n\u2139 suites 0\n\u2139 pass 32\n\u2139 fail 6\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 145.981541\n\n\u2716 failing tests:\n\ntest at test/unit.test.mjs:123:1\n\u2716 UI regression: saving one task preserves another draft and its focused input (15.293709ms)\n  AssertionError [ERR_ASSERTION]: Expected \"actual\" to be reference-equal to \"expected\":\n  + actual - expected\n  ... Skipped lines\n  \n    <ref *1> Element {\n      children: [\n        Element {\n          children: [],\n          disabled: false,\n  ...\n          type: 'date',\n  +       value: ''\n  -       value: '2028-02-29'\n        },\n        Element {\n          children: [],\n          disabled: false,\n          listeners: {},\n  ...\n        listeners: {},\n  +     parent: <ref *4> Element {\n  +       children: [\n  +         <ref *3> Element {\n  +           children: [\n  +             Element {\n  +               children: [],\n  +               disabled: false,\n  +               listeners: {},\n  +               parent: [Circular *3],\n  +               tag: 'h2',\n  +               textContent: 'First task',\n  +               value: ''\n  +             },\n  +             Element {\n  +               children: [],\n  +               disabled: false,\n  +               listeners: {},\n  +               parent: [Circular *3],\n  +               tag: 'p',\n  +               textContent: 'Due date: 2027-01-01',\n  +               value: ''\n  +             }\n  +           ],\n  +           disabled: false,\n  +           listeners: {},\n  +           parent: [Circular *4],\n  +           tag: 'li',\n  +           value: ''\n  +         },\n  +         [Circular *2]\n  +       ],\n  +       disabled: false,\n  +       listeners: {},\n  +       parent: null,\n  +       tag: 'div',\n  +       value: ''\n  +     },\n  -     parent: null,\n        tag: 'li',\n        value: ''\n      },\n      tag: 'form',\n      value: ''\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:130:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: [Element],\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:135:1\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (4.332ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + null\n  - <ref *1> Element {\n  -   children: [],\n  -   disabled: false,\n  -   listeners: {},\n  -   parent: <ref *2> Element {\n  -     children: [\n  -       [Circular *1],\n  -       Element {\n  -         children: [],\n  -         disabled: false,\n  -         listeners: {},\n  -         parent: [Circular *2],\n  -         tag: 'p',\n  -         textContent: 'Due date: 2027-01-01',\n  -         value: ''\n  -       }\n  -     ],\n  -     disabled: false,\n  -     listeners: {},\n  -     parent: <ref *5> Element {\n  -       children: [\n  -         [Circular *2],\n  -         <ref *3> Element {\n  -           children: [\n  -             Element {\n  -               children: [],\n  -               disabled: false,\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'h2',\n  -               textContent: 'Second task',\n  -               value: ''\n  -             },\n  -             Element {\n  -               children: [],\n  -               disabled: false,\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'p',\n  -               textContent: 'No due date',\n  -               value: ''\n  -             },\n  -             <ref *4> Element {\n  -               children: [\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   htmlFor: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'label',\n  -                   textContent: 'Initial due date for Second task',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   id: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   required: true,\n  -                   tag: 'input',\n  -                   type: 'date',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   children: [],\n  -                   disabled: false,\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'button',\n  -                   textContent: 'Assign due date',\n  -                   type: 'submit',\n  -                   value: ''\n  -                 }\n  -               ],\n  -               disabled: false,\n  -               listeners: {\n  -                 submit: [AsyncFunction (anonymous)]\n  -               },\n  -               parent: [Circular *3],\n  -               tag: 'form',\n  -               value: ''\n  -             }\n  -           ],\n  -           disabled: false,\n  -           listeners: {},\n  -           parent: [Circular *5],\n  -           tag: 'li',\n  -           value: ''\n  -         }\n  -       ],\n  -       disabled: false,\n  -       listeners: {},\n  -       parent: null,\n  -       tag: 'div',\n  -       value: ''\n  -     },\n  -     tag: 'li',\n  -     value: ''\n  -   },\n  -   tag: 'h2',\n  -   textContent: 'First task',\n  -   value: ''\n  - }\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:140:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: null,\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:143:1\n\u2716 UI regression: lost successful save response reconciles readback without another mutation (2.083917ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /2027-01-01/. Input:\n  \n  'No due date'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:147:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'No due date',\n    expected: /2027-01-01/,\n    operator: 'match',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:153:1\n\u2716 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.293459ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  false !== true\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:157:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:161:1\n\u2716 UI regression: readback proving no save permits a manual retry and retains the draft (1.368917ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /still undated.*try again/i. Input:\n  \n  'Response lost'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:168:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'Response lost',\n    expected: /still undated.*try again/i,\n    operator: 'match',\n    diff: 'simple'\n  }\n\ntest at test/unit.test.mjs:170:1\n\u2716 UI regression: known successful save survives a failed subsequent refresh (1.008625ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /2027-01-01/. Input:\n  \n  'No due date'\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:176:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'No due date',\n    expected: /2027-01-01/,\n    operator: 'match',\n    diff: 'simple'\n  }\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 0,
+        "output": "\u2714 real calendar date 2026-12-31 (1.079834ms)\n\u2714 real calendar date 2027-01-01 (0.097084ms)\n\u2714 real calendar date 2028-02-29 (0.544166ms)\n\u2714 real calendar date 2000-02-29 (0.049542ms)\n\u2714 real calendar date 0001-01-01 (0.048542ms)\n\u2714 real calendar date 9999-12-31 (0.040917ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.054083ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.10125ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.0915ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.240375ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.1155ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.145875ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.043542ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.075542ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.062166ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.196417ms)\n\u2714 reject non-calendar value null (0.066667ms)\n\u2714 reject non-calendar value 20261028 (0.040625ms)\n\u2714 reject non-calendar value {} (0.038417ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.02925ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.957458ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.105875ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.056917ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.034625ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.052083ms)\n\u2714 repositories isolate independent fixtures (0.041708ms)\n\u2714 invalid structural input leaves state unchanged (0.286541ms)\n\u2714 unknown target returns controlled error without mutation (0.087458ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.077708ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.09ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.060667ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.085667ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.128125ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.32825ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (1.6785ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (0.958792ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.995542ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.944292ms)\n\u2139 tests 38\n\u2139 suites 0\n\u2139 pass 38\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 178.075791\n",
+        "output_sha256": "18be4785d55ca3b8d5aa6a858bcdbaf1e6360f75090fc725ebb3f17f8da2dc53",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "c45af2c59454091d815b2f81da8e21f2fef95509ad0cddc34264107a4e0c576e",
+        "status": "passed",
+        "content": "\u2714 real calendar date 2026-12-31 (1.079834ms)\n\u2714 real calendar date 2027-01-01 (0.097084ms)\n\u2714 real calendar date 2028-02-29 (0.544166ms)\n\u2714 real calendar date 2000-02-29 (0.049542ms)\n\u2714 real calendar date 0001-01-01 (0.048542ms)\n\u2714 real calendar date 9999-12-31 (0.040917ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.054083ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.10125ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.0915ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.240375ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.1155ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.145875ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.043542ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.075542ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.062166ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.196417ms)\n\u2714 reject non-calendar value null (0.066667ms)\n\u2714 reject non-calendar value 20261028 (0.040625ms)\n\u2714 reject non-calendar value {} (0.038417ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.02925ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.957458ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.105875ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.056917ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.034625ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.052083ms)\n\u2714 repositories isolate independent fixtures (0.041708ms)\n\u2714 invalid structural input leaves state unchanged (0.286541ms)\n\u2714 unknown target returns controlled error without mutation (0.087458ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.077708ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.09ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.060667ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.085667ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.128125ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.32825ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (1.6785ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (0.958792ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.995542ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.944292ms)\n\u2139 tests 38\n\u2139 suites 0\n\u2139 pass 38\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 178.075791\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-BUILD"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "build"
+          ],
+          "category": "build",
+          "cwd": ".",
+          "id": "C-BUILD",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+          "timeout": 60
+        },
+        "check_id": "C-BUILD",
+        "exit_code": 0,
+        "output": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n",
+        "output_sha256": "1a6c6b4b47fc94c3740e0a8fc8b6786354d9ad851bc6ebb212b83cd0b7372b96",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "c45af2c59454091d815b2f81da8e21f2fef95509ad0cddc34264107a4e0c576e",
+        "status": "passed",
+        "content": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 0,
+        "output": "\u2714 real calendar date 2026-12-31 (1.13225ms)\n\u2714 real calendar date 2027-01-01 (0.16075ms)\n\u2714 real calendar date 2028-02-29 (0.052875ms)\n\u2714 real calendar date 2000-02-29 (0.047417ms)\n\u2714 real calendar date 0001-01-01 (0.217625ms)\n\u2714 real calendar date 9999-12-31 (0.104042ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.118459ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.097334ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.183209ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.100458ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.133958ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.179ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.095667ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.134708ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.042958ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.0275ms)\n\u2714 reject non-calendar value null (0.02375ms)\n\u2714 reject non-calendar value 20261028 (0.022541ms)\n\u2714 reject non-calendar value {} (0.020542ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.022292ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (1.0405ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.113791ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.062792ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.038875ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.055917ms)\n\u2714 repositories isolate independent fixtures (0.042208ms)\n\u2714 invalid structural input leaves state unchanged (0.240291ms)\n\u2714 unknown target returns controlled error without mutation (0.091125ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.081833ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.088ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.069459ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.091083ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.365375ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.412416ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (2.171167ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.170708ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.957042ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (1.134292ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (1.012459ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.857833ms)\n\u2139 tests 40\n\u2139 suites 0\n\u2139 pass 40\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 134.227167\n",
+        "output_sha256": "2454230ce700732e1dd2c19abaca2802bf5e3e82abbb31902210af76d4ec4783",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+        "status": "passed",
+        "content": "\u2714 real calendar date 2026-12-31 (1.13225ms)\n\u2714 real calendar date 2027-01-01 (0.16075ms)\n\u2714 real calendar date 2028-02-29 (0.052875ms)\n\u2714 real calendar date 2000-02-29 (0.047417ms)\n\u2714 real calendar date 0001-01-01 (0.217625ms)\n\u2714 real calendar date 9999-12-31 (0.104042ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.118459ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.097334ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.183209ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.100458ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.133958ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.179ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.095667ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.134708ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.042958ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.0275ms)\n\u2714 reject non-calendar value null (0.02375ms)\n\u2714 reject non-calendar value 20261028 (0.022541ms)\n\u2714 reject non-calendar value {} (0.020542ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.022292ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (1.0405ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.113791ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.062792ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.038875ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.055917ms)\n\u2714 repositories isolate independent fixtures (0.042208ms)\n\u2714 invalid structural input leaves state unchanged (0.240291ms)\n\u2714 unknown target returns controlled error without mutation (0.091125ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.081833ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.088ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.069459ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.091083ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.365375ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.412416ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (2.171167ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.170708ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.957042ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (1.134292ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (1.012459ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.857833ms)\n\u2139 tests 40\n\u2139 suites 0\n\u2139 pass 40\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 134.227167\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-BUILD"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "build"
+          ],
+          "category": "build",
+          "cwd": ".",
+          "id": "C-BUILD",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+          "timeout": 60
+        },
+        "check_id": "C-BUILD",
+        "exit_code": 0,
+        "output": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n",
+        "output_sha256": "1a6c6b4b47fc94c3740e0a8fc8b6786354d9ad851bc6ebb212b83cd0b7372b96",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+        "status": "passed",
+        "content": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 1,
+        "output": "\u2714 real calendar date 2026-12-31 (2.347459ms)\n\u2714 real calendar date 2027-01-01 (0.131166ms)\n\u2714 real calendar date 2028-02-29 (0.052917ms)\n\u2714 real calendar date 2000-02-29 (0.045625ms)\n\u2714 real calendar date 0001-01-01 (0.063292ms)\n\u2714 real calendar date 9999-12-31 (0.041833ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.053625ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.049625ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.141417ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.335917ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.235417ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.164917ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.059958ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.064417ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.03075ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.06975ms)\n\u2714 reject non-calendar value null (0.064333ms)\n\u2714 reject non-calendar value 20261028 (0.0345ms)\n\u2714 reject non-calendar value {} (0.044958ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.031416ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (1.076375ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.110541ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.033458ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.033541ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.056167ms)\n\u2714 repositories isolate independent fixtures (0.044709ms)\n\u2714 invalid structural input leaves state unchanged (0.237291ms)\n\u2714 unknown target returns controlled error without mutation (0.089375ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.085666ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.087958ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.063375ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.112334ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (10.920917ms)\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (6.056083ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (2.780042ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.166833ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.809834ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.801583ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (0.887875ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.847834ms)\n\u2139 tests 40\n\u2139 suites 0\n\u2139 pass 39\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 148.116375\n\n\u2716 failing tests:\n\ntest at test/unit.test.mjs:142:1\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (6.056083ms)\n  AssertionError [ERR_ASSERTION]: Expected \"actual\" to be reference-equal to \"expected\":\n  + actual - expected\n  \n  + Element {\n  - <ref *1> Element {\n      _disabled: false,\n      children: [],\n      listeners: {},\n  +   parent: null,\n  +   tag: 'body',\n  -   parent: <ref *2> Element {\n  -     _disabled: false,\n  -     children: [\n  -       [Circular *1],\n  -       Element {\n  -         _disabled: false,\n  -         children: [],\n  -         listeners: {},\n  -         parent: [Circular *2],\n  -         tag: 'p',\n  -         textContent: 'Due date: 2027-01-01',\n  -         value: ''\n  -       }\n  -     ],\n  -     listeners: {},\n  -     parent: <ref *5> Element {\n  -       _disabled: false,\n  -       children: [\n  -         [Circular *2],\n  -         <ref *3> Element {\n  -           _disabled: false,\n  -           children: [\n  -             Element {\n  -               _disabled: false,\n  -               children: [],\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tabIndex: -1,\n  -               tag: 'h2',\n  -               textContent: 'Second task',\n  -               value: ''\n  -             },\n  -             Element {\n  -               _disabled: false,\n  -               children: [],\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'p',\n  -               textContent: 'No due date',\n  -               value: ''\n  -             },\n  -             <ref *4> Element {\n  -               _disabled: false,\n  -               children: [\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   htmlFor: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'label',\n  -                   textContent: 'Initial due date for Second task',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   id: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   required: true,\n  -                   tag: 'input',\n  -                   type: 'date',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'button',\n  -                   textContent: 'Assign due date',\n  -                   type: 'submit',\n  -                   value: ''\n  -                 }\n  -               ],\n  -               listeners: {\n  -                 submit: [AsyncFunction (anonymous)]\n  -               },\n  -               parent: [Circular *3],\n  -               tag: 'form',\n  -               value: ''\n  -             }\n  -           ],\n  -           listeners: {},\n  -           parent: [Circular *5],\n  -           tag: 'li',\n  -           value: ''\n  -         }\n  -       ],\n  -       listeners: {},\n  -       parent: null,\n  -       tag: 'div',\n  -       value: ''\n  -     },\n  -     tag: 'li',\n  -     value: ''\n  -   },\n  -   tabIndex: -1,\n  -   tag: 'h2',\n  -   textContent: 'First task',\n      value: ''\n    }\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:147:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: [Element],\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+        "output_sha256": "d0769a8570953f10eb67dbe0dfc5b5e6a5c62b246b218f0d32f0528f3ae5b031",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "6a86f92317936a2e1e724413d5b35dff9adee42de488b56d296d034c08657eef",
+        "status": "failed",
+        "content": "\u2714 real calendar date 2026-12-31 (2.347459ms)\n\u2714 real calendar date 2027-01-01 (0.131166ms)\n\u2714 real calendar date 2028-02-29 (0.052917ms)\n\u2714 real calendar date 2000-02-29 (0.045625ms)\n\u2714 real calendar date 0001-01-01 (0.063292ms)\n\u2714 real calendar date 9999-12-31 (0.041833ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.053625ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.049625ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.141417ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.335917ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.235417ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.164917ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.059958ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.064417ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.03075ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.06975ms)\n\u2714 reject non-calendar value null (0.064333ms)\n\u2714 reject non-calendar value 20261028 (0.0345ms)\n\u2714 reject non-calendar value {} (0.044958ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.031416ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (1.076375ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.110541ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.033458ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.033541ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.056167ms)\n\u2714 repositories isolate independent fixtures (0.044709ms)\n\u2714 invalid structural input leaves state unchanged (0.237291ms)\n\u2714 unknown target returns controlled error without mutation (0.089375ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.085666ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.087958ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.063375ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.112334ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (10.920917ms)\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (6.056083ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (2.780042ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (1.166833ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.809834ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.801583ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (0.887875ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.847834ms)\n\u2139 tests 40\n\u2139 suites 0\n\u2139 pass 39\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 148.116375\n\n\u2716 failing tests:\n\ntest at test/unit.test.mjs:142:1\n\u2716 UI regression: removed assignment control moves focus to the updated task heading (6.056083ms)\n  AssertionError [ERR_ASSERTION]: Expected \"actual\" to be reference-equal to \"expected\":\n  + actual - expected\n  \n  + Element {\n  - <ref *1> Element {\n      _disabled: false,\n      children: [],\n      listeners: {},\n  +   parent: null,\n  +   tag: 'body',\n  -   parent: <ref *2> Element {\n  -     _disabled: false,\n  -     children: [\n  -       [Circular *1],\n  -       Element {\n  -         _disabled: false,\n  -         children: [],\n  -         listeners: {},\n  -         parent: [Circular *2],\n  -         tag: 'p',\n  -         textContent: 'Due date: 2027-01-01',\n  -         value: ''\n  -       }\n  -     ],\n  -     listeners: {},\n  -     parent: <ref *5> Element {\n  -       _disabled: false,\n  -       children: [\n  -         [Circular *2],\n  -         <ref *3> Element {\n  -           _disabled: false,\n  -           children: [\n  -             Element {\n  -               _disabled: false,\n  -               children: [],\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tabIndex: -1,\n  -               tag: 'h2',\n  -               textContent: 'Second task',\n  -               value: ''\n  -             },\n  -             Element {\n  -               _disabled: false,\n  -               children: [],\n  -               listeners: {},\n  -               parent: [Circular *3],\n  -               tag: 'p',\n  -               textContent: 'No due date',\n  -               value: ''\n  -             },\n  -             <ref *4> Element {\n  -               _disabled: false,\n  -               children: [\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   htmlFor: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'label',\n  -                   textContent: 'Initial due date for Second task',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   id: 'date-task-2',\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   required: true,\n  -                   tag: 'input',\n  -                   type: 'date',\n  -                   value: ''\n  -                 },\n  -                 Element {\n  -                   _disabled: false,\n  -                   children: [],\n  -                   listeners: {},\n  -                   parent: [Circular *4],\n  -                   tag: 'button',\n  -                   textContent: 'Assign due date',\n  -                   type: 'submit',\n  -                   value: ''\n  -                 }\n  -               ],\n  -               listeners: {\n  -                 submit: [AsyncFunction (anonymous)]\n  -               },\n  -               parent: [Circular *3],\n  -               tag: 'form',\n  -               value: ''\n  -             }\n  -           ],\n  -           listeners: {},\n  -           parent: [Circular *5],\n  -           tag: 'li',\n  -           value: ''\n  -         }\n  -       ],\n  -       listeners: {},\n  -       parent: null,\n  -       tag: 'div',\n  -       value: ''\n  -     },\n  -     tag: 'li',\n  -     value: ''\n  -   },\n  -   tabIndex: -1,\n  -   tag: 'h2',\n  -   textContent: 'First task',\n      value: ''\n    }\n  \n      at TestContext.<anonymous> (file:///private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/test/unit.test.mjs:147:10)\n      at async Test.run (node:internal/test_runner/test:1208:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: [Element],\n    expected: [Element],\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-UNIT"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "unit"
+          ],
+          "category": "unit",
+          "cwd": ".",
+          "id": "C-UNIT",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies.",
+          "timeout": 60
+        },
+        "check_id": "C-UNIT",
+        "exit_code": 0,
+        "output": "\u2714 real calendar date 2026-12-31 (2.412083ms)\n\u2714 real calendar date 2027-01-01 (0.126417ms)\n\u2714 real calendar date 2028-02-29 (0.050709ms)\n\u2714 real calendar date 2000-02-29 (0.045417ms)\n\u2714 real calendar date 0001-01-01 (0.063417ms)\n\u2714 real calendar date 9999-12-31 (0.044ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.054542ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.196834ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.080417ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.093417ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.057583ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.041125ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.037417ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.024042ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.023375ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.02825ms)\n\u2714 reject non-calendar value null (0.022542ms)\n\u2714 reject non-calendar value 20261028 (0.065458ms)\n\u2714 reject non-calendar value {} (0.046542ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.029792ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.942416ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.10625ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.035459ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.032792ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.054333ms)\n\u2714 repositories isolate independent fixtures (0.0415ms)\n\u2714 invalid structural input leaves state unchanged (0.223625ms)\n\u2714 unknown target returns controlled error without mutation (0.091125ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078583ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.086584ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.059166ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.086583ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.346541ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.748833ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (1.135416ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (0.935917ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.864209ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.992917ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (1.227958ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.757ms)\n\u2714 UI regression QA-F-001: pending submit retains focus and blocks duplicate mutations (0.8025ms)\n\u2139 tests 41\n\u2139 suites 0\n\u2139 pass 41\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 137.685584\n",
+        "output_sha256": "e57c4714fbead4a68deb1bb28b2444140b7cad23040c0884e64e63fe4a9e1cb0",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+        "status": "passed",
+        "content": "\u2714 real calendar date 2026-12-31 (2.412083ms)\n\u2714 real calendar date 2027-01-01 (0.126417ms)\n\u2714 real calendar date 2028-02-29 (0.050709ms)\n\u2714 real calendar date 2000-02-29 (0.045417ms)\n\u2714 real calendar date 0001-01-01 (0.063417ms)\n\u2714 real calendar date 9999-12-31 (0.044ms)\n\u2714 reject non-calendar value \"2026-02-29\" (0.054542ms)\n\u2714 reject non-calendar value \"1900-02-29\" (0.196834ms)\n\u2714 reject non-calendar value \"2026-04-31\" (0.080417ms)\n\u2714 reject non-calendar value \"2026-00-01\" (0.093417ms)\n\u2714 reject non-calendar value \"2026-13-01\" (0.057583ms)\n\u2714 reject non-calendar value \"2026-01-00\" (0.041125ms)\n\u2714 reject non-calendar value \"0000-01-01\" (0.037417ms)\n\u2714 reject non-calendar value \"2026-1-01\" (0.024042ms)\n\u2714 reject non-calendar value \"2026-01-01T12:00:00Z\" (0.023375ms)\n\u2714 reject non-calendar value \" 2026-01-01\" (0.02825ms)\n\u2714 reject non-calendar value null (0.022542ms)\n\u2714 reject non-calendar value 20261028 (0.065458ms)\n\u2714 reject non-calendar value {} (0.046542ms)\n\u2714 reject non-calendar value [\"2027-01-01\"] (0.029792ms)\n\u2714 FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.942416ms)\n\u2714 FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.10625ms)\n\u2714 FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.035459ms)\n\u2714 FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.032792ms)\n\u2714 returned copies cannot mutate stored or seeded state (0.054333ms)\n\u2714 repositories isolate independent fixtures (0.0415ms)\n\u2714 invalid structural input leaves state unchanged (0.223625ms)\n\u2714 unknown target returns controlled error without mutation (0.091125ms)\n\u2714 past/today demonstrator boundaries are not product-policy decisions (0.078583ms)\n\u2714 change/clear demonstrator boundaries preserve state without defining product policy (0.086584ms)\n\u2714 invalid reference day cannot silently classify an assignment (0.059166ms)\n\u2714 invalid or duplicate seed records fail explicitly (0.086583ms)\n\u2714 UI regression: saving one task preserves another draft and its focused input (11.346541ms)\n\u2714 UI regression: removed assignment control moves focus to the updated task heading (1.748833ms)\n\u2714 UI regression: lost successful save response reconciles readback without another mutation (1.135416ms)\n\u2714 UI regression: failed save and failed readback block retry with an unknown-outcome message (0.935917ms)\n\u2714 UI regression: readback proving no save permits a manual retry and retains the draft (0.864209ms)\n\u2714 UI regression: known successful save survives a failed subsequent refresh (0.992917ms)\n\u2714 UI regression: rejected input retains the useful server diagnostic after readback (1.227958ms)\n\u2714 UI regression: different saved date is reported without claiming the attempted date succeeded (0.757ms)\n\u2714 UI regression QA-F-001: pending submit retains focus and blocks duplicate mutations (0.8025ms)\n\u2139 tests 41\n\u2139 suites 0\n\u2139 pass 41\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 137.685584\n"
+      },
+      {
+        "_request": {
+          "check_id": "C-BUILD"
+        },
+        "check": {
+          "argv": [
+            "node",
+            "scripts/check.mjs",
+            "build"
+          ],
+          "category": "build",
+          "cwd": ".",
+          "id": "C-BUILD",
+          "requirements": [
+            "AC-001",
+            "AC-002"
+          ],
+          "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim.",
+          "timeout": 60
+        },
+        "check_id": "C-BUILD",
+        "exit_code": 0,
+        "output": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n",
+        "output_sha256": "1a6c6b4b47fc94c3740e0a8fc8b6786354d9ad851bc6ebb212b83cd0b7372b96",
+        "output_truncated": false,
+        "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+        "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+        "status": "passed",
+        "content": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n"
+      }
+    ]
+  },
+  "ownership": {
+    "status": "verification",
+    "owner": "David Krzystek",
+    "assignee": null,
+    "required_role": "Engineering Lead",
+    "assignment_status": "awaiting_assignment",
+    "target_stage": "engineering",
+    "since": "2026-10-28T21:09:45Z",
+    "history": [
+      {
+        "operation_id": "track-init-0cce26fefcdcf77bba6d1697374607ca55952fe3c7c8f3980aa222dfd2a6fbb2",
+        "action": "initialize",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "timestamp": "2026-10-28T21:09:45Z",
+        "expected_revision": null,
+        "from_owner": null,
+        "to_owner": "David Krzystek",
+        "assignee": null,
+        "required_role": "Engineering Lead",
+        "assignment_status": "awaiting_assignment",
+        "target_stage": "engineering",
+        "lifecycle_id": null,
+        "decision": "Yes, I authorize adoption into the Engineering/QA work-track model.\nPreserve all existing approvals, baselines and history. Keep both tracks under my ownership until separately assigned.\nDo not start work or approve any new artifacts."
+      }
+    ],
+    "needs_reconciliation": false,
+    "next_action": "Assign Engineering Lead",
+    "revision": "889fc56176748e1c0f9f257ee0e93601313730363bde36fdc20b2205d5fa5eb0"
+  },
+  "identity": {
+    "schema_version": "0.1",
+    "display_name": "David Krzystek",
+    "declared_roles": [
+      "Requester"
+    ],
+    "identity_source": "local_profile",
+    "authenticated": false,
+    "roles_enforced": false,
+    "profile_revision": "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+    "file": "/Users/davidkrzystek/.config/ai-sdlc/identity.json"
+  },
+  "identity_diagnostic": null
+}

@@ -1,0 +1,14 @@
+[
+  "qa-advance",
+  "REQ-0001",
+  "--kind",
+  "automation",
+  "--expected-qa-revision",
+  "b62edc19f46adeef4c37d93055a0358a43400c9b64838af598f01c2160bf3d70",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-qa-automation-advance-69a36161-a48d-4da9-b717-4ca222fed42d",
+  "--decision",
+  "$sdlc advance qa"
+]

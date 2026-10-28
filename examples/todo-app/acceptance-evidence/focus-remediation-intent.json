@@ -1,0 +1,14 @@
+[
+  "verification-remediate",
+  "REQ-0001",
+  "--check-id",
+  "QA-UI",
+  "--expected-engineering-revision",
+  "7a60809dcae66dad09117f38af172df3b28ce1a4615ac9b8fd0f968a7302e1ab",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-focus-remediation-36e0b6c1-3222-40b9-8874-54f2739f4f6a",
+  "--decision",
+  "Yes, I authorize Engineering remediation of the focus defect, followed by regression tests and renewed code review. Keep QA evidence unchanged until the fix is approved."
+]

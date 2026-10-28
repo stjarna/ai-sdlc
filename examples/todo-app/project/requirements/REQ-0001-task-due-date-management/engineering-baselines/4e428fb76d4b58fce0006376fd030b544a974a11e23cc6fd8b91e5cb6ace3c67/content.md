@@ -1,0 +1,46 @@
+✔ real calendar date 2026-12-31 (1.079834ms)
+✔ real calendar date 2027-01-01 (0.097084ms)
+✔ real calendar date 2028-02-29 (0.544166ms)
+✔ real calendar date 2000-02-29 (0.049542ms)
+✔ real calendar date 0001-01-01 (0.048542ms)
+✔ real calendar date 9999-12-31 (0.040917ms)
+✔ reject non-calendar value "2026-02-29" (0.054083ms)
+✔ reject non-calendar value "1900-02-29" (0.10125ms)
+✔ reject non-calendar value "2026-04-31" (0.0915ms)
+✔ reject non-calendar value "2026-00-01" (0.240375ms)
+✔ reject non-calendar value "2026-13-01" (0.1155ms)
+✔ reject non-calendar value "2026-01-00" (0.145875ms)
+✔ reject non-calendar value "0000-01-01" (0.043542ms)
+✔ reject non-calendar value "2026-1-01" (0.075542ms)
+✔ reject non-calendar value "2026-01-01T12:00:00Z" (0.062166ms)
+✔ reject non-calendar value " 2026-01-01" (0.196417ms)
+✔ reject non-calendar value null (0.066667ms)
+✔ reject non-calendar value 20261028 (0.040625ms)
+✔ reject non-calendar value {} (0.038417ms)
+✔ reject non-calendar value ["2027-01-01"] (0.02925ms)
+✔ FR-002 / AC-002: leaving tasks alone preserves permitted absence (0.957458ms)
+✔ FR-001 / AC-001: exact initial date 2026-12-31, other task stays undated (0.105875ms)
+✔ FR-001 / AC-001: exact initial date 2027-01-01, other task stays undated (0.056917ms)
+✔ FR-001 / AC-001: exact initial date 2028-02-29, other task stays undated (0.034625ms)
+✔ returned copies cannot mutate stored or seeded state (0.052083ms)
+✔ repositories isolate independent fixtures (0.041708ms)
+✔ invalid structural input leaves state unchanged (0.286541ms)
+✔ unknown target returns controlled error without mutation (0.087458ms)
+✔ past/today demonstrator boundaries are not product-policy decisions (0.077708ms)
+✔ change/clear demonstrator boundaries preserve state without defining product policy (0.09ms)
+✔ invalid reference day cannot silently classify an assignment (0.060667ms)
+✔ invalid or duplicate seed records fail explicitly (0.085667ms)
+✔ UI regression: saving one task preserves another draft and its focused input (11.128125ms)
+✔ UI regression: removed assignment control moves focus to the updated task heading (1.32825ms)
+✔ UI regression: lost successful save response reconciles readback without another mutation (1.6785ms)
+✔ UI regression: failed save and failed readback block retry with an unknown-outcome message (0.958792ms)
+✔ UI regression: readback proving no save permits a manual retry and retains the draft (0.995542ms)
+✔ UI regression: known successful save survives a failed subsequent refresh (0.944292ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 178.075791

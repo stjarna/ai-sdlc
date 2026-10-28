@@ -1,0 +1,22 @@
+[
+  "qa-approve",
+  "REQ-0001",
+  "--kind",
+  "scenarios",
+  "--expected-qa-revision",
+  "bbec074c4ee9c495c8f44db5c4b8ac8e1f4e3bc8a056bb2ee9a917ceef8e8415",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-qa-scenarios-approve-0c725a21-084d-45ef-8204-9d77b5c645fa",
+  "--decision",
+  "Yes, approve QA strategy and scenarios with both topics unresolved",
+  "--acknowledge-open-item",
+  "U-001",
+  "--acknowledge-open-item",
+  "AQ-001",
+  "--acknowledge-open-item",
+  "FR-003",
+  "--acknowledge-open-item",
+  "AQ-002"
+]

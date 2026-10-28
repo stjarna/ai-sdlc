@@ -1,0 +1,17 @@
+{
+  "question": "Do you authorize advancing Engineering to Verification?",
+  "arguments": [
+    "engineering-advance",
+    "REQ-0001",
+    "--kind",
+    "implementation",
+    "--expected-engineering-revision",
+    "3710914abca471c54da56ba86ea54cd31d204e11f6e4e806362ad62a8ddb96c6",
+    "--expected-profile-revision",
+    "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+    "--operation-id",
+    "human-working-app-code-v2-advance-56971dd3-3d94-48cf-b46d-cc05411e7cf5",
+    "--decision",
+    "yes"
+  ]
+}

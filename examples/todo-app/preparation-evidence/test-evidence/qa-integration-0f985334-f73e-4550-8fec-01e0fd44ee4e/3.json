@@ -1,0 +1,8 @@
+{
+  "name": "TC-002/003 / AC-001/002: exact date 2027-01-01, independent readback and other task untouched",
+  "cases": [
+    "TC-002",
+    "TC-003"
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,1 @@
+Yes, approve QA strategy and scenarios with both topics unresolved

@@ -1,0 +1,8 @@
+{
+  "name": "TC-001 / AC-002: undated state remains valid through real UI reload",
+  "cases": [
+    "TC-001"
+  ],
+  "status": "passed",
+  "pageErrors": []
+}

@@ -1,0 +1,670 @@
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,44 @@
++# Task Due Date Management — local acceptance demonstrator
++
++Dependency-free Node.js application, using the observed Node v25.9.0 runtime.
++No installation is needed. From this disposable project run `node src/server.mjs`
++and open the printed **http://127.0.0.1:PORT** URL. Stop with Ctrl-C.
++The port is ephemeral. No public deployment is configured.
++
++Two seeded existing tasks start without due dates. Leave them undated or assign an
++initial future calendar date. The exact date is stored in process and displayed in
++YYYY-MM-DD notation; this is not an instant/timezone conversion. Reloading the page
++retains in-process state. Restarting the server resets fixtures.
++
++Past-date behavior remains deferred pending support consultation. Changing or clearing
++an assigned date remains undefined. Those capabilities are not implemented here; the
++explicit unsupported response is a demo boundary, not a product acceptance/rejection
++policy. The displayed server UTC reference day is only the accepted testing convention.
++No reminders/notifications, task CRUD/completion, accounts, synchronization or durable
++storage are implemented. This is not a full task manager or production-ready service.
++
++## Interface for independent QA
++
++`createApp({repository, referenceDay})` in `src/http.mjs` constructs a Node HTTP server
++without listening; defaults use the seeded repository and current UTC reference day.
++QA can inject isolated seeds with `createRepository(seeds)` and a function returning a
++fixed YYYY-MM-DD test day, then listen on port 0 on 127.0.0.1 and close after each run.
++
++- GET `/api/tasks`: `{tasks: [{id, title, dueDate}], referenceDay}`.
++- POST `/api/tasks/TASK_ID/due-date`: UTF-8 JSON `{dueDate: "YYYY-MM-DD"}`;
++  success returns `{task}`. Read back with GET to inspect actual state.
++- `/`, `/app.js`, `/styles.css` are the only static routes. Other routes return 404.
++- Errors: `{error: {code, message}}` with appropriate HTTP status. Unsupported demo
++  paths use `DEMO_NOT_IMPLEMENTED`/501 and preserve state, not FR-003 coverage.
++- HTTP Host must match the printed 127.0.0.1 origin; foreign browser Origins cannot
++  mutate state. Bodies are limited to 4096 bytes. No authentication is claimed.
++
++## Engineering verification
++
++Approved named operations: `node scripts/check.mjs unit` and
++`node scripts/check.mjs build`. Use the SDLC evidence operation for official results.
++The first runs domain unit assertions only; the second validates syntax, local imports,
++fixed assets and package scripts without bundling. Neither proves HTTP or browser behavior.
++Independent QA owns integration/UI automation, dependencies and checks under `qa/`,
++with separate scenario/automation approvals and explicit execution/completion gates.
++No QA package is installed by Engineering. No release or security certification claim.
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,11 @@
++{
++  "name": "task-due-date-acceptance",
++  "version": "0.1.0",
++  "private": true,
++  "type": "module",
++  "scripts": {
++    "start": "node src/server.mjs",
++    "test": "node scripts/check.mjs unit",
++    "build": "node scripts/check.mjs build"
++  }
++}
+--- /dev/null
++++ b/public/app.js
+@@ -0,0 +1,102 @@
++const taskList = document.querySelector('#tasks');
++const feedback = document.querySelector('#feedback');
++const reference = document.querySelector('#reference');
++const rows = new Map();
++
++async function api(path, options) {
++  const response = await fetch(path, options);
++  const body = await response.json();
++  if (!response.ok) throw new Error(body.error?.message ?? 'Request failed.');
++  return body;
++}
++
++function render(tasks) {
++  for (const task of tasks) {
++    let row = rows.get(task.id);
++    if (!row) {
++      const item = document.createElement('li');
++      const heading = document.createElement('h2');
++      heading.tabIndex = -1;
++      const date = document.createElement('p');
++      item.append(heading, date);
++      row = { item, heading, date, form: null, busy: false, blocked: false };
++      rows.set(task.id, row);
++      taskList.append(item);
++    }
++    row.heading.textContent = task.title;
++    row.date.textContent = task.dueDate === null ? 'No due date' : `Due date: ${task.dueDate}`;
++    if (task.dueDate !== null && row.form) {
++      const restoreFocus = row.form.contains(document.activeElement);
++      row.form.remove();
++      row.form = null;
++      if (restoreFocus) row.heading.focus();
++    } else if (task.dueDate === null && !row.form) {
++      const form = document.createElement('form');
++      const label = document.createElement('label');
++      label.htmlFor = `date-${task.id}`;
++      label.textContent = `Initial due date for ${task.title}`;
++      const input = document.createElement('input');
++      input.id = label.htmlFor;
++      input.type = 'date';
++      input.required = true;
++      const button = document.createElement('button');
++      button.type = 'submit';
++      button.textContent = 'Assign due date';
++      form.append(label, input, button);
++      row.form = form;
++      form.addEventListener('submit', async event => {
++        event.preventDefault();
++        if (row.busy || row.blocked || !form.reportValidity()) return;
++        const requestedDate = input.value;
++        row.busy = true;
++        button.disabled = true;
++        feedback.textContent = '';
++        let saved = false;
++        try {
++          const result = await api(`/api/tasks/${encodeURIComponent(task.id)}/due-date`, {
++            method: 'POST', headers: { 'Content-Type': 'application/json' },
++            body: JSON.stringify({ dueDate: requestedDate }),
++          });
++          saved = true;
++          // Apply the authoritative mutation response even if the subsequent refresh fails.
++          render([result.task]);
++          await load();
++          feedback.textContent = 'Due date assigned.';
++        } catch (error) {
++          if (saved) {
++            feedback.textContent = 'The date was saved, but refreshing failed. Reload to refresh task state.';
++          } else {
++            try {
++              // A failed response does not prove the server failed to save. Never retry blindly.
++              const current = await load();
++              const actual = current.tasks.find(candidate => candidate.id === task.id);
++              if (!actual) throw new Error('Task state unavailable.');
++              if (actual.dueDate === requestedDate) {
++                feedback.textContent = 'Due date confirmed from current task state.';
++              } else if (actual.dueDate === null) {
++                feedback.textContent = `${error.message} The task is still undated. You can try again.`;
++              } else {
++                feedback.textContent = `Current saved due date: ${actual.dueDate}. The attempted date was not confirmed.`;
++              }
++            } catch {
++              row.blocked = true;
++              feedback.textContent = 'Save outcome unknown. Reload to check task state before trying again.';
++            }
++          }
++        } finally {
++          row.busy = false;
++          button.disabled = row.blocked;
++        }
++      });
++      row.item.append(form);
++    }
++  }
++}
++
++async function load() {
++  const data = await api('/api/tasks');
++  reference.textContent = `UTC test reference day: ${data.referenceDay}. This is a testing convention, not a product timezone rule.`;
++  render(data.tasks);
++  return data;
++}
++load().catch(() => { feedback.textContent = 'Tasks could not be loaded. Reload to try again.'; });
+--- /dev/null
++++ b/public/index.html
+@@ -0,0 +1,27 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <title>Task due-date demonstrator</title>
++  <link rel="stylesheet" href="/styles.css">
++  <script src="/app.js" defer></script>
++</head>
++<body>
++  <main>
++    <p class="eyebrow">Local acceptance demonstration</p>
++    <h1>Task due dates</h1>
++    <p>Assign an initial future calendar date, or leave a task undated.</p>
++    <aside>
++      <strong>Limited demonstration</strong>
++      <p>Past-date behavior and changing or clearing assigned dates remain unresolved.
++      Their absence here is not a product rule. Reminders and notifications are excluded.</p>
++      <p>Seeded tasks are held in memory and reset when the server restarts.</p>
++      <p id="reference">Loading the UTC test reference day…</p>
++    </aside>
++    <p id="feedback" role="status" aria-live="polite"></p>
++    <ul id="tasks" aria-label="Seeded tasks"></ul>
++    <noscript>This local demonstrator needs JavaScript to display tasks.</noscript>
++  </main>
++</body>
++</html>
+--- /dev/null
++++ b/public/styles.css
+@@ -0,0 +1,20 @@
++:root { color-scheme: light; font-family: system-ui, sans-serif; color: #192c3d; background: #f3f6fa; }
++* { box-sizing: border-box; }
++body { margin: 0; }
++main { max-width: 780px; margin: 2.5rem auto; padding: 0 1.25rem 2rem; }
++h1 { font-size: 2.3rem; margin: .3rem 0 1rem; }
++h2 { font-size: 1.15rem; margin: 0; }
++p { line-height: 1.55; }
++.eyebrow { color: #315b75; font-size: .85rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
++aside { padding: 1rem 1.25rem; background: #fff4d8; border-left: 4px solid #9b6800; border-radius: 6px; }
++aside p { margin: .5rem 0; }
++ul { padding: 0; list-style: none; }
++li { padding: 1.4rem; margin-bottom: 1rem; border: 1px solid #c9d4df; border-radius: 10px; background: white; }
++form { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
++label { flex-basis: 100%; }
++input, button { font: inherit; padding: .7rem .9rem; border-radius: 6px; }
++input { border: 1px solid #61788a; min-width: 12rem; }
++button { border: 0; background: #174f79; color: white; cursor: pointer; }
++button:disabled { opacity: .6; cursor: wait; }
++:focus-visible { outline: 3px solid #ac4a00; outline-offset: 3px; }
++#feedback { min-height: 1.5rem; font-weight: 600; }
+--- /dev/null
++++ b/scripts/check.mjs
+@@ -0,0 +1,50 @@
++import { spawnSync } from 'node:child_process';
++import { readFileSync, existsSync, readdirSync } from 'node:fs';
++import { fileURLToPath } from 'node:url';
++import { resolve, join } from 'node:path';
++import assert from 'node:assert/strict';
++
++const root = fileURLToPath(new URL('../', import.meta.url));
++process.chdir(root);
++function run(args) {
++  const result = spawnSync(process.execPath, args, { stdio: 'inherit', timeout: 45000 });
++  if (result.error) throw result.error;
++  if (result.status !== 0) process.exit(result.status ?? 1);
++}
++const category = process.argv[2];
++if (category === 'unit') {
++  run(['--test', 'test/unit.test.mjs']);
++} else if (category === 'build') {
++  const files = [];
++  function scan(dir) {
++    for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
++      const path = join(dir, entry.name);
++      if (entry.isDirectory()) scan(path);
++      else if (/\.(?:mjs|js)$/.test(path)) files.push(path);
++    }
++  }
++  for (const dir of ['src', 'public', 'scripts', 'test']) scan(dir);
++  for (const file of files.sort()) {
++    run(['--check', file]);
++    const text = readFileSync(file, 'utf8');
++    for (const match of text.matchAll(/(?:from\s+|import\s*)['"](\.[^'"]+)['"]/g)) {
++      assert.ok(existsSync(resolve(root, file, '..', match[1])), `Missing local import: ${file}: ${match[1]}`);
++    }
++  }
++  const html = readFileSync('public/index.html', 'utf8');
++  for (const asset of ['/app.js', '/styles.css']) {
++    assert.ok(html.includes(`"${asset}"`), `Missing declared asset reference ${asset}`);
++    assert.ok(existsSync(join(root, 'public', asset.slice(1))));
++  }
++  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
++  assert.equal(pkg.type, 'module');
++  assert.equal(pkg.scripts.start, 'node src/server.mjs');
++  assert.equal(pkg.scripts.test, 'node scripts/check.mjs unit');
++  assert.equal(pkg.scripts.build, 'node scripts/check.mjs build');
++  assert.equal(Object.keys(pkg.dependencies ?? {}).length, 0);
++  assert.equal(Object.keys(pkg.devDependencies ?? {}).length, 0);
++  console.log(`Build validation passed: ${files.length} JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.`);
++} else {
++  console.error('Supported Engineering checks: unit, build');
++  process.exitCode = 1;
++}
+--- /dev/null
++++ b/src/domain.mjs
+@@ -0,0 +1,35 @@
++export class AppError extends Error {
++  constructor(code, message, status = 400) {
++    super(message);
++    this.code = code;
++    this.status = status;
++  }
++}
++
++export function isCalendarDate(value) {
++  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
++  const [year, month, day] = value.split('-').map(Number);
++  if (year < 1 || month < 1 || month > 12 || day < 1) return false;
++  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
++  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
++  return day <= days[month - 1];
++}
++
++export function assignInitialDate(repository, id, dueDate, referenceDay) {
++  if (!isCalendarDate(referenceDay)) throw new Error('Invalid reference calendar day.');
++  const task = repository.get(id);
++  if (!task) throw new AppError('TASK_NOT_FOUND', 'Task not found.', 404);
++  if (dueDate === null || dueDate === '') {
++    throw new AppError('DEMO_NOT_IMPLEMENTED', 'Clearing dates is not implemented in this demonstrator; its product behavior remains undefined.', 501);
++  }
++  if (!isCalendarDate(dueDate)) {
++    throw new AppError('INVALID_DATE', 'Supply a real calendar date in YYYY-MM-DD format.');
++  }
++  if (task.dueDate !== null) {
++    throw new AppError('DEMO_NOT_IMPLEMENTED', 'Changing an assigned date is not implemented in this demonstrator; its product behavior remains undefined.', 501);
++  }
++  if (dueDate <= referenceDay) {
++    throw new AppError('DEMO_NOT_IMPLEMENTED', 'Past/today-date behavior is outside this demonstrator. No product acceptance or rejection rule has been decided.', 501);
++  }
++  return repository.setDueDate(id, dueDate);
++}
+--- /dev/null
++++ b/src/http.mjs
+@@ -0,0 +1,114 @@
++import http from 'node:http';
++import { readFile } from 'node:fs/promises';
++import { AppError, assignInitialDate, isCalendarDate } from './domain.mjs';
++import { createRepository } from './repository.mjs';
++
++const assets = new Map([
++  ['/', ['../public/index.html', 'text/html; charset=utf-8']],
++  ['/app.js', ['../public/app.js', 'text/javascript; charset=utf-8']],
++  ['/styles.css', ['../public/styles.css', 'text/css; charset=utf-8']],
++]);
++const bodyLimit = 4096;
++const csp = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
++
++function send(response, status, value, type = 'application/json; charset=utf-8') {
++  response.writeHead(status, {
++    'Content-Type': type,
++    'Content-Security-Policy': csp,
++    'X-Content-Type-Options': 'nosniff',
++    'Referrer-Policy': 'no-referrer',
++    'Cache-Control': 'no-store',
++  });
++  response.end(type.startsWith('application/json') ? JSON.stringify(value) : value);
++}
++
++async function jsonBody(request) {
++  if (!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(request.headers['content-type'] ?? '')) {
++    throw new AppError('CONTENT_TYPE', 'Use application/json.', 415);
++  }
++  const length = request.headers['content-length'];
++  if (length !== undefined && (!/^\d+$/.test(length) || Number(length) > bodyLimit)) {
++    throw new AppError('BODY_TOO_LARGE', 'Request body exceeds the demonstrator limit.', 413);
++  }
++  const chunks = [];
++  await new Promise((resolve, reject) => {
++    let size = 0;
++    function cleanup() {
++      request.off('data', onData);
++      request.off('end', onEnd);
++      request.off('aborted', onAborted);
++      request.off('error', onError);
++    }
++    function onData(chunk) {
++      size += chunk.length;
++      if (size > bodyLimit) {
++        cleanup();
++        // Drain without buffering; destroying the input would also destroy the error response.
++        request.resume();
++        reject(new AppError('BODY_TOO_LARGE', 'Request body exceeds the demonstrator limit.', 413));
++      } else chunks.push(chunk);
++    }
++    function onEnd() { cleanup(); resolve(); }
++    function onAborted() { cleanup(); reject(new AppError('INCOMPLETE_BODY', 'Request was interrupted.')); }
++    function onError() { cleanup(); reject(new AppError('INCOMPLETE_BODY', 'Request could not be read.')); }
++    request.on('data', onData);
++    request.on('end', onEnd);
++    request.on('aborted', onAborted);
++    request.on('error', onError);
++  });
++  let body;
++  try {
++    const text = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks));
++    body = JSON.parse(text);
++  } catch {
++    throw new AppError('INVALID_JSON', 'Supply a valid UTF-8 JSON object.');
++  }
++  if (!body || Array.isArray(body) || typeof body !== 'object'
++      || Object.keys(body).length !== 1 || !Object.hasOwn(body, 'dueDate')) {
++    throw new AppError('INVALID_BODY', 'Supply exactly the dueDate field.');
++  }
++  return body;
++}
++
++// Construct without listening so QA can start isolated servers with fixed test data/time.
++export function createApp({ repository = createRepository(), referenceDay = () => new Date().toISOString().slice(0, 10) } = {}) {
++  const server = http.createServer(async (request, response) => {
++    try {
++      const host = `127.0.0.1:${server.address().port}`;
++      if (request.headers.host !== host) throw new AppError('INVALID_HOST', 'Use the local application URL.', 403);
++      const path = request.url;
++      if (request.method === 'GET' && path === '/api/tasks') {
++        const day = referenceDay();
++        if (!isCalendarDate(day)) throw new Error('Invalid reference day.');
++        send(response, 200, { tasks: repository.list(), referenceDay: day });
++      } else if (request.method === 'GET' && assets.has(path)) {
++        const [file, type] = assets.get(path);
++        send(response, 200, await readFile(new URL(file, import.meta.url)), type);
++      } else if (request.method === 'POST' && /^\/api\/tasks\/[a-zA-Z0-9_-]{1,80}\/due-date$/.test(path)) {
++        const origin = request.headers.origin;
++        if (origin !== undefined && origin !== `http://${host}`) {
++          throw new AppError('FOREIGN_ORIGIN', 'Only same-origin browser mutations are supported.', 403);
++        }
++        const body = await jsonBody(request);
++        const id = path.split('/')[3];
++        const task = assignInitialDate(repository, id, body.dueDate, referenceDay());
++        send(response, 200, { task });
++      } else {
++        throw new AppError('NOT_FOUND', 'Route not found.', 404);
++      }
++    } catch (error) {
++      const known = error instanceof AppError;
++      if (!response.headersSent && !response.destroyed) {
++        send(response, known ? error.status : 500, { error: {
++          code: known ? error.code : 'INTERNAL_ERROR',
++          message: known ? error.message : 'The application could not complete this request.',
++        } });
++      }
++    }
++  });
++  server.requestTimeout = 10000;
++  server.headersTimeout = 10000;
++  server.keepAliveTimeout = 1000;
++  server.maxHeadersCount = 50;
++  return server;
++}
+--- /dev/null
++++ b/src/repository.mjs
+@@ -0,0 +1,25 @@
++import { isCalendarDate } from './domain.mjs';
++
++export function createRepository(seeds = [
++  { id: 'task-1', title: 'Prepare a presentation', dueDate: null },
++  { id: 'task-2', title: 'Read a book', dueDate: null },
++]) {
++  const rows = new Map();
++  for (const task of seeds) {
++    if (!task || typeof task.id !== 'string' || !task.id || rows.has(task.id)
++        || typeof task.title !== 'string'
++        || !(task.dueDate === null || isCalendarDate(task.dueDate))) {
++      throw new Error('Invalid or duplicate seeded task.');
++    }
++    rows.set(task.id, { id: task.id, title: task.title, dueDate: task.dueDate });
++  }
++  return {
++    list: () => Array.from(rows.values(), task => ({ ...task })),
++    get: id => rows.has(id) ? { ...rows.get(id) } : null,
++    setDueDate(id, dueDate) {
++      if (!rows.has(id) || !isCalendarDate(dueDate)) throw new Error('Invalid repository update.');
++      rows.get(id).dueDate = dueDate;
++      return { ...rows.get(id) };
++    },
++  };
++}
+--- /dev/null
++++ b/src/server.mjs
+@@ -0,0 +1,13 @@
++import { createApp } from './http.mjs';
++const server = createApp();
++server.on('error', error => {
++  console.error(`Application could not start: ${error.code ?? 'unknown error'}`);
++  process.exitCode = 1;
++});
++server.listen(0, '127.0.0.1', () => {
++  console.log(`Task due-date demonstrator: http://127.0.0.1:${server.address().port}`);
++  console.log('In-memory seeded tasks only. Data resets on restart.');
++});
++for (const signal of ['SIGINT', 'SIGTERM']) {
++  process.on(signal, () => server.close(() => { process.exitCode = 0; }));
++}
+--- /dev/null
++++ b/test/unit.test.mjs
+@@ -0,0 +1,196 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { isCalendarDate, assignInitialDate, AppError } from '../src/domain.mjs';
++import { createRepository } from '../src/repository.mjs';
++const day = '2026-10-28';
++for (const date of ['2026-12-31', '2027-01-01', '2028-02-29', '2000-02-29', '0001-01-01', '9999-12-31']) {
++  test(`real calendar date ${date}`, () => assert.equal(isCalendarDate(date), true));
++}
++for (const date of ['2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01', '2026-01-00', '0000-01-01', '2026-1-01', '2026-01-01T12:00:00Z', ' 2026-01-01', null, 20261028, {}, ['2027-01-01']]) {
++  test(`reject non-calendar value ${JSON.stringify(date)}`, () => assert.equal(isCalendarDate(date), false));
++}
++test('FR-002 / AC-002: leaving tasks alone preserves permitted absence', () => {
++  const r = createRepository();
++  assert.deepEqual(r.list().map(t => t.dueDate), [null, null]);
++  r.list();
++  assert.equal(r.get('task-1').dueDate, null);
++});
++for (const date of ['2026-12-31', '2027-01-01', '2028-02-29']) {
++  test(`FR-001 / AC-001: exact initial date ${date}, other task stays undated`, () => {
++    const r = createRepository();
++    assert.equal(assignInitialDate(r, 'task-1', date, day).dueDate, date);
++    assert.equal(r.get('task-1').dueDate, date);
++    assert.equal(r.get('task-2').dueDate, null);
++  });
++}
++test('returned copies cannot mutate stored or seeded state', () => {
++  const seed = { id: 'a', title: '<script>alert(1)</script>', dueDate: null };
++  const r = createRepository([seed]); seed.dueDate = '2027-01-01';
++  r.get('a').title = 'changed'; r.list()[0].dueDate = '2027-01-01';
++  assert.equal(r.get('a').title, '<script>alert(1)</script>');
++  assert.equal(r.get('a').dueDate, null);
++});
++test('repositories isolate independent fixtures', () => {
++  const a = createRepository(), b = createRepository();
++  assignInitialDate(a, 'task-1', '2027-01-01', day);
++  assert.equal(b.get('task-1').dueDate, null);
++});
++test('invalid structural input leaves state unchanged', () => {
++  const r = createRepository();
++  assert.throws(() => assignInitialDate(r, 'task-1', '2027-02-30', day), e => e instanceof AppError && e.code === 'INVALID_DATE');
++  assert.equal(r.get('task-1').dueDate, null);
++});
++test('unknown target returns controlled error without mutation', () => {
++  const r = createRepository(); const before = r.list();
++  assert.throws(() => assignInitialDate(r, 'missing', '2027-01-01', day), e => e.status === 404 && e.code === 'TASK_NOT_FOUND');
++  assert.deepEqual(r.list(), before);
++});
++test('past/today demonstrator boundaries are not product-policy decisions', () => {
++  const r = createRepository();
++  for (const date of ['2026-10-27', day]) {
++    assert.throws(() => assignInitialDate(r, 'task-1', date, day), e => e.status === 501 && e.code === 'DEMO_NOT_IMPLEMENTED');
++    assert.equal(r.get('task-1').dueDate, null);
++  }
++});
++test('change/clear demonstrator boundaries preserve state without defining product policy', () => {
++  const r = createRepository(); assignInitialDate(r, 'task-1', '2027-01-01', day);
++  for (const date of ['2027-02-01', null, '']) {
++    assert.throws(() => assignInitialDate(r, 'task-1', date, day), e => e.status === 501 && e.code === 'DEMO_NOT_IMPLEMENTED');
++    assert.equal(r.get('task-1').dueDate, '2027-01-01');
++  }
++});
++test('invalid reference day cannot silently classify an assignment', () => {
++  const r = createRepository();
++  assert.throws(() => assignInitialDate(r, 'task-1', '2027-01-01', 'bad'), /Invalid reference/);
++  assert.equal(r.get('task-1').dueDate, null);
++});
++test('invalid or duplicate seed records fail explicitly', () => {
++  const task = {id:'a', title:'test', dueDate:null};
++  assert.throws(() => createRepository([task, task]), /Invalid or duplicate/);
++  assert.throws(() => createRepository([{...task, dueDate:'2026-02-30'}]), /Invalid or duplicate/);
++});
++
++// Controller-level regressions: actual browser script in a small DOM/fetch test double.
++// These do not replace independent HTTP or real-browser QA verification.
++import vm from 'node:vm';
++import { readFileSync } from 'node:fs';
++
++function browserHarness(fetchSteps) {
++  const doc = { activeElement: null };
++  class Element {
++    constructor(tag) { this.tag = tag; this.children = []; this.listeners = {}; this.value = ''; this.disabled = false; this.parent = null; }
++    append(...nodes) { for (const node of nodes) { node.parent = this; this.children.push(node); } }
++    contains(node) { return this === node || this.children.some(child => child.contains(node)); }
++    remove() {
++      if (this.contains(doc.activeElement)) doc.activeElement = null;
++      if (this.parent) this.parent.children = this.parent.children.filter(child => child !== this);
++      this.parent = null;
++    }
++    replaceChildren(...nodes) { for (const node of [...this.children]) node.remove(); this.append(...nodes); }
++    addEventListener(type, fn) { this.listeners[type] = fn; }
++    focus() { doc.activeElement = this; }
++    reportValidity() { return true; }
++  }
++  const roots = Object.fromEntries(['tasks', 'feedback', 'reference'].map(id => [id, new Element('div')]));
++  doc.querySelector = selector => roots[selector.slice(1)];
++  doc.createElement = tag => new Element(tag);
++  const requests = [];
++  const fetch = async (url, options) => {
++    requests.push({ url, options });
++    const step = fetchSteps.shift();
++    assert.ok(step, 'Unexpected extra HTTP request');
++    if (step instanceof Error) throw step;
++    return { ok: step.ok ?? true, json: async () => step.body ?? step };
++  };
++  vm.runInNewContext(readFileSync(new URL('../public/app.js', import.meta.url), 'utf8'), { document: doc, fetch });
++  const flush = () => new Promise(resolve => setImmediate(resolve));
++  const child = (node, tag) => node.children.find(x => x.tag === tag);
++  return { doc, roots, requests, flush, child,
++    item: index => roots.tasks.children[index],
++    async submit(index) {
++      const form = child(roots.tasks.children[index], 'form');
++      await form.listeners.submit({ preventDefault() {} });
++      await flush();
++    },
++  };
++}
++function browserTasks(date = null) {
++  return { referenceDay: '2026-10-28', tasks: [
++    { id: 'task-1', title: 'First task', dueDate: date },
++    { id: 'task-2', title: 'Second task', dueDate: null },
++  ] };
++}
++test('UI regression: saving one task preserves another draft and its focused input', async () => {
++  const data = browserTasks('2027-01-01');
++  const h = browserHarness([browserTasks(), { task: data.tasks[0] }, data]); await h.flush();
++  const first = h.child(h.item(0), 'form'); h.child(first, 'input').value = '2027-01-01';
++  const other = h.child(h.item(1), 'form'); const input = h.child(other, 'input');
++  input.value = '2028-02-29'; input.focus();
++  await h.submit(0);
++  assert.equal(h.child(h.item(1), 'form'), other);
++  assert.equal(input.value, '2028-02-29');
++  assert.equal(h.doc.activeElement, input);
++  assert.match(h.child(h.item(0), 'p').textContent, /2027-01-01/);
++});
++test('UI regression: removed assignment control moves focus to the updated task heading', async () => {
++  const data = browserTasks('2027-01-01');
++  const h = browserHarness([browserTasks(), { task: data.tasks[0] }, data]); await h.flush();
++  const form = h.child(h.item(0), 'form'); h.child(form, 'input').value = '2027-01-01';
++  h.child(form, 'button').focus(); await h.submit(0);
++  assert.equal(h.doc.activeElement, h.child(h.item(0), 'h2'));
++  assert.equal(h.child(h.item(0), 'form'), undefined);
++});
++test('UI regression: lost successful save response reconciles readback without another mutation', async () => {
++  const h = browserHarness([browserTasks(), new Error('Response lost'), browserTasks('2027-01-01')]); await h.flush();
++  h.child(h.child(h.item(0), 'form'), 'input').value = '2027-01-01';
++  await h.submit(0);
++  assert.match(h.child(h.item(0), 'p').textContent, /2027-01-01/);
++  assert.equal(h.child(h.item(0), 'form'), undefined);
++  assert.match(h.roots.feedback.textContent, /confirmed/i);
++  assert.equal(h.requests.filter(r => r.options?.method === 'POST').length, 1);
++  assert.equal(h.requests.length, 3);
++});
++test('UI regression: failed save and failed readback block retry with an unknown-outcome message', async () => {
++  const h = browserHarness([browserTasks(), new Error('Response lost'), new Error('Read unavailable')]); await h.flush();
++  const form = h.child(h.item(0), 'form'); h.child(form, 'input').value = '2027-01-01';
++  await h.submit(0);
++  assert.equal(h.child(form, 'button').disabled, true);
++  assert.match(h.roots.feedback.textContent, /unknown.*reload/i);
++  const count = h.requests.length; await h.submit(0); assert.equal(h.requests.length, count);
++});
++test('UI regression: readback proving no save permits a manual retry and retains the draft', async () => {
++  const h = browserHarness([browserTasks(), new Error('Response lost'), browserTasks()]); await h.flush();
++  const form = h.child(h.item(0), 'form'); const input = h.child(form, 'input'); input.value = '2027-01-01';
++  await h.submit(0);
++  assert.equal(h.child(h.item(0), 'form'), form);
++  assert.equal(input.value, '2027-01-01');
++  assert.equal(h.child(form, 'button').disabled, false);
++  assert.match(h.roots.feedback.textContent, /still undated.*try again/i);
++});
++test('UI regression: known successful save survives a failed subsequent refresh', async () => {
++  const data = browserTasks('2027-01-01');
++  const h = browserHarness([browserTasks(), { task: data.tasks[0] }, new Error('Read unavailable')]); await h.flush();
++  h.child(h.child(h.item(0), 'form'), 'input').value = '2027-01-01';
++  const other = h.child(h.child(h.item(1), 'form'), 'input'); other.value = '2028-02-29';
++  await h.submit(0);
++  assert.match(h.child(h.item(0), 'p').textContent, /2027-01-01/);
++  assert.equal(h.child(h.item(0), 'form'), undefined);
++  assert.equal(other.value, '2028-02-29');
++  assert.match(h.roots.feedback.textContent, /saved.*refresh/i);
++});
++
++test('UI regression: rejected input retains the useful server diagnostic after readback', async () => {
++  const h = browserHarness([browserTasks(), { ok: false, body: { error: { message: 'Supply a real calendar date.' } } }, browserTasks()]); await h.flush();
++  const form = h.child(h.item(0), 'form'); h.child(form, 'input').value = 'bad';
++  await h.submit(0);
++  assert.match(h.roots.feedback.textContent, /Supply a real calendar date/);
++  assert.equal(h.child(form, 'button').disabled, false);
++});
++test('UI regression: different saved date is reported without claiming the attempted date succeeded', async () => {
++  const h = browserHarness([browserTasks(), new Error('Response lost'), browserTasks('2027-02-01')]); await h.flush();
++  h.child(h.child(h.item(0), 'form'), 'input').value = '2027-01-01';
++  await h.submit(0);
++  assert.match(h.child(h.item(0), 'p').textContent, /2027-02-01/);
++  assert.match(h.roots.feedback.textContent, /attempted date was not confirmed/);
++  assert.equal(h.child(h.item(0), 'form'), undefined);
++});

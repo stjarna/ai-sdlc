@@ -1,0 +1,16 @@
+[
+  "qa-check-run",
+  "REQ-0001",
+  "--check-id",
+  "QA-INTEGRATION",
+  "--expected-qa-revision",
+  "f4d9f63f16d2311931ec7a79d8e66bd195e7745281da4a1f0e78cc576083683d",
+  "--expected-source-revision",
+  "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+  "--operation-id",
+  "working-app-focus-rerun-qa-integration-f05c73c7-9387-42be-be9f-6160d1116de1",
+  "--actor",
+  "AI assistant using Testing skill",
+  "--decision",
+  "Rerun the approved QA check against the human-approved focus remediation after separate advancement authorization. Preserve historical failed evidence; do not automatically complete or advance QA."
+]

@@ -1,0 +1,14 @@
+[
+  "qa-advance",
+  "REQ-0001",
+  "--kind",
+  "scenarios",
+  "--expected-qa-revision",
+  "f9ec3eecb2e40472f4c655783545b7426857b43650ec91fbd457607fe530e267",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-qa-scenarios-advance-4b102f05-bb64-49b4-89d6-9923296e5a87",
+  "--decision",
+  "$sdlc advance qa"
+]

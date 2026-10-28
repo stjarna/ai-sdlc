@@ -1,0 +1,14 @@
+[
+  "engineering-request-changes",
+  "REQ-0001",
+  "--kind",
+  "implementation",
+  "--expected-engineering-revision",
+  "1905389f7320004772f6a62c596feffb457839a5a5de148491e0d43cd7db83a6",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-ui-changes-077a0fcc-6780-471f-ac33-e9074e7b64a0",
+  "--decision",
+  "Yes, fix both findings, add regression tests and rerun verification. Present the results for review before approval."
+]

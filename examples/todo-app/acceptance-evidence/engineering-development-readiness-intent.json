@@ -1,0 +1,16 @@
+{
+  "arguments": [
+    "engineering-advance",
+    "REQ-0001",
+    "--kind",
+    "plan",
+    "--expected-engineering-revision",
+    "b04af53486b5cba189d072b0b2356dac770fd10bd350b0c3bc6cc3a0c9853825",
+    "--expected-profile-revision",
+    "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+    "--operation-id",
+    "human-working-app-engineering-plan-advance-cb2876ba-fa4b-4825-9650-467389a4ae39",
+    "--decision",
+    "$sdlc advance engineering"
+  ]
+}

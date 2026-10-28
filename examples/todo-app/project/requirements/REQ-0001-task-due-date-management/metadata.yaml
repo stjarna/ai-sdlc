@@ -1,0 +1,1026 @@
+schema_version: '0.6'
+id: REQ-0001
+title: Task Due Date Management
+status: verified
+artifacts:
+  idea: idea.md
+lifecycle:
+- id: acceptance-complete-909ae54e-6e1a-445a-aec9-a096d88eb137
+  action: complete
+  from: discovery
+  to: ready_for_refinement
+  base_revision: ec34096c370e6c78590a7fec1c2221f52edc553dfdd338687c18b72ac37bf7ae
+  actor: David Krzystek
+  decision: I confirm, as the Requester, completion of Discovery for REQ-0001 at revision
+    `ec34096c370e6c78590a7fec1c2221f52edc553dfdd338687c18b72ac37bf7ae`. I acknowledge
+    that question D-0006 regarding past due dates remains deferred and should be explicitly
+    carried forward into Business Refinement. Please execute `discovery-complete`,
+    verify the transition to `ready_for_refinement`, and proceed with generating the
+    initial `business.md` using only the documented Discovery evidence. Present the
+    generated business document for my review before making any further changes. This
+    confirmation does not constitute business approval.
+  timestamp: '2026-10-28T15:29:09Z'
+- id: acceptance-business-generate-8e637ef0-95a2-403c-9a0a-2f58f6224be7
+  action: refine
+  from: ready_for_refinement
+  to: business_refinement
+  base_revision: f9e84062c0f7f10931ee7c1492795510248ec403acc97a43b20240c039b29a0e
+  actor: AI assistant using sdlc skill
+  decision: Initial business draft from documented Discovery evidence following explicit
+    Requester completion.
+  timestamp: '2026-10-28T15:29:09Z'
+- id: human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4
+  action: advance
+  from: business_refinement
+  to: ready_for_analysis
+  base_revision: ba8dffa680e35fa93b373a1f376862ae8938ece9b655d6115175f0ee08d3bd56
+  actor: David Krzystek
+  decision: Let's keep the specification as approved. I don't want to make any further
+    changes. Please proceed to the next SDLC stage.
+  timestamp: '2026-10-28T16:26:00Z'
+  review_revision: af26b68389d2dc80e58e632145d689d21642a60868e7b7a801a0dda39440265c
+  business_revision: 4447d86ae208ce7dc50f1ec5f47c792b797e49b89c9824d33c39c0a627b4e595
+  approval_id: BD-0002
+  baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+- id: human-acceptance-analysis-generate-593d518b-7332-476b-bbda-9316199e640b
+  action: analyze
+  from: ready_for_analysis
+  to: functional_analysis
+  base_revision: 5a8b43614de8f8cf2cf097fb9ce932f83f2a908b700960bc39b32c5838070eaf
+  actor: AI assistant using sdlc skill
+  decision: Initial functional draft from the approved frozen business evidence for
+    requested interactive acceptance testing.
+  timestamp: '2026-10-28T16:55:53Z'
+  review_revision: 5d8ce8b0462c0294805b380eb799d7546bc3ae72ead8e5b9e29ef90c7cdb9ddf
+  business_revision: 4447d86ae208ce7dc50f1ec5f47c792b797e49b89c9824d33c39c0a627b4e595
+  baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+  approval_id: BD-0002
+  handoff_id: human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4
+- id: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+  action: analysis_advance
+  from: functional_analysis
+  to: ready_for_technical_design
+  base_revision: 069d3a98350f1fe01043df261fbcb0f1ac20a40bc70bd711f71bc6eb20ab6633
+  actor: David Krzystek
+  decision: Yes, I authorize advancing this request to Technical Design readiness.
+  timestamp: '2026-10-28T20:08:51Z'
+  identity_source: local_profile
+  review_revision: b942453c0f88d4e029ea441e0ff6a9feeecf2417d363281e09da1b4486f949fd
+  analysis_revision: fab121d47ebd2f629df982cf0ce1c7d01da49a1f489345abf6490b96ad8b4a2f
+  analysis_operation_id: human-analysis-clarify-960f5a08-7946-4154-bedc-2c54a6969fef
+  business_baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+  business_approval_id: BD-0002
+  business_handoff_id: human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4
+  approval_id: AD-0002
+  baseline_id: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598
+- id: working-app-design-draft-68bf4fea-8ffb-499a-8022-8c38e5dcf55b
+  action: engineer
+  from: ready_for_technical_design
+  to: technical_design
+  base_revision: 9721ecfdd4733cd70486f0ea5a7371d942b9dadca84c6df29a69cd4892b8c04b
+  actor: AI assistant using Architecture and Security skills
+  decision: Prepare the initial Technical Design based on the approved Functional
+    Analysis baseline, as explicitly requested by David Krzystek; present all technical
+    proposals for review. This drafting instruction is not Design approval.
+  timestamp: '2026-10-28T20:11:12Z'
+  baseline_id: 97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d
+- id: human-working-app-design-advance-a7e2b3f9-79bc-46e3-8238-91c994124a72
+  action: engineer
+  from: technical_design
+  to: ready_for_implementation_planning
+  base_revision: f7f47f8292ccce30c63e793c0d12713aae099b2e5c5251f6bafb7bcd01db4180
+  actor: David Krzystek
+  decision: $sdlc advance
+  timestamp: '2026-10-28T20:20:55Z'
+  baseline_id: 639e9e61fbe3a14279856823e73e3dd4cd7238e3676187650f396c83385dce32
+  identity_source: local_profile
+- id: working-app-plan-draft-a985e6ca-0231-4fde-9e39-fa78c9393fa1
+  action: engineer
+  from: ready_for_implementation_planning
+  to: implementation_planning
+  base_revision: 11c6e20038aab53157db7e9948185e1d332d12c945789459bbea86798eb2c157
+  actor: AI assistant using Development and Testing skills
+  decision: Prepare the Implementation Plan in response to the user command $sdlc
+    start following the offer to prepare it. Planning only; no human Plan approval
+    or Development authorization is inferred.
+  timestamp: '2026-10-28T20:25:34Z'
+  baseline_id: a3edcd499adfe7464a0beb524121eee26296247f51b7af32d0a72ac0e363a4e7
+- id: human-working-app-engineering-plan-advance-cb2876ba-fa4b-4825-9650-467389a4ae39
+  action: engineer
+  from: implementation_planning
+  to: ready_for_development
+  base_revision: 98415ac924b2f3fb85930a2fbe518bc652dffc0ab491ad47a032b441c180fc81
+  actor: David Krzystek
+  decision: $sdlc advance engineering
+  timestamp: '2026-10-28T21:22:30Z'
+  baseline_id: a23a644e9fdce6ee1d8a28a6fe1db8d711e7f4f8b28d138d8b40d9a7c4a50c4b
+  identity_source: local_profile
+- id: human-working-app-development-start-94df2859-1c71-4182-9ed1-5ddfed66be56
+  action: engineer
+  from: ready_for_development
+  to: development
+  base_revision: 1d4cb007aad57c873f2a12fcd921252888e8e32db74cb7d8ceea31d3ea87eacb
+  actor: David Krzystek
+  decision: $sdlc start engineering
+  timestamp: '2026-10-28T21:22:58Z'
+  baseline_id: 838695c3b4d5172ffcb7a0e0698aabf7c9b1f5576c4b5c70f055c67a90cac3bd
+  identity_source: local_profile
+- id: human-working-app-code-v2-advance-56971dd3-3d94-48cf-b46d-cc05411e7cf5
+  action: engineer
+  from: development
+  to: verification
+  base_revision: 32f8c9650027ac5549549cdfcbe80e39d2ffa09406b62bef1484d3bd534665ea
+  actor: David Krzystek
+  decision: 'yes'
+  timestamp: '2026-10-28T21:37:42Z'
+  baseline_id: 816a9ed1b701a03d8fef49f1acaab065e52ccfc7b3dd5397f1f46c1397d7e9fc
+  identity_source: local_profile
+- id: human-working-app-focus-remediation-36e0b6c1-3222-40b9-8874-54f2739f4f6a
+  action: engineer
+  from: verification
+  to: development
+  base_revision: a6b7556a1f5be090b2d71367494a1b2e7c410ac4e4e3a3e2dcb4fac98a154844
+  actor: David Krzystek
+  decision: Yes, I authorize Engineering remediation of the focus defect, followed
+    by regression tests and renewed code review. Keep QA evidence unchanged until
+    the fix is approved.
+  timestamp: '2026-10-28T21:49:24Z'
+  baseline_id: 6080f27b4f83414c634697133e42a0c917d7ff3f80f9fe465f636977ce76b673
+  identity_source: local_profile
+- id: human-working-app-focus-advance-428ce3de-fd8d-4ae7-8595-5a9c161de920
+  action: engineer
+  from: development
+  to: verification
+  base_revision: fb5f8be13ce6800656df4494f1addb8ab80fc92aee40ef243ea6cebbe5ce0c54
+  actor: David Krzystek
+  decision: Yes, I authorize returning Engineering to Verification and rerunning the
+    approved QA checks against the updated implementation.
+  timestamp: '2026-10-28T21:52:36Z'
+  baseline_id: 11d5986282fcc169a0fe751050d573b0e1f7e89db657070f8af6eb4f3ee6529a
+  identity_source: local_profile
+- id: human-working-app-security-advance-237d24a9-c634-40f7-8f71-35b368f5b7dc
+  action: engineer
+  from: verification
+  to: security_review
+  base_revision: 1c624be837ef99ffd27045b856c957c34bed5e61e498a03c82fc04ca8421695e
+  actor: David Krzystek
+  decision: $sdlc advance engineering
+  timestamp: '2026-10-28T21:54:58Z'
+  baseline_id: b1dda0e79e35f97f8eaf45fa7f3e749bb3f8f5429e7489ad7556e62e433fb208
+  identity_source: local_profile
+- id: human-working-app-final-readiness-d4b607ad-82ed-4aa1-9e6c-26690d28dcb1
+  action: engineer
+  from: security_review
+  to: final_verification
+  base_revision: cf728b68187c3de5cb7ec7a5f5e15fd01fe5723b99c497b4f435b902f2695c25
+  actor: David Krzystek
+  decision: $sdlc advance engineering
+  timestamp: '2026-10-28T22:35:07Z'
+  baseline_id: 7104bdbc24f6271739a52376503ef3d5b40881c7e7e99fbcadd303f0032d005a
+  identity_source: local_profile
+- id: human-working-app-finalize-668fcb3a-f84f-47b9-a91b-6c7db439230f
+  action: engineer
+  from: final_verification
+  to: verified
+  base_revision: 6d9993fdeaecdfe2df38c1a62a9f5d27f5d512a94a250a0ee7449b76ef2f3893
+  actor: David Krzystek
+  decision: $sdlc advance engineering
+  timestamp: '2026-10-28T22:37:03Z'
+  baseline_id: bc843c4302b96bc0faeba77993e81da5b064dd283c7ed78e7f484407bbba3eba
+  identity_source: local_profile
+business_decisions:
+- id: BD-0001
+  operation_id: human-request-changes-e984ca20-b54a-4518-9c63-275b384b8bc1
+  action: request_changes
+  actor: David Krzystek
+  reason: Clarification of the already confirmed scope, not a new business requirement.
+  decision: 'I am requesting changes to the current business revision as Product Owner
+    David Krzystek. Please clarify B-002 to explicitly state that users can assign
+    an optional due date to a task. Suggested wording: "Users should be able to assign
+    an optional due date to each task. Reminders and notifications remain outside
+    the initial scope." This is a clarification of the already confirmed scope, not
+    a new business requirement. Keep U-001 / D-0006 unresolved. Do not approve or
+    advance the lifecycle yet.'
+  timestamp: '2026-10-28T16:04:14Z'
+  review_revision: ced512d7899799757eee88a77779a9eba007180f287335a03422e7f835da0df2
+  business_revision: d2f43b91e3897d0d23aad610b9bee71fffe87704ede76ea8174953b1d1fd8467
+  business_operation_id: acceptance-business-revise-38f56e95-4001-43b8-8c9e-9f5f2efd310f
+  source_revision: f721697ed58c51c59ad8e37bb7c62bea6612cd4f003ee4fd7b5e333393f22f8d
+  discovery_completion_id: acceptance-complete-909ae54e-6e1a-445a-aec9-a096d88eb137
+  acknowledged_open_items: []
+  baseline_id: null
+- id: BD-0002
+  operation_id: human-business-approve-4c257e53-e605-4e2b-b9c6-3bc6d363b7a7
+  action: approve
+  actor: David Krzystek
+  reason: Explicit Product Owner approval accepting the unresolved and deferred U-001
+    / D-0006 pending consultation with support.
+  decision: I, David Krzystek, acting as Product Owner, explicitly approve business
+    revision `4447d86ae208ce7dc50f1ec5f47c792b797e49b89c9824d33c39c0a627b4e595` for
+    REQ-0001 — Task Due Date Management. I explicitly acknowledge that U-001 / D-0006,
+    concerning whether users may select a past due date, remains unresolved and deferred
+    pending consultation with support. I accept this outstanding uncertainty for the
+    purpose of proceeding with the business approval.
+  timestamp: '2026-10-28T16:07:35Z'
+  review_revision: dd8edb7c558d2d7f8d176a1b628986d215f9736898fb6cb83cbdc914b729b16c
+  business_revision: 4447d86ae208ce7dc50f1ec5f47c792b797e49b89c9824d33c39c0a627b4e595
+  business_operation_id: human-business-revise-97d409a2-3f9e-47fd-91e8-cb563e3eb7c4
+  source_revision: f721697ed58c51c59ad8e37bb7c62bea6612cd4f003ee4fd7b5e333393f22f8d
+  discovery_completion_id: acceptance-complete-909ae54e-6e1a-445a-aec9-a096d88eb137
+  acknowledged_open_items:
+  - U-001
+  baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+analysis_decisions:
+- id: AD-0001
+  operation_id: human-analysis-request-changes-a331d173-bede-42e4-a80e-190137b564d1
+  action: request_changes
+  actor: David Krzystek
+  reason: Product Owner requests explicit clarification that changing or clearing
+    an assigned due date remains undefined.
+  decision: 'I''d like to request one clarification before approval.
+
+    Please make it explicit in the functional specification that the ability to change
+    or clear an already assigned due date has not yet been defined. This should remain
+    an open Analysis question, not an implied functional capability.
+
+    Keep the past-date question deferred and all existing functional requirements
+    unchanged.
+
+    Please record my feedback, apply the clarification and present the updated specification
+    for approval.
+
+    Do not approve or advance the lifecycle yet.'
+  timestamp: '2026-10-28T17:46:02Z'
+  review_revision: be0d3e67d04bd5c19fd2fb6f1bfa7a3fd796849f0a797f78812940119bb5e71c
+  analysis_revision: 82a2ff7494bba01c92949b173f8ce62f69d326ea03f7b3bd79227983849f74cf
+  analysis_operation_id: human-analysis-refine-89579000-b82e-4dc1-9748-5ed5b9f3c5a6
+  business_baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+  business_approval_id: BD-0002
+  business_handoff_id: human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4
+  acknowledged_open_items: []
+  baseline_id: null
+- id: AD-0002
+  operation_id: human-analysis-approve-62509fe3-986d-4790-bdd9-4c53dc2795fc
+  action: approve
+  actor: David Krzystek
+  reason: Product Owner explicitly approves the reviewed Functional Analysis, acknowledging
+    both unresolved issues and withholding advancement.
+  decision: 'Yes, I approve the updated Functional Analysis specification as David
+    Krzystek, acting as Product Owner.
+
+
+    I explicitly acknowledge that:
+
+
+    - Past-date behavior remains deferred and blocked pending consultation with support.
+
+    - Changing or clearing an existing due date remains undefined.
+
+
+    I accept both unresolved items for the purpose of this approval.
+
+
+    Please record the approval, verify the approved baseline and confirm the result.
+
+
+    Do not advance to Technical Design yet.'
+  timestamp: '2026-10-28T17:47:04Z'
+  review_revision: 4a2570c7ba594a7d03ca4a7812271168ef05ee9ba9740b41ebd191607585e6d4
+  analysis_revision: fab121d47ebd2f629df982cf0ce1c7d01da49a1f489345abf6490b96ad8b4a2f
+  analysis_operation_id: human-analysis-clarify-960f5a08-7946-4154-bedc-2c54a6969fef
+  business_baseline_id: 124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c
+  business_approval_id: BD-0002
+  business_handoff_id: human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4
+  acknowledged_open_items:
+  - AQ-001
+  - AQ-002
+  - FR-003
+  - U-001
+  baseline_id: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598
+ownership:
+  owner: David Krzystek
+  assignee: null
+  required_role: Requester / Product Owner
+  assignment_status: awaiting_assignment
+  target_stage: verified
+  since: '2026-10-28T22:37:03Z'
+  history:
+  - operation_id: owner-init-bf1bb7806da9e65856fe2237adbbbc651aa80905964d5e4cc2487ed66108414c
+    action: initialize
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T20:08:51Z'
+    expected_revision: null
+    from_owner: null
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Business Analyst
+    assignment_status: awaiting_assignment
+    target_stage: functional_analysis
+    lifecycle_id: null
+    decision: Initialize accountability from recorded Requester.
+  - operation_id: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T20:08:51Z'
+    expected_revision: 069d3a98350f1fe01043df261fbcb0f1ac20a40bc70bd711f71bc6eb20ab6633
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Engineering Lead / Architect
+    assignment_status: awaiting_assignment
+    target_stage: technical_design
+    lifecycle_id: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+    decision: Yes, I authorize advancing this request to Technical Design readiness.
+  - operation_id: human-working-app-design-advance-a7e2b3f9-79bc-46e3-8238-91c994124a72
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T20:20:55Z'
+    expected_revision: f7f47f8292ccce30c63e793c0d12713aae099b2e5c5251f6bafb7bcd01db4180
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Engineering Lead
+    assignment_status: awaiting_assignment
+    target_stage: implementation_planning
+    lifecycle_id: human-working-app-design-advance-a7e2b3f9-79bc-46e3-8238-91c994124a72
+    decision: $sdlc advance
+  - operation_id: human-working-app-engineering-plan-advance-cb2876ba-fa4b-4825-9650-467389a4ae39
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T21:22:30Z'
+    expected_revision: 98415ac924b2f3fb85930a2fbe518bc652dffc0ab491ad47a032b441c180fc81
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Developer
+    assignment_status: awaiting_assignment
+    target_stage: development
+    lifecycle_id: human-working-app-engineering-plan-advance-cb2876ba-fa4b-4825-9650-467389a4ae39
+    decision: $sdlc advance engineering
+  - operation_id: human-working-app-code-v2-advance-56971dd3-3d94-48cf-b46d-cc05411e7cf5
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T21:37:42Z'
+    expected_revision: 32f8c9650027ac5549549cdfcbe80e39d2ffa09406b62bef1484d3bd534665ea
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: QA / Quality Engineering
+    assignment_status: awaiting_assignment
+    target_stage: verification
+    lifecycle_id: human-working-app-code-v2-advance-56971dd3-3d94-48cf-b46d-cc05411e7cf5
+    decision: 'yes'
+  - operation_id: human-working-app-focus-remediation-36e0b6c1-3222-40b9-8874-54f2739f4f6a
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T21:49:24Z'
+    expected_revision: a6b7556a1f5be090b2d71367494a1b2e7c410ac4e4e3a3e2dcb4fac98a154844
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Developer
+    assignment_status: awaiting_assignment
+    target_stage: development
+    lifecycle_id: human-working-app-focus-remediation-36e0b6c1-3222-40b9-8874-54f2739f4f6a
+    decision: Yes, I authorize Engineering remediation of the focus defect, followed
+      by regression tests and renewed code review. Keep QA evidence unchanged until
+      the fix is approved.
+  - operation_id: human-working-app-focus-advance-428ce3de-fd8d-4ae7-8595-5a9c161de920
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T21:52:36Z'
+    expected_revision: fb5f8be13ce6800656df4494f1addb8ab80fc92aee40ef243ea6cebbe5ce0c54
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: QA / Quality Engineering
+    assignment_status: awaiting_assignment
+    target_stage: verification
+    lifecycle_id: human-working-app-focus-advance-428ce3de-fd8d-4ae7-8595-5a9c161de920
+    decision: Yes, I authorize returning Engineering to Verification and rerunning
+      the approved QA checks against the updated implementation.
+  - operation_id: human-working-app-security-advance-237d24a9-c634-40f7-8f71-35b368f5b7dc
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T21:54:58Z'
+    expected_revision: 1c624be837ef99ffd27045b856c957c34bed5e61e498a03c82fc04ca8421695e
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Application Security
+    assignment_status: awaiting_assignment
+    target_stage: security_review
+    lifecycle_id: human-working-app-security-advance-237d24a9-c634-40f7-8f71-35b368f5b7dc
+    decision: $sdlc advance engineering
+  - operation_id: human-working-app-final-readiness-d4b607ad-82ed-4aa1-9e6c-26690d28dcb1
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T22:35:07Z'
+    expected_revision: cf728b68187c3de5cb7ec7a5f5e15fd01fe5723b99c497b4f435b902f2695c25
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: QA / Quality Engineering
+    assignment_status: awaiting_assignment
+    target_stage: final_verification
+    lifecycle_id: human-working-app-final-readiness-d4b607ad-82ed-4aa1-9e6c-26690d28dcb1
+    decision: $sdlc advance engineering
+  - operation_id: human-working-app-finalize-668fcb3a-f84f-47b9-a91b-6c7db439230f
+    action: handoff
+    actor: David Krzystek
+    identity_source: local_profile
+    timestamp: '2026-10-28T22:37:03Z'
+    expected_revision: 6d9993fdeaecdfe2df38c1a62a9f5d27f5d512a94a250a0ee7449b76ef2f3893
+    from_owner: David Krzystek
+    to_owner: David Krzystek
+    assignee: null
+    required_role: Requester / Product Owner
+    assignment_status: awaiting_assignment
+    target_stage: verified
+    lifecycle_id: human-working-app-finalize-668fcb3a-f84f-47b9-a91b-6c7db439230f
+    decision: $sdlc advance engineering
+engineering_history:
+- operation_id: working-app-design-draft-68bf4fea-8ffb-499a-8022-8c38e5dcf55b
+  action: write
+  kind: design
+  actor: AI assistant using Architecture and Security skills
+  identity_source: declared
+  decision: Prepare the initial Technical Design based on the approved Functional
+    Analysis baseline, as explicitly requested by David Krzystek; present all technical
+    proposals for review. This drafting instruction is not Design approval.
+  expected_revision: d74be8951a62b6c93e5d8cfce61cb0bf630c529da212380dad4b7414192186f6
+  timestamp: '2026-10-28T20:11:12Z'
+  baseline_id: 97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-design-approve-54f990f2-7da2-4137-8946-ffd2201f3f2f
+  action: approve
+  kind: design
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: 'I approve the proposed Technical Design for the PoC.
+
+    I acknowledge that past-date behavior and changing or clearing existing due dates
+    remain unresolved.
+
+    The UTC reference date is acceptable for reproducible testing, but must not introduce
+    a new business rule.
+
+    Please record the approval, verify the baseline and keep the current lifecycle
+    state unchanged.
+
+    Do not advance automatically. Wait for my separate authorization to proceed to
+    Implementation Planning.'
+  expected_revision: acabf22dfcd4b4f24d079888583a8267d94c836d56bba49d2f46009ae705a32b
+  timestamp: '2026-10-28T20:14:54Z'
+  baseline_id: eb923f53fc6e24948599d3e8f3d060491400fbe3959c44729bf12eced70892d0
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-design-advance-a7e2b3f9-79bc-46e3-8238-91c994124a72
+  action: advance
+  kind: design
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc advance
+  expected_revision: 4e20c3ac08c931210d64e05c9ce83b7e65ef75431f183abf87e373f1e8b97ea5
+  timestamp: '2026-10-28T20:20:55Z'
+  baseline_id: 639e9e61fbe3a14279856823e73e3dd4cd7238e3676187650f396c83385dce32
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-plan-draft-a985e6ca-0231-4fde-9e39-fa78c9393fa1
+  action: write
+  kind: plan
+  actor: AI assistant using Development and Testing skills
+  identity_source: declared
+  decision: Prepare the Implementation Plan in response to the user command $sdlc
+    start following the offer to prepare it. Planning only; no human Plan approval
+    or Development authorization is inferred.
+  expected_revision: 3624d71932f6ffe414d720d4d197c556ed913a4cdc3a3aa5c5f781e0c22ab0de
+  timestamp: '2026-10-28T20:25:34Z'
+  baseline_id: a3edcd499adfe7464a0beb524121eee26296247f51b7af32d0a72ac0e363a4e7
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-engineering-only-plan-be1027d1-c10d-439b-a87d-2bf81de39582
+  action: write
+  kind: plan
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Prepare a replacement Engineering-only Implementation Plan in response
+    to $sdlc start engineering after authorized track adoption. This is drafting authorization
+    only, not Plan approval, advancement or Development start.
+  expected_revision: 4a02b1ab024dc4183bb2a0eb0a116cdb84bce362a757616f6c4bbdd2cf6d7829
+  timestamp: '2026-10-28T21:19:49Z'
+  baseline_id: 6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-engineering-plan-approve-8008ee74-6ee2-4495-aab8-f9be842f4a77
+  action: approve
+  kind: plan
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Approved. I acknowledge both unresolved topics and accept the Engineering
+    Plan as proposed.
+  expected_revision: 0f9b92652161a6f9b7bdeff9633e56f872cf097b39217e217fd04eac25e15ea1
+  timestamp: '2026-10-28T21:21:42Z'
+  baseline_id: e8369aaf2ac3216dde6d06cc2d1af2ef90cb355e5fabfa0e576816d549824440
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-engineering-plan-advance-cb2876ba-fa4b-4825-9650-467389a4ae39
+  action: advance
+  kind: plan
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc advance engineering
+  expected_revision: b04af53486b5cba189d072b0b2356dac770fd10bd350b0c3bc6cc3a0c9853825
+  timestamp: '2026-10-28T21:22:30Z'
+  baseline_id: a23a644e9fdce6ee1d8a28a6fe1db8d711e7f4f8b28d138d8b40d9a7c4a50c4b
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-development-start-94df2859-1c71-4182-9ed1-5ddfed66be56
+  action: start
+  kind: development
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc start engineering
+  expected_revision: 01b764a1ec0c67c4e6fcf9412c35a822e2f0f326988c3b166878dfa70aaf4dd6
+  timestamp: '2026-10-28T21:22:58Z'
+  baseline_id: 838695c3b4d5172ffcb7a0e0698aabf7c9b1f5576c4b5c70f055c67a90cac3bd
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-c-unit-f323a5d9-eb11-42a4-a411-dc2c102d9cb3
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Execute the approved Engineering unit/build check during explicitly authorized
+    Development. No QA acceptance or human code approval is inferred.
+  expected_revision: 2af30bf9ebed8bb3dee9396053aae3cd1e62aa04c09f9f4acc5ca0cb4c79afe6
+  timestamp: '2026-10-28T21:25:53Z'
+  baseline_id: ab85c00b900737fa615e08743c39d7a1434da4d876c3682135e91f7860b736d9
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-c-build-f86c144a-93be-4fd5-ad23-fc58ec00c09e
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Execute the approved Engineering unit/build check during explicitly authorized
+    Development. No QA acceptance or human code approval is inferred.
+  expected_revision: deedc7c6f49ccd76826ae4da7d43e5bd1d1faf021fb8020924ea49ac1a8b6f98
+  timestamp: '2026-10-28T21:25:56Z'
+  baseline_id: 8a60836f175afe7aca4b793e7950f6e491a5e07bbb81e8f1b3c7d41daf40fa70
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-implementation-review-6ac60d36-34c3-471f-9a46-ef3775247eb3
+  action: write
+  kind: implementation
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Record completed approved Engineering tasks and actual unit/build evidence
+    after explicitly authorized Development; present exact source for human code review.
+    No human code approval or advancement is inferred.
+  expected_revision: d39a9a976ab4ede869bf5cb2af2f14543f573897ac500dee71feb0f70225a136
+  timestamp: '2026-10-28T21:26:52Z'
+  baseline_id: b592ba358464e31f8dc717f13d3d873170a67899dc9ec39390e9d650e5e11919
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-ui-changes-077a0fcc-6780-471f-ac33-e9074e7b64a0
+  action: request_changes
+  kind: implementation
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Yes, fix both findings, add regression tests and rerun verification. Present
+    the results for review before approval.
+  expected_revision: 1905389f7320004772f6a62c596feffb457839a5a5de148491e0d43cd7db83a6
+  timestamp: '2026-10-28T21:33:47Z'
+  baseline_id: 70b0f25e2300309b75946bf892634c123c5af85be05061bb6e78c46a1bad6002
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-regression-reproduce-53f2ccd0-86e1-4b1f-aaf5-16af754ea6d4
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Run new regression assertions against the original UI to reproduce the
+    human-requested findings before applying fixes.
+  expected_revision: ad431705d4ef3b04cb28feca4ed1db7d68f170dc1e350dff375ea33c9bdeff66
+  timestamp: '2026-10-28T21:34:33Z'
+  baseline_id: 80f15aa3dde529ff4324b8eccf80743ae8729cbc250d272d53f495904d95e98f
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-fixed-c-unit-4331815f-fe62-4aed-a801-87f8ea1f2dab
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Verify the explicitly requested UI fixes and regression assertions using
+    approved Engineering checks. This is not independent QA or human approval.
+  expected_revision: 434cfcba182403b1a60cab4e14c725bf84a44c0665003af5a1a758aa2e78c8c0
+  timestamp: '2026-10-28T21:35:08Z'
+  baseline_id: 4e428fb76d4b58fce0006376fd030b544a974a11e23cc6fd8b91e5cb6ace3c67
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-fixed-c-build-da8ebb1e-7b0c-4116-99b6-a7f69c14bf5d
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Verify the explicitly requested UI fixes and regression assertions using
+    approved Engineering checks. This is not independent QA or human approval.
+  expected_revision: 14863b27cf1561ebd3cc7708d6144beeb43cd196cc609327885533bdee4a3511
+  timestamp: '2026-10-28T21:35:11Z'
+  baseline_id: 0b781ea6bb76f4fb9989472c69b48ccab3dd86bd20638e255e3f9292a6b43135
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-final-c-unit-67f399b6-f567-4906-bcf1-4a0cb6518b36
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Run final approved Engineering verification after completing UI remediation
+    and diagnostic/provenance regressions. No QA execution or approval is inferred.
+  expected_revision: 0f50067778ae89f85c6fb4ba3f4a6d7df0e03531eb4cdd5fe6569fdbe9e46f63
+  timestamp: '2026-10-28T21:35:37Z'
+  baseline_id: 68a44b3d863769d3df0579fe6253c6b6930711b3dc531649571b10b509fcd733
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-final-c-build-7989ae8c-5f07-4cd9-841a-12415a3f3936
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Run final approved Engineering verification after completing UI remediation
+    and diagnostic/provenance regressions. No QA execution or approval is inferred.
+  expected_revision: 5eafec6f69c0cef3324b1a1160a9ea711577dc23379d2464a846342c04cbb770
+  timestamp: '2026-10-28T21:35:40Z'
+  baseline_id: 5d4ed2f5a143883a649e88258319acda514d6b9214bdbf8ce429f35f6604fc05
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-ui-remediation-review-f7d02908-411a-4640-9a07-4f55207e7e5e
+  action: write
+  kind: implementation
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Present the explicitly requested R1/R2 fixes, regression reproduction
+    and final source-bound unit/build results for renewed human review. Not human
+    approval or advancement.
+  expected_revision: 51689a2d6c5b56e717589ed4413e35508bb74efea0caa1778c1f6b3dfec90ef3
+  timestamp: '2026-10-28T21:36:18Z'
+  baseline_id: 3f0d1634c8fd88100b61d0f557bae703a8d6f66c314975ec99739d930c0c79d4
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-code-v2-approve-c7b0c098-104c-4dc5-a63b-1098ea7220b8
+  action: approve
+  kind: implementation
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Approved. I acknowledge both unresolved business topics. Keep them open
+    and proceed only to the next authorized lifecycle state.
+  expected_revision: adc6e356baafe857675231fc37862bd8c6d1f3ccfd8fcf708dd2f53577809288
+  timestamp: '2026-10-28T21:37:16Z'
+  baseline_id: 4da716e0506e5db5f60d9fe8bdb343caeadcc59103f52abb29293739209e157f
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-code-v2-advance-56971dd3-3d94-48cf-b46d-cc05411e7cf5
+  action: advance
+  kind: implementation
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: 'yes'
+  expected_revision: 3710914abca471c54da56ba86ea54cd31d204e11f6e4e806362ad62a8ddb96c6
+  timestamp: '2026-10-28T21:37:42Z'
+  baseline_id: 816a9ed1b701a03d8fef49f1acaab065e52ccfc7b3dd5397f1f46c1397d7e9fc
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-focus-remediation-36e0b6c1-3222-40b9-8874-54f2739f4f6a
+  action: remediate
+  kind: verification
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Yes, I authorize Engineering remediation of the focus defect, followed
+    by regression tests and renewed code review. Keep QA evidence unchanged until
+    the fix is approved.
+  expected_revision: 7a60809dcae66dad09117f38af172df3b28ce1a4615ac9b8fd0f968a7302e1ab
+  timestamp: '2026-10-28T21:49:24Z'
+  baseline_id: 6080f27b4f83414c634697133e42a0c917d7ff3f80f9fe465f636977ce76b673
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-focus-reproduce-ed93de12-0757-472d-851c-5ddf0c1561c4
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Reproduce QA-F-001 with a unit DOM double that models browser focus loss
+    when a focused button is disabled. No QA execution or mutation.
+  expected_revision: ceadd2d2fb7ac08f341f0de1271992236322b3d3e13521efbf942c6aee883c6b
+  timestamp: '2026-10-28T21:49:29Z'
+  baseline_id: 2fabad2041e889df056d73e3d86d2ae6efc65e1159bbc69c298c3e26ff8ba3f6
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-focus-fixed-c-unit-54a6a28b-91f2-45ad-8c34-03ac56f481c5
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Verify authorized remediation of QA-F-001 with updated browser-blur regression
+    and busy-submit protection. Keep existing QA execution evidence unchanged.
+  expected_revision: f6fcbdc4175fa04f934c25eb39f1199af3af4fac1e06e299ad4aedf9fe3a2672
+  timestamp: '2026-10-28T21:49:58Z'
+  baseline_id: d10abd27d1741aa0569321a9e5bcef357f3aba51c0356f6c98333d6f7eafa5b3
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-focus-fixed-c-build-83a56aa2-a323-4b51-a815-7c307eed404a
+  action: run
+  kind: check
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Verify authorized remediation of QA-F-001 with updated browser-blur regression
+    and busy-submit protection. Keep existing QA execution evidence unchanged.
+  expected_revision: 411aefeecdefa46480572c5cf65f6fff7d08a1077aeb2d9cafdcac4dda9a9a92
+  timestamp: '2026-10-28T21:50:03Z'
+  baseline_id: c7b80e55c629f0e18f67d26417659587f004c384fd5c101ab69550954b4acbae
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-focus-remediation-review-fc440376-c647-4738-b875-75083dbd3bba
+  action: write
+  kind: implementation
+  actor: AI assistant using Development skill
+  identity_source: declared
+  decision: Present authorized QA-F-001 focus remediation and actual regression/unit/build
+    evidence for renewed human code review. Preserve all prior QA execution evidence;
+    no human approval or advancement is inferred.
+  expected_revision: b75fb89a71bc282085161321cdcde7dd5e2888e503651992abcd9a1b35725f9f
+  timestamp: '2026-10-28T21:50:50Z'
+  baseline_id: e3195b832a823c3b6412752f88b8187e8e91af254b464ad7be881931d6c97e2a
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-focus-code-approve-a866883a-689e-4cad-b35a-7e3f7ddd08e5
+  action: approve
+  kind: implementation
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Approved. Both unresolved business topics remain acknowledged. Proceed
+    with the existing QA remediation and verification workflow.
+  expected_revision: 936689bfd3237b164048cc5456495263b4e211d82879643cb026b18246c398f6
+  timestamp: '2026-10-28T21:51:49Z'
+  baseline_id: 0b4ad07ce04ff3f96e740dd50f19fb640cb38ecf415d16334c1302f6c6bd4fdf
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-focus-advance-428ce3de-fd8d-4ae7-8595-5a9c161de920
+  action: advance
+  kind: implementation
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: Yes, I authorize returning Engineering to Verification and rerunning the
+    approved QA checks against the updated implementation.
+  expected_revision: 77a2820c57f915afc9e9f334741f275a8cd038995d47458e3c6260194d53b3d1
+  timestamp: '2026-10-28T21:52:36Z'
+  baseline_id: 11d5986282fcc169a0fe751050d573b0e1f7e89db657070f8af6eb4f3ee6529a
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-security-advance-237d24a9-c634-40f7-8f71-35b368f5b7dc
+  action: advance
+  kind: verification
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc advance engineering
+  expected_revision: 889fc56176748e1c0f9f257ee0e93601313730363bde36fdc20b2205d5fa5eb0
+  timestamp: '2026-10-28T21:54:58Z'
+  baseline_id: b1dda0e79e35f97f8eaf45fa7f3e749bb3f8f5429e7489ad7556e62e433fb208
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: working-app-security-review-57c9e6da-7938-4420-bd26-3f6a844b58f2
+  action: write
+  kind: security
+  actor: AI assistant using Security skill
+  identity_source: declared
+  decision: Perform and record the scoped source-bound Security Review in response
+    to $sdlc start engineering, using actual integrated QA evidence and dependency
+    advisory lookup. No human approval or lifecycle advancement is inferred.
+  expected_revision: b8b01f3eba098e89e500afe799fb03dc9298b2a98909cc6f90a6ad1b2b7e6fb5
+  timestamp: '2026-10-28T21:57:13Z'
+  baseline_id: 9067cb3166ca29bf04672c5485419443ee7c22192cde209b3d69b221188d643a
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-final-readiness-d4b607ad-82ed-4aa1-9e6c-26690d28dcb1
+  action: advance
+  kind: security
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc advance engineering
+  expected_revision: ec8f47f34b587fb8ae177f41a3903091f164490ebe95cd7501c665b9e5cf7398
+  timestamp: '2026-10-28T22:35:07Z'
+  baseline_id: 7104bdbc24f6271739a52376503ef3d5b40881c7e7e99fbcadd303f0032d005a
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+- operation_id: human-working-app-finalize-668fcb3a-f84f-47b9-a91b-6c7db439230f
+  action: finalize
+  kind: final
+  actor: David Krzystek
+  identity_source: local_profile
+  decision: $sdlc advance engineering
+  expected_revision: 47522f66c2163cb8b18b5c1d44000f691c6ada6de237933b7d5bdf869c201e68
+  timestamp: '2026-10-28T22:37:03Z'
+  baseline_id: bc843c4302b96bc0faeba77993e81da5b064dd283c7ed78e7f484407bbba3eba
+  cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+work_tracks:
+  schema_version: '0.1'
+  cycles:
+  - id: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+    analysis_baseline: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598
+    origin: adopt
+    engineering:
+      ownership:
+        owner: David Krzystek
+        assignee: null
+        required_role: Engineering Lead
+        assignment_status: awaiting_assignment
+        target_stage: engineering
+        since: '2026-10-28T21:09:45Z'
+        history:
+        - operation_id: track-init-0cce26fefcdcf77bba6d1697374607ca55952fe3c7c8f3980aa222dfd2a6fbb2
+          action: initialize
+          actor: David Krzystek
+          identity_source: local_profile
+          timestamp: '2026-10-28T21:09:45Z'
+          expected_revision: null
+          from_owner: null
+          to_owner: David Krzystek
+          assignee: null
+          required_role: Engineering Lead
+          assignment_status: awaiting_assignment
+          target_stage: engineering
+          lifecycle_id: null
+          decision: 'Yes, I authorize adoption into the Engineering/QA work-track
+            model.
+
+            Preserve all existing approvals, baselines and history. Keep both tracks
+            under my ownership until separately assigned.
+
+            Do not start work or approve any new artifacts.'
+      reconciliation: []
+      legacy_plan: working-app-plan-draft-a985e6ca-0231-4fde-9e39-fa78c9393fa1
+    qa:
+      ownership:
+        owner: David Krzystek
+        assignee: null
+        required_role: QA Lead / Tester
+        assignment_status: awaiting_assignment
+        target_stage: qa
+        since: '2026-10-28T21:09:45Z'
+        history:
+        - operation_id: track-init-a20521addee2f40bf0c75d4987a0808409cf1d41bcbdbba33c177ab1e5e32338
+          action: initialize
+          actor: David Krzystek
+          identity_source: local_profile
+          timestamp: '2026-10-28T21:09:45Z'
+          expected_revision: null
+          from_owner: null
+          to_owner: David Krzystek
+          assignee: null
+          required_role: QA Lead / Tester
+          assignment_status: awaiting_assignment
+          target_stage: qa
+          lifecycle_id: null
+          decision: 'Yes, I authorize adoption into the Engineering/QA work-track
+            model.
+
+            Preserve all existing approvals, baselines and history. Keep both tracks
+            under my ownership until separately assigned.
+
+            Do not start work or approve any new artifacts.'
+      reconciliation: []
+      status: verified
+      history:
+      - operation_id: working-app-qa-strategy-5807940e-dbc3-4740-89a1-500b144e889b
+        action: write
+        kind: strategy
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Draft QA strategy directly from the approved Functional Analysis
+          in response to the user command $sdlc start qa. This is drafting authorization,
+          not human scenario approval or advancement.
+        expected_revision: 85140be163fdcc97929a16cb0a4a1317a3e77266f8368ffc8e82032f94eda46a
+        timestamp: '2026-10-28T21:14:06Z'
+        baseline_id: fe334ee142992548d60ab3e07167002b7cfeff44a0d7fa5f6227daebb3f1bae0
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-qa-scenarios-cb96b7d3-02b4-40e8-8c83-beeb8a103019
+        action: write
+        kind: scenarios
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Draft QA scenarios directly from the approved Functional Analysis
+          in response to the user command $sdlc start qa. This is drafting authorization,
+          not human scenario approval or advancement.
+        expected_revision: e87898c25e0c06b4d9a569d31f11ec138d3a4607bec85d8291299c789de51955
+        timestamp: '2026-10-28T21:14:08Z'
+        baseline_id: 84c3b21faea541978595102d431b35d76e8dca945cbdedbbd317c7b9a2bb9bd4
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: human-working-app-qa-scenarios-approve-0c725a21-084d-45ef-8204-9d77b5c645fa
+        action: approve
+        kind: scenarios
+        actor: David Krzystek
+        identity_source: local_profile
+        decision: Yes, approve QA strategy and scenarios with both topics unresolved
+        expected_revision: bbec074c4ee9c495c8f44db5c4b8ac8e1f4e3bc8a056bb2ee9a917ceef8e8415
+        timestamp: '2026-10-28T21:23:45Z'
+        baseline_id: 48eebe8e51c1e8730b8d97f9d4df3d007b41011940f2ad95a6f13c59114febfa
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: human-working-app-qa-scenarios-advance-4b102f05-bb64-49b4-89d6-9923296e5a87
+        action: advance
+        kind: scenarios
+        actor: David Krzystek
+        identity_source: local_profile
+        decision: $sdlc advance qa
+        expected_revision: f9ec3eecb2e40472f4c655783545b7426857b43650ec91fbd457607fe530e267
+        timestamp: '2026-10-28T21:38:52Z'
+        baseline_id: b2f265fa8d1b8a695a50856b484b96c2e20dd521eacb0b33a81beb63a8d255e5
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-qa-automation-draft-4f68408e-dfba-4810-ba5e-175f160740d3
+        action: write
+        kind: automation
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Prepare QA-only automation from the approved scenarios and available
+          approved interfaces in response to $sdlc start qa; present pinned dependency
+          setup and exact QA source for human approval. No package installation, QA
+          execution, approval or advancement is inferred.
+        expected_revision: c7e21a50d5f189afaec4af5a5c3c7db7c217651032ef242682f7561ac4f0983f
+        timestamp: '2026-10-28T21:43:21Z'
+        baseline_id: 849ac49769433728d8dd75afdc31727ea2c779db00c33619b33a8ccf344e09e5
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: human-working-app-qa-automation-approve-eeb51288-0e38-4500-80e3-1bfeaeb3219d
+        action: approve
+        kind: automation
+        actor: David Krzystek
+        identity_source: local_profile
+        decision: Approved. I acknowledge both unresolved business topics and authorize
+          the local QA dependency setup.
+        expected_revision: 1f7abb695317e4b4b5aa4d97bd6db94ed31808a0629168b9d8ac4fd70351ef67
+        timestamp: '2026-10-28T21:44:33Z'
+        baseline_id: 683bcecf96de09dc96379ad60790cefdacb305d9e328527a68e8a589296791fc
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: human-working-app-qa-automation-advance-69a36161-a48d-4da9-b717-4ca222fed42d
+        action: advance
+        kind: automation
+        actor: David Krzystek
+        identity_source: local_profile
+        decision: $sdlc advance qa
+        expected_revision: b62edc19f46adeef4c37d93055a0358a43400c9b64838af598f01c2160bf3d70
+        timestamp: '2026-10-28T21:45:13Z'
+        baseline_id: 9021e0b6100b1fcfabcaee38a528e0b8155da934089807cd53b47e0c0dc06d39
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-qa-integration-run-9b6784b2-dbd7-4082-bdba-9ed99d9316ca
+        action: run
+        kind: check
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Execute the approved integration check in response to $sdlc start
+          qa after separate scenario/automation approval, readiness advancement and
+          authorized QA dependency setup.
+        expected_revision: cb2da0b423b717fcb422cfdbe5cd66f887a2a9832858eb965923de5558ce3684
+        timestamp: '2026-10-28T21:46:07Z'
+        baseline_id: 48598efe3f7908b8357736e80783fcd41f48d9705def71991fb221b692ccf26a
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-qa-ui-run-8128152d-47e5-4796-9339-cb3ba92b4491
+        action: run
+        kind: check
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Execute the approved real Chrome UI check in response to $sdlc start
+          qa; preserve actual outcomes and screenshot/trace evidence, with no automatic
+          completion or advancement.
+        expected_revision: 43b8e87b704fab6773b770544a68f25dc1f2812a30b19ab6a7e9e410e144ef4d
+        timestamp: '2026-10-28T21:46:24Z'
+        baseline_id: fb8b54b52844c6a23fe13cda1bb23749b6103fac8fe1283288de7835cf421cb7
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-focus-rerun-qa-integration-f05c73c7-9387-42be-be9f-6160d1116de1
+        action: run
+        kind: check
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Rerun the approved QA check against the human-approved focus remediation
+          after separate advancement authorization. Preserve historical failed evidence;
+          do not automatically complete or advance QA.
+        expected_revision: f4d9f63f16d2311931ec7a79d8e66bd195e7745281da4a1f0e78cc576083683d
+        timestamp: '2026-10-28T21:52:41Z'
+        baseline_id: f6b3822d465349f8680c886f0d89dbb681586ab3467086a50ad3d4cdfcbd064b
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: working-app-focus-rerun-qa-ui-fba88cb3-5f9d-46a8-85c6-bc383941cf03
+        action: run
+        kind: check
+        actor: AI assistant using Testing skill
+        identity_source: declared
+        decision: Rerun the approved QA check against the human-approved focus remediation
+          after separate advancement authorization. Preserve historical failed evidence;
+          do not automatically complete or advance QA.
+        expected_revision: b067cd53834acb8fdea3145f179fd97e98f426fc2017fc56fdb3791128f18f1b
+        timestamp: '2026-10-28T21:52:51Z'
+        baseline_id: 5e1951f764649db7f537763417ba931b019b21975c82af7899c2204621e60f75
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+      - operation_id: human-working-app-qa-complete-0633f31b-5bad-438b-b90f-f0630bf925b1
+        action: advance
+        kind: verification
+        actor: David Krzystek
+        identity_source: local_profile
+        decision: Yes, mark QA verification complete. Preserve all test evidence and
+          unresolved business questions.
+        expected_revision: 06c2ce00b4082b64749af290fe9d21cfdc8ec5200168ed65cf22f1f6d08f9f62
+        timestamp: '2026-10-28T21:53:56Z'
+        baseline_id: 3bda93cbe99e17864ed3bec87d39ca141e37a1ef58d89cca9757c5f6af23bf2d
+        cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+  operations:
+  - operation_id: human-working-app-tracks-adopt-cbd6ec0e-8cf1-4aef-854c-3925f32de27b
+    action: adopt
+    track: null
+    cycle: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927
+    actor: David Krzystek
+    identity_source: local_profile
+    decision: 'Yes, I authorize adoption into the Engineering/QA work-track model.
+
+      Preserve all existing approvals, baselines and history. Keep both tracks under
+      my ownership until separately assigned.
+
+      Do not start work or approve any new artifacts.'
+    expected_revision: 49a55d58ca55852e7da62b4b42cb62d42675c38dc4b68dc816c7ecd00b83d619
+    assignee: null
+    timestamp: '2026-10-28T21:09:45Z'

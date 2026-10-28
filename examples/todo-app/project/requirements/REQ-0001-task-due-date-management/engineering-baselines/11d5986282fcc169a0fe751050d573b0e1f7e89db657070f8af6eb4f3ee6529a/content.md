@@ -1,0 +1,1 @@
+Yes, I authorize returning Engineering to Verification and rerunning the approved QA checks against the updated implementation.

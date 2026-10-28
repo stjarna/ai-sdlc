@@ -1,0 +1,379 @@
+--- /dev/null
++++ b/qa/README.md
+@@ -0,0 +1,61 @@
++# Independent QA automation — proposed for human review
++
++Authority: approved QA strategy/scenarios derived from the frozen Functional Analysis.
++Technical Design supplies interface bindings only, never functional expectations.
++Testing 1.1.0 is pinned by the orchestrator when this automation artifact is recorded.
++
++## Dependencies and setup proposal
++
++Playwright 1.64.1 is pinned in this QA-only manifest and npm lockfile. The lockfile was
++resolved without installing modules or running scripts. No QA package or browser has
++been installed. The existing Chrome executable is:
++`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`.
++This host path is a disclosed local PoC portability limitation.
++
++After explicit automation approval and separate advancement, the proposed local setup
++is `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefix qa --ignore-scripts --no-audit --no-fund`.
++This installs only the reviewed QA dependency tree under qa/node_modules; no global
++install, production dependency or browser download. Setup is not itself a QA test.
++Inspect actual locked dependency/advisory evidence during Security Review; no clean
++security result is inferred from pinning. Never change the lockfile to obtain a pass.
++No external AI service or credentials. Browser/runtime incompatibility is a real blocker.
++
++## Named checks (not executed yet)
++
++- QA-INTEGRATION: `node --test qa/integration.test.mjs`, cwd project root, 90 seconds.
++  Six actual HTTP tests: permitted undated reads, exact future-date assignment and
++  independent readback across three calendar examples, task isolation, plus supplementary
++  structural-input/origin and fixed-route/header controls from the approved Design.
++- QA-UI: `node qa/ui.mjs`, cwd project root, 120 seconds. Eight real browser scenarios:
++  undated reload; three exact calendar assignments with HTTP readback; preserved draft/
++  focus; committed save with lost response; unknown outcome and blocked retry; literal
++  hostile-title rendering. Real input/select/submit interactions and observable assertions.
++  Local interception in failure regressions controls delivery, not application answers.
++
++Both checks map to TC-001/002/003 and FR-001/002, AC-001/002. Parameterized dates are
++future relative to injected 2026-10-28 test data, not an approved business range or UTC
++product policy. TC-004 (past-date behavior) and TC-005 (changing/clearing existing dates)
++remain blocked: there are no assertions accepting/rejecting these undefined capabilities.
++Supplementary Design controls and R1/R2 regressions do not create new business criteria.
++
++## Execution and evidence
++
++Run only the named checks through qa-check-run after explicit approval/advancement and
++current Engineering approval. Do not treat source generation or syntax inspection as a
++passing integration/browser check. Each test uses isolated seeded in-memory state on an
++ephemeral 127.0.0.1 port, then closes the server. No app artifacts or source are modified.
++QA evidence is appended under this Epic's test-evidence/qa-KIND-UUID/; no earlier run
++is overwritten. Each report, screenshot and trace path/hash is printed into CLI-captured
++output. Browser scenarios retain screenshots and traces on success/failure where possible.
++An early browser/setup failure remains failed/not-run, not an empty success. Node assertions
++and JSON reports carry outcomes: Playwright library traces capture browser activity, not
++assertion semantics. No task data other than synthetic fixtures is used.
++
++There is no Technical Design, Plan, code, QA, lifecycle or release approval embedded in
++these files. Automation needs its own human approval and separate readiness advancement.
++Actual QA execution and explicit completion are later decisions; Engineering does not
++advance automatically. Security Review remains separate and production readiness unclaimed.
++
++API references used to prepare the runner:
++https://playwright.dev/docs/api/class-browsertype
++https://playwright.dev/docs/api/class-tracing
+--- /dev/null
++++ b/qa/helpers.mjs
+@@ -0,0 +1,40 @@
++import { createApp } from '../src/http.mjs';
++import { createRepository } from '../src/repository.mjs';
++import { mkdir, writeFile, readFile } from 'node:fs/promises';
++import { createHash, randomUUID } from 'node:crypto';
++import { fileURLToPath } from 'node:url';
++
++export const referenceDay = '2026-10-28';
++export const dates = ['2026-12-31', '2027-01-01', '2028-02-29'];
++export async function fixture(seeds) {
++  const server = createApp({ repository: createRepository(seeds), referenceDay: () => referenceDay });
++  await new Promise((resolve, reject) => {
++    server.once('error', reject);
++    server.listen(0, '127.0.0.1', resolve);
++  });
++  return { url: `http://127.0.0.1:${server.address().port}`,
++    async close() {
++      server.closeAllConnections();
++      await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
++    },
++  };
++}
++
++// Each invocation creates new files; output never goes into fingerprinted QA source.
++export async function evidenceDirectory(kind) {
++  const parent = new URL('../requirements/REQ-0001-task-due-date-management/test-evidence/', import.meta.url);
++  await mkdir(parent, { recursive: true });
++  const dir = new URL(`qa-${kind}-${randomUUID()}/`, parent);
++  await mkdir(dir, { recursive: false });
++  console.log(`Node ${process.version}; QA kind ${kind}; reference day ${referenceDay} (test data only)`);
++  return dir;
++}
++export async function reportFile(file) {
++  const data = await readFile(file);
++  console.log(JSON.stringify({ evidence: fileURLToPath(file), sha256: createHash('sha256').update(data).digest('hex') }));
++}
++export async function report(dir, name, data) {
++  const file = new URL(name, dir);
++  await writeFile(file, JSON.stringify(data, null, 2) + '\n', { flag: 'wx' });
++  await reportFile(file);
++}
+--- /dev/null
++++ b/qa/integration.test.mjs
+@@ -0,0 +1,79 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { fixture, dates, evidenceDirectory, report } from './helpers.mjs';
++
++const dir = await evidenceDirectory('integration');
++let sequence = 0;
++function integration(name, cases, fn) {
++  const filename = `${++sequence}.json`;
++  test(name, { timeout: 12000 }, async () => {
++    const app = await fixture();
++    let status = 'failed';
++    try { await fn(app.url); status = 'passed'; }
++    finally {
++      await app.close();
++      await report(dir, filename, { name, cases, status });
++    }
++  });
++}
++async function state(url) {
++  const response = await fetch(`${url}/api/tasks`);
++  assert.equal(response.status, 200);
++  return response.json();
++}
++const post = (url, data, headers = {}) => fetch(`${url}/api/tasks/task-1/due-date`, {
++  method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(data),
++});
++integration('TC-001 / FR-002 / AC-002: repeated real reads retain permitted undated state', ['TC-001'], async url => {
++  for (let i = 0; i < 2; i++) {
++    const data = await state(url);
++    assert.equal(data.tasks.length, 2);
++    assert.equal(data.tasks[0].dueDate, null);
++    assert.equal(data.tasks[1].dueDate, null);
++  }
++});
++for (const date of dates) {
++  integration(`TC-002/003 / AC-001/002: exact date ${date}, independent readback and other task untouched`, ['TC-002', 'TC-003'], async url => {
++    const before = await state(url);
++    assert.equal(before.tasks[0].dueDate, null);
++    assert.equal(before.tasks[1].dueDate, null);
++    const response = await post(url, { dueDate: date });
++    assert.equal(response.status, 200);
++    assert.equal((await response.json()).task.dueDate, date);
++    const after = await state(url);
++    assert.equal(after.tasks[0].id, before.tasks[0].id);
++    assert.equal(after.tasks[0].dueDate, date);
++    assert.deepEqual(after.tasks[1], before.tasks[1]);
++  });
++}
++integration('Supplementary approved Design controls: malformed bodies and foreign Origin do not mutate', [], async url => {
++  const initial = await state(url);
++  const foreign = await post(url, { dueDate: dates[0] }, { Origin: 'https://foreign.invalid' });
++  assert.equal(foreign.status, 403);
++  assert.equal((await foreign.json()).error.code, 'FOREIGN_ORIGIN');
++  const malformed = await fetch(`${url}/api/tasks/task-1/due-date`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' });
++  assert.equal(malformed.status, 400);
++  assert.equal((await malformed.json()).error.code, 'INVALID_JSON');
++  const invalid = await post(url, { dueDate: '2027-02-30' });
++  assert.equal(invalid.status, 400);
++  assert.equal((await invalid.json()).error.code, 'INVALID_DATE');
++  const extra = await post(url, { dueDate: dates[0], other: true });
++  assert.equal(extra.status, 400);
++  const large = await post(url, { dueDate: 'x'.repeat(5000) });
++  assert.equal(large.status, 413);
++  assert.deepEqual(await state(url), initial);
++});
++integration('Supplementary approved Design controls: fixed routes, no artifact exposure and security headers', [], async url => {
++  for (const path of ['/requirements/REQ-0001-task-due-date-management/metadata.yaml', '/src/server.mjs', '/..%2fREADME.md']) {
++    const response = await fetch(url + path);
++    assert.equal(response.status, 404);
++    assert.equal((await response.json()).error.code, 'NOT_FOUND');
++  }
++  const html = await fetch(url);
++  assert.equal(html.status, 200);
++  assert.match(html.headers.get('content-type'), /text\/html/);
++  assert.equal(html.headers.get('x-content-type-options'), 'nosniff');
++  assert.match(html.headers.get('content-security-policy'), /script-src 'self'/);
++  assert.match(await html.text(), /Task due dates/);
++});
++console.log('TC-004/TC-005 remain blocked; no past-date or change/clear product outcome is asserted.');
+--- /dev/null
++++ b/qa/package-lock.json
+@@ -0,0 +1,44 @@
++{
++  "name": "task-due-date-qa",
++  "version": "0.1.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "task-due-date-qa",
++      "version": "0.1.0",
++      "devDependencies": {
++        "playwright": "1.64.1"
++      }
++    },
++    "node_modules/playwright": {
++      "version": "1.64.1",
++      "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.64.1.tgz",
++      "integrity": "sha512-HCrVhHr5QQuwYoswEUGTb7gGp522yflbv/ST8nF4sFWGuLjQCt17Q/EubpGGSNKYn1tsTCPZxqHhHCfVURu7UA==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "dependencies": {
++        "playwright-core": "1.64.1"
++      },
++      "bin": {
++        "playwright": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    },
++    "node_modules/playwright-core": {
++      "version": "1.64.1",
++      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.64.1.tgz",
++      "integrity": "sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "playwright-core": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/qa/package.json
+@@ -0,0 +1,9 @@
++{
++  "name": "task-due-date-qa",
++  "version": "0.1.0",
++  "private": true,
++  "type": "module",
++  "devDependencies": {
++    "playwright": "1.64.1"
++  }
++}
+--- /dev/null
++++ b/qa/ui.mjs
+@@ -0,0 +1,128 @@
++import assert from 'node:assert/strict';
++import { chromium } from 'playwright';
++import { fixture, dates, evidenceDirectory, report, reportFile } from './helpers.mjs';
++
++const dir = await evidenceDirectory('ui');
++const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
++console.log(`Browser ${browser.version()}; Playwright 1.64.1; existing Chrome only, no browser download`);
++let sequence = 0;
++async function scenario(name, cases, fn, seeds) {
++  const id = `${++sequence}`;
++  const app = await fixture(seeds);
++  const context = await browser.newContext({ viewport: { width: 1100, height: 900 } });
++  const page = await context.newPage();
++  page.setDefaultTimeout(10000);
++  const errors = [];
++  page.on('pageerror', error => errors.push(error.message));
++  await context.route('**/*', route => route.request().url().startsWith(app.url + '/') ? route.continue() : route.abort());
++  await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
++  let status = 'failed';
++  try {
++    await page.goto(app.url);
++    await page.locator('#tasks li').nth(1).waitFor();
++    await fn(page, app.url);
++    assert.deepEqual(errors, [], 'Unhandled browser script errors');
++    status = 'passed';
++  } finally {
++    try {
++      const screenshot = new URL(`${id}-${status}.png`, dir);
++      await page.screenshot({ path: screenshot.pathname, fullPage: true });
++      await reportFile(screenshot);
++      const trace = new URL(`${id}-trace.zip`, dir);
++      await context.tracing.stop({ path: trace.pathname });
++      await reportFile(trace);
++      await report(dir, `${id}.json`, { name, cases, status, pageErrors: errors });
++    } finally { await context.close(); await app.close(); }
++  }
++}
++const input = (page, index) => page.locator('#tasks li').nth(index).locator('input[type=date]');
++const button = (page, index) => page.locator('#tasks li').nth(index).getByRole('button', { name: 'Assign due date' });
++async function expectDate(page, index, date) {
++  await page.locator('#tasks li').nth(index).getByText(`Due date: ${date}`, { exact: true }).waitFor();
++}
++async function state(url) {
++  const response = await fetch(`${url}/api/tasks`);
++  assert.equal(response.status, 200);
++  return response.json();
++}
++try {
++  await scenario('TC-001 / AC-002: undated state remains valid through real UI reload', ['TC-001'], async (page, url) => {
++    assert.equal(await page.getByText('No due date', { exact: true }).count(), 2);
++    await page.reload();
++    await page.locator('#tasks li').nth(1).waitFor();
++    assert.equal(await page.getByText('No due date', { exact: true }).count(), 2);
++    const data = await state(url);
++    assert.ok(data.tasks.every(task => task.dueDate === null));
++  });
++  for (const date of dates) {
++    await scenario(`TC-002/003 / AC-001/002: actual date input assignment ${date} and independent readback`, ['TC-002', 'TC-003'], async (page, url) => {
++      await input(page, 0).fill(date);
++      await button(page, 0).click();
++      await expectDate(page, 0, date);
++      assert.equal(await page.locator('#tasks li').nth(1).getByText('No due date', { exact: true }).count(), 1);
++      const data = await state(url);
++      assert.equal(data.tasks[0].dueDate, date);
++      assert.equal(data.tasks[1].dueDate, null);
++      await page.reload();
++      await expectDate(page, 0, date);
++    });
++  }
++  await scenario('R1: unrelated draft and active input survive delayed response; submitted form has focus fallback', ['TC-002', 'TC-003'], async page => {
++    let release;
++    const gate = new Promise(resolve => { release = resolve; });
++    const handler = async route => { await gate; await route.continue(); };
++    await page.route('**/api/tasks/task-1/due-date', handler);
++    await input(page, 0).fill(dates[0]);
++    const started = page.waitForRequest(request => request.method() === 'POST');
++    await button(page, 0).click();
++    await started;
++    await input(page, 1).fill(dates[1]);
++    await input(page, 1).focus();
++    release();
++    await expectDate(page, 0, dates[0]);
++    assert.equal(await input(page, 1).inputValue(), dates[1]);
++    assert.ok(await input(page, 1).evaluate(element => element === document.activeElement));
++    await page.unroute('**/api/tasks/task-1/due-date', handler);
++    await button(page, 1).click();
++    await expectDate(page, 1, dates[1]);
++    assert.ok(await page.locator('#tasks li').nth(1).locator('h2').evaluate(element => element === document.activeElement));
++  });
++  await scenario('R2: server commits, response lost; readback confirms without duplicate POST', ['TC-002', 'TC-003'], async (page, url) => {
++    let posts = 0;
++    await page.route('**/api/tasks/task-1/due-date', async route => {
++      posts++;
++      const response = await route.fetch();
++      assert.equal(response.status(), 200);
++      await route.abort('failed');
++    });
++    await input(page, 0).fill(dates[0]);
++    await button(page, 0).click();
++    await page.getByRole('status').filter({ hasText: 'Due date confirmed from current task state.' }).waitFor();
++    await expectDate(page, 0, dates[0]);
++    assert.equal(posts, 1);
++    const data = await state(url);
++    assert.equal(data.tasks[0].dueDate, dates[0]);
++    assert.equal(data.tasks[1].dueDate, null);
++  });
++  await scenario('R2: unknown outcome blocks repeat mutation until task state is reloaded', ['TC-001'], async page => {
++    let posts = 0;
++    await page.route('**/api/tasks', route => route.abort('failed'));
++    await page.route('**/api/tasks/task-1/due-date', route => { posts++; return route.abort('failed'); });
++    await input(page, 0).fill(dates[0]);
++    await button(page, 0).click();
++    await page.getByRole('status').filter({ hasText: 'Save outcome unknown.' }).waitFor();
++    assert.equal(await button(page, 0).isDisabled(), true);
++    await input(page, 0).press('Enter');
++    assert.equal(posts, 1);
++  });
++  await scenario('Supplementary approved Design control: seeded hostile text renders literally, not as markup', ['TC-001'], async page => {
++    await page.getByRole('heading', { name: '<img src=x onerror="window.injected=true">', exact: true }).waitFor();
++    assert.equal(await page.locator('#tasks img').count(), 0);
++    assert.equal(await page.evaluate(() => window.injected), undefined);
++    assert.equal(await page.getByText('No due date', { exact: true }).count(), 2);
++  }, [
++    { id: 'task-1', title: '<img src=x onerror="window.injected=true">', dueDate: null },
++    { id: 'task-2', title: 'Undated control task', dueDate: null },
++  ]);
++  console.log('All declared browser scenarios completed. TC-004/TC-005 remain blocked, not passed.');
++} finally { await browser.close(); }

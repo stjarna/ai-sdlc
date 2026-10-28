@@ -1,0 +1,11 @@
+{
+  "name": "task-due-date-acceptance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node scripts/check.mjs unit",
+    "build": "node scripts/check.mjs build"
+  }
+}

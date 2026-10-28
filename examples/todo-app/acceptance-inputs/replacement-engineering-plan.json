@@ -1,0 +1,164 @@
+{
+  "coverage": {
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+    },
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned nullable date state and undated display; no clearing capability."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "description": "Prepare dependency-free Node package scripts, unit/build check runner and local run instructions. No package installation.",
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "depends_on": [],
+      "paths": [
+        "package.json",
+        "scripts/",
+        "README.md"
+      ]
+    },
+    {
+      "id": "T-002",
+      "description": "Implement strict calendar parsing, seeded in-memory task repository and initial-assignment domain operations together with isolated unit tests.",
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "depends_on": [
+        "T-001"
+      ],
+      "paths": [
+        "src/domain.mjs",
+        "src/repository.mjs",
+        "test/unit.test.mjs"
+      ]
+    },
+    {
+      "id": "T-003",
+      "description": "Implement loopback HTTP and fixed static-asset adapters with bounded JSON, controlled errors, same-origin mutation and response headers. No QA integration automation.",
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "depends_on": [
+        "T-002"
+      ],
+      "paths": [
+        "src/http.mjs",
+        "src/server.mjs"
+      ]
+    },
+    {
+      "id": "T-004",
+      "description": "Implement plain browser UI for undated tasks and initial future-date assignment, exact date display and safe text rendering. No QA/browser automation.",
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "depends_on": [
+        "T-003"
+      ],
+      "paths": [
+        "public/"
+      ]
+    },
+    {
+      "id": "T-005",
+      "description": "Complete syntax/assets/import checks and run named unit/build checks through the orchestrator; present actual source changes and task evidence for separate human code review.",
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "depends_on": [
+        "T-004"
+      ],
+      "paths": [
+        "scripts/",
+        "README.md",
+        "test/unit.test.mjs"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "C-UNIT",
+      "category": "unit",
+      "argv": [
+        "node",
+        "scripts/check.mjs",
+        "unit"
+      ],
+      "cwd": ".",
+      "timeout": 60,
+      "requirements": [
+        "AC-001",
+        "AC-002"
+      ],
+      "scenario": "Isolated node:test domain checks for exact calendar preservation, optional absence, real-calendar parsing, task isolation, and controlled demonstrator boundary responses; not product decisions on unresolved policies."
+    },
+    {
+      "id": "C-BUILD",
+      "category": "build",
+      "argv": [
+        "node",
+        "scripts/check.mjs",
+        "build"
+      ],
+      "cwd": ".",
+      "timeout": 60,
+      "requirements": [
+        "AC-001",
+        "AC-002"
+      ],
+      "scenario": "Syntax-check declared JavaScript/MJS, validate fixed assets/import references and package scripts; no HTTP/browser verification or production bundle claim."
+    }
+  ],
+  "content": "# Engineering Implementation Plan \u2014 Task Due Date Management\n\nStatus: replacement draft for explicit human Engineering Plan review. Not approved.\nThis draft responds to `$sdlc start engineering` after authorized work-track adoption.\nIt authorizes neither lifecycle advancement nor coding, installation or test execution.\n\n## Authority and preserved history\n\nApproved Technical Design: 97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d\nApproved Functional Analysis: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598\nAnalysis handoff: human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927\nHistorical unapproved combined Plan: a3edcd499adfe7464a0beb524121eee26296247f51b7af32d0a72ac0e363a4e7\n\nThe approved Design, decisions and original combined Plan remain immutable evidence.\nThe current approved Design governs technical choices despite its original draft-status\nwording. This replacement separates Engineering duties from independent QA; it does not\namend Design or approve any QA artifact. Development 1.1.0 is resolved from the approved\ncatalog; the immutable instruction digest is recorded by the CLI.\n\n## Inspected context and runtime\n\nThe disposable project currently contains only requirements artifacts: no application,\nbuild configuration or existing source conventions. Node v25.9.0 is installed. Use its\nbuilt-in HTTP and node:test modules plus plain HTML/CSS/JavaScript, matching the approved\nDesign. No third-party Engineering dependencies, package installation, browser download,\nglobal tools, external infrastructure or orchestrator changes are needed. package.json\nwill contain local start/unit/build scripts. There is no dependency tree to install.\nThis observed runtime is a local acceptance environment, not a production recommendation.\n\nPlaywright, any QA-specific manifest/lockfile, HTTP/browser automation and their runners\nbelong to the separately reviewed QA automation under reserved qa/. This Plan selects\nno QA dependency version or QA installation. The old combined Plan's proposed Playwright\npin is historical only; it is not carried forward as authorization. The Design's browser\nverification intent remains and must be fulfilled by QA before integrated verification.\n\n## Implemented subset and uncertainty\n\nFR-001/AC-001: initial assignment of a supplied future calendar date to an existing\nundated seeded task, preserving the exact day/month/year in state and display.\nFR-002/AC-002: an existing task may remain undated; dueDate is null and the UI makes the\nabsence clear. Coverage dispositions denote planned implementation, not completed work.\nSeeded tasks meet the existing-task precondition, not a new task-creation requirement.\nNo task CRUD/completion, reminders, notifications, accounts, synchronization or persistence.\n\nU-001/AQ-001 stay deferred pending support consultation. FR-003 remains blocked: no\nproduct acceptance or rejection policy for past dates. AQ-002 remains undefined:\nchanging or clearing an assigned date is not an implied capability or prohibition.\nAs approved in Design, outside-subset attempts (past/today or reassignment/clear) receive\nan explicit demonstrator-not-implemented response with unchanged state. This technical\nboundary must never be presented as the unresolved product rule or FR-003 coverage.\nDo not proceed with a task that requires selecting a missing business decision.\n\n## Ordered tasks, source boundary and outcomes\n\nT-001 \u2014 Create package.json, scripts/ and README.md with local startup and named check\ncommands. Outcome: dependency-free application/check entry points; no install.\n\nT-002 \u2014 After T-001, implement src/domain.mjs, src/repository.mjs and test/unit.test.mjs.\nOutcome: strict real-calendar strings, seeded isolated in-memory tasks, nullable dates\nand initial assignment with exact preservation, accompanied by isolated unit assertions.\n\nT-003 \u2014 After T-002, implement src/http.mjs and src/server.mjs. Outcome: an ephemeral\n127.0.0.1 listener, GET /api/tasks, narrow initial-assignment mutation and fixed static\nroutes. Export isolated server construction for later independent QA. Bound body sizes,\nvalidate content type/keys/task identity, reject foreign origins on mutation, provide\ncontrolled errors without stack leakage, CSP and nosniff. Never expose requirements/,\nidentity, evidence or arbitrary paths. Do not create integration automation in Engineering.\n\nT-004 \u2014 After T-003, implement public/ assets. Outcome: labelled date input for an\nundated task, exact assigned date display, explicit undated state, safe textContent\nrendering and controlled feedback. No edit/clear control for assigned dates. Display\nserver UTC reference day as the accepted testing convention, not a timezone/product rule.\nNo browser runner or QA automation is included in this task.\n\nT-005 \u2014 After T-004, finish scripts/, README.md and test/unit.test.mjs. Outcome: complete\nunit/build runner, real results and source diff ready for human Engineering code review.\nEvery task links FR-001, FR-002, AC-001 and AC-002; detailed safe paths and dependencies\nare in the structured contract. The union of those paths is the full Engineering source\nboundary. Leave reserved qa/ and requirements artifacts untouched by application edits.\n\n## Interfaces and demonstration limitations\n\nTask records have id, seeded title and dueDate null or YYYY-MM-DD. Keep calendar strings\nunchanged rather than converting them into instants; reject impossible calendar values\nwithout JavaScript rollover. Isolate reference-day injection for deterministic unit tests.\nThe server and browser exchange same-origin JSON and display actual in-process state.\nA later independent read must see the selected date. Fixed static routes serve only\npublic assets. In-memory data resets on process restart: demo limitation, no retention rule.\nNo sensitive or real-user data, remote deployment or authentication claim is introduced.\n\n## Named Engineering checks \u2014 planned, not run\n\nC-UNIT: literal argv [node, scripts/check.mjs, unit], cwd '.', timeout 60 seconds.\nUse node:test with isolated fixtures/reference-day injection. Assert exact calendar date\npreservation, permitted absence, real-calendar validity and task isolation; include\napplicable month/year/leap-day examples as test data, not new business range rules.\nCheck controlled demonstrator unsupported responses without asserting a product policy.\n\nC-BUILD: literal argv [node, scripts/check.mjs, build], cwd '.', timeout 60 seconds.\nSyntax-check JS/MJS and verify fixed asset/import references and package script targets.\nThis is a dependency-free validation build, not a bundling, HTTP or browser result.\n\nRun these only during separately authorized Development, through check-run to preserve\nactual exit status, output, requirement links and current source fingerprint. Nonzero,\nunavailable or unexecuted checks never count as passing. Keep outputs out of hashed\nsource and preserve each orchestrator evidence record. No checks have run for this Plan.\n\n## Human gates and independent QA join\n\nFirst obtain explicit Plan approval, acknowledging all inherited uncertainty. Approval\nleaves Engineering in Implementation Planning. Wait for separate readiness advancement,\nthen separate explicit Development start before changing application files. Engineering\nownership remains David Krzystek pending separate assignment; no transfer is inferred.\n\nAfter implementation, present actual diff, task completion and current unit/build evidence\nfor separate human source-bound code approval. Self-review is not independent review.\nCode approval does not approve QA automation; lifecycle advancement remains separate.\nQA strategy/scenarios remain drafts until their own human decision, and automation has\nits own review gate. This Plan neither edits those artifacts nor defines their oracle.\n\nIntegrated verification requires current approved Engineering implementation, separately\napproved QA strategy/scenarios and automation, actual integration and browser evidence,\nand explicit QA completion. Missing QA blocks the join. No passing unit/build result\nsubstitutes for working application acceptance or Security Review. Later Security Review\nmust inspect actual source and evidence; findings require explicit linked remediation,\nrelevant renewed reviews/checks and retained prior results. Final verification binds the\nexact baselines, source, QA and Security evidence and still preserves unresolved topics.\nNo release, deployment, Git operation or security certification is authorized.\n\n## Decision requested\n\nApprove this Engineering-only Plan with past-date behavior deferred/blocked and changing\nor clearing assigned dates undefined. QA approval is a separate decision. No coding,\ndependency installation, advancement or automatic next-stage work follows this approval.\n"
+}

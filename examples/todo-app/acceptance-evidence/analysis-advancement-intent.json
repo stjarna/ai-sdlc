@@ -1,0 +1,24 @@
+{
+  "operation_id": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927",
+  "arguments": [
+    "analysis-advance",
+    "REQ-0001",
+    "--expected-analysis-review-revision",
+    "b942453c0f88d4e029ea441e0ff6a9feeecf2417d363281e09da1b4486f949fd",
+    "--expected-analysis-revision",
+    "fab121d47ebd2f629df982cf0ce1c7d01da49a1f489345abf6490b96ad8b4a2f",
+    "--expected-baseline-id",
+    "124a4eb4597b0fdfa2fbd179ec109e5e16ec15a2127c4b4f7e7bc79de480ed0c",
+    "--expected-handoff-id",
+    "human-business-advance-a77bda61-729f-4de7-8dec-7911fb7a8cb4",
+    "--approval-id",
+    "AD-0002",
+    "--operation-id",
+    "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927",
+    "--reason",
+    "Yes, I authorize advancing this request to Technical Design readiness.",
+    "--expected-profile-revision",
+    "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434"
+  ],
+  "actual_decision": "Yes, I authorize advancing this request to Technical Design readiness."
+}

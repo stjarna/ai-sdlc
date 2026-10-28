@@ -1,0 +1,94 @@
+{
+  "content": "# QA automation review \u2014 Task Due Date Management\n\nStatus: prepared for explicit human automation approval. Not approved, not run.\nPrepared using Testing 1.1.0 in response to `$sdlc start qa` after separate approval\nof strategy/scenarios and explicit QA advancement. No Engineering authority is changed.\n\n## Frozen authority and bindings\n\nFunctional Analysis baseline: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598\nApproved QA strategy/scenarios remain the functional oracle; the CLI records exact\nscenario approval, approved Technical Design/interface and QA source bindings. Current\nEngineering implementation is approved and in Verification. No code/Plan/Design is edited.\n\nTC-001: an existing task can remain undated, AC-002 / FR-002.\nTC-002: assign a selected future calendar date and preserve exact day/month/year, AC-001 / FR-001.\nTC-003: the target receives that exact date while the second task stays undated, both ACs.\nTC-004: past-date outcome remains blocked/deferred pending consultation with support.\nTC-005: changing or clearing an assigned date remains undefined and blocked.\nNeither blocked case is executed or counted as a pass. Acknowledgement is not resolution.\n\n## Source/dependency boundary\n\nSix files under qa/: package.json, package-lock.json, helpers.mjs, integration.test.mjs,\nui.mjs, README.md. Source fingerprint and paths are recorded in the structured contract.\nThe original Engineering source, developer unit/build tests and all approved baselines\nremain unchanged. No dependency is added to the application package.\n\nProposed QA-only development dependency: playwright 1.64.1 with exact playwright-core\n1.64.1 and registry integrity hashes in a portable npm lockfile. Registry metadata and\nlockfile resolution were performed; no node_modules, package installation, scripts or\nbrowser download. Proposed setup after approval and separate advancement: from project\nroot run PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefix qa --ignore-scripts --no-audit\n--no-fund, using the physical project path to avoid /tmp symlink lockfile differences.\nNo global installation, runtime replacement, external AI service or credentials.\nInstalled Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome supplies\nthe browser. Compatibility/launch remains unverified; the exact observed runtime/version\nis printed at actual execution. Host-specific Chrome path is a local PoC limitation.\n\n## Named checks and real assertions\n\nQA-INTEGRATION: node --test qa/integration.test.mjs, cwd '.', timeout 90s. Six real HTTP\ntests with isolated servers: undated reads; initial assignment and independent readback\nfor three calendar examples; supplementary malformed-body/origin/state-preservation and\nfixed-route/header assertions from approved Design. Those controls do not define new\nbusiness expected outcomes or replace Security Review. TC-001/002/003 map to the actual\nfirst four tests, not just labels.\n\nQA-UI: node qa/ui.mjs, cwd '.', timeout 120s. Eight real Chrome scenarios: undated reload;\nthree parameterized assignments through labelled date inputs and actual submission,\nexact output/reload and independent HTTP state; preserved other-task draft/focus and\nfocus fallback; server commit with lost response/readback/no duplicate mutation; failed\nreadback with unknown outcome and disabled retry; literal hostile-title rendering.\nFailure interception changes delivery, not product expected outcomes. API-only calls are\nnot UI evidence; assertions require actual input, clicking, DOM state and focus.\n\nBoth named checks link all three specified case IDs and their FR/AC references. Future\ndates 2026-12-31, 2027-01-01 and 2028-02-29 use injected reference day 2026-10-28 solely\nas reproducible test fixtures, not a production business range or UTC/timezone policy.\nNo assertions choose past-date acceptance/rejection or change/clear capability.\n\n## Evidence, safety and actual preparation results\n\nEach execution uses ephemeral loopback servers and isolated seeded in-memory data.\nSources, business content and baselines are not edited by runners. New evidence goes to\nthis Epic's test-evidence/qa-KIND-UUID/; no previous run is overwritten. JSON per-test\nreports and real browser screenshot/trace files print paths and SHA256 into captured\nCLI output. Browser trace records activity; Node assertions/reports carry test outcomes.\nFailures retain available evidence, remain failures and are never converted to passes.\nBrowser/context/server cleanup runs in finally blocks after normal assertion failures.\nAll commands are literal argv and require current approvals via qa-check-run; these\nrunners are not an OS sandbox. No production data or network service is used.\n\nActual preparation verification: node --check succeeded for helpers.mjs,\nintegration.test.mjs and ui.mjs; package/lock JSON parses, exact versions/integrity and\nportable node_modules-relative entries were checked. This proves syntax/structure only.\nNo integration/browser checks, dependency installation, advisory scan or UI launch have\nrun. No test is reported passed merely because its source exists. Existing 40 unit tests\nand build evidence still apply to unchanged Engineering source; QA readiness is separate.\n\n## Review and next gates\n\nReview the complete QA source diff, exact local dependency/setup boundary, case mapping\nand retained uncertainty. Explicit human automation approval binds these exact QA bytes;\napproval leaves QA in Test Automation. Wait for separate readiness advancement before\ninstalling reviewed QA dependencies and executing the named checks. Actual passed checks\nand explicit QA completion are still required; Engineering does not advance automatically.\nSecurity Review, joined final verification and separate lifecycle decisions remain ahead.\nNo approval, stage advancement, release, Git action or production readiness is inferred.\n",
+  "coverage": {
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+    },
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+    }
+  ],
+  "paths": [
+    "qa/"
+  ],
+  "source_revision": "22020008f60e67a62283eab65a5228480884e6afdc4d376d44f915e8362a076f",
+  "checks": [
+    {
+      "id": "QA-INTEGRATION",
+      "category": "integration",
+      "argv": [
+        "node",
+        "--test",
+        "qa/integration.test.mjs"
+      ],
+      "cwd": ".",
+      "timeout": 90,
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "scenario": "TC-001/002/003: actual HTTP optional absence, future-calendar assignment/readback, task isolation, plus supplementary approved Design boundary controls.",
+      "cases": [
+        "TC-001",
+        "TC-002",
+        "TC-003"
+      ]
+    },
+    {
+      "id": "QA-UI",
+      "category": "ui",
+      "argv": [
+        "node",
+        "qa/ui.mjs"
+      ],
+      "cwd": ".",
+      "timeout": 120,
+      "requirements": [
+        "FR-001",
+        "FR-002",
+        "AC-001",
+        "AC-002"
+      ],
+      "scenario": "TC-001/002/003: real Chrome date-input submission, exact displayed date and HTTP readback, undated reload, plus UI draft/focus and save-reconciliation regressions and literal text rendering.",
+      "cases": [
+        "TC-001",
+        "TC-002",
+        "TC-003"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "content": "# Engineering implementation review \u2014 focus remediation QA-F-001\n\nStatus: source remediation prepared for renewed human code approval. Not approved.\nHuman explicitly authorized Engineering remediation, regression tests and renewed code\nreview while preserving QA evidence. verification-remediate links the actual failed\nQA-UI check and returns Engineering to Development; old decisions/baselines remain.\nThe approved Technical Design and Engineering-only Plan are unchanged. Development\n1.1.0 instruction pin is recorded by the CLI. All T-001..T-005 remain complete.\n\n## Scope and changes\n\nOnly public/app.js and test/unit.test.mjs changed from the last approved source.\nQA-F-001: disabling a focused submit button moved focus before render checked whether\nto restore it. The prior DOM test double did not model that behavior. Its updated disabled\nsetter now models this blur and reproduced the exact focus assertion failure: 39 of 40\nunit tests passed, 1 failed, before modifying application behavior. Evidence retained.\n\nThe submit button now remains focusable during the pending request and exposes\naria-disabled=true. The existing row.busy guard rejects duplicate submissions before\nany mutation. On successful assignment, the existing renderer restores focus to the\ntask heading if focus is still inside that form, and preserves user focus on another\ntask. After failure, busy/ARIA state resets; an unknown save outcome still actually\ndisables retries until reload. No event bypass creates a second mutation.\n\nThe original focus-removal and other-task-draft tests remain. A new gated pending-request\nregression verifies focused-button retention, ARIA state, duplicate-submit suppression\nand eventual heading focus. Other save-reconciliation regressions remain unchanged.\nThese controller tests execute the actual browser script with DOM/fetch doubles, not a\nreal browser. Real Chrome confirmation is pending; QA-F-001 is not declared closed.\n\n## Actual current Engineering verification\n\nC-UNIT passed, exit 0: 41 tests, 41 passed, 0 failed/skipped/cancelled.\nC-BUILD passed, exit 0: syntax of seven JS/MJS files, local imports, fixed assets and\npackage scripts. Both ran through check-run against this exact source fingerprint.\nEarlier reproduction failure and all prior successful/failing evidence are retained.\nIncremental actual diff: evidence/engineering-focus-remediation.patch.\n\n## Preserved functionality, authority and boundaries\n\nThe small dependency-free local HTTP/browser application implements initial exact\nfuture-calendar-date assignment and permitted undated tasks only, as in the approved\nAnalysis/Design/Plan. Seeded data is in-memory and resets on server restart. No CRUD,\ncompletion, reminders, notifications, persistence, accounts or synchronization are added.\nThe accepted UTC reference day remains a testing convention, not a product business rule.\nPast-date behavior (U-001/AQ-001, FR-003) stays deferred/blocked pending support consultation.\nChanging or clearing assigned dates (AQ-002) remains undefined. Demonstrator unsupported\nresponses define no product acceptance/rejection policy. No business question is resolved.\n\nQA source, scenario/automation approvals, ownership and append-only QA history/evidence\nare unchanged. The previous integration pass and UI failure belong to the earlier source;\nthey cannot serve as verification of this changed source. No QA check was rerun. Preserve\nthose outputs and obtain renewed source-bound QA execution only after fresh human code\napproval and separate Engineering advancement. QA stays ready for Verification, incomplete.\nNo dependencies, Engineering Plan, QA automation or orchestrator implementation changes.\nNo Git stage/commit/push, automatic advancement or Security/final readiness claim.\n\n## Human review requested\n\nReview the exact source diff and current Engineering evidence. Obtain fresh explicit\nimplementation approval with both unresolved topics acknowledged. Approval leaves\nEngineering in Development; subsequent Verification advancement is a separate decision.\nQA failure remains historical evidence, and real browser re-verification remains required.\n",
+  "coverage": {
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+    },
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned nullable date state and undated display; no clearing capability."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+    }
+  ],
+  "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+  "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+  "completed_tasks": [
+    "T-001",
+    "T-002",
+    "T-003",
+    "T-004",
+    "T-005"
+  ]
+}

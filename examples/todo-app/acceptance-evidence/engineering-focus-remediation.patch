@@ -1,0 +1,72 @@
+--- a/public/app.js
++++ b/public/app.js
+@@ -49,7 +49,8 @@
+         if (row.busy || row.blocked || !form.reportValidity()) return;
+         const requestedDate = input.value;
+         row.busy = true;
+-        button.disabled = true;
++        // Keep focus until the form is replaced; the busy guard blocks duplicate submits.
++        button.ariaDisabled = 'true';
+         feedback.textContent = '';
+         let saved = false;
+         try {
+@@ -85,6 +86,7 @@
+           }
+         } finally {
+           row.busy = false;
++          button.ariaDisabled = String(row.blocked);
+           button.disabled = row.blocked;
+         }
+       });
+--- a/test/unit.test.mjs
++++ b/test/unit.test.mjs
+@@ -80,6 +80,12 @@
+   class Element {
+     constructor(tag) { this.tag = tag; this.children = []; this.listeners = {}; this.value = ''; this.disabled = false; this.parent = null; }
+     append(...nodes) { for (const node of nodes) { node.parent = this; this.children.push(node); } }
++    get disabled() { return this._disabled ?? false; }
++    set disabled(value) {
++      this._disabled = Boolean(value);
++      // Real browsers can blur a focused button when it is disabled.
++      if (this._disabled && doc.activeElement === this) doc.activeElement = doc.body;
++    }
+     contains(node) { return this === node || this.children.some(child => child.contains(node)); }
+     remove() {
+       if (this.contains(doc.activeElement)) doc.activeElement = null;
+@@ -91,13 +97,14 @@
+     focus() { doc.activeElement = this; }
+     reportValidity() { return true; }
+   }
++  doc.body = new Element('body');
+   const roots = Object.fromEntries(['tasks', 'feedback', 'reference'].map(id => [id, new Element('div')]));
+   doc.querySelector = selector => roots[selector.slice(1)];
+   doc.createElement = tag => new Element(tag);
+   const requests = [];
+   const fetch = async (url, options) => {
+     requests.push({ url, options });
+-    const step = fetchSteps.shift();
++    const step = await fetchSteps.shift();
+     assert.ok(step, 'Unexpected extra HTTP request');
+     if (step instanceof Error) throw step;
+     return { ok: step.ok ?? true, json: async () => step.body ?? step };
+@@ -194,3 +201,20 @@
+   assert.match(h.roots.feedback.textContent, /attempted date was not confirmed/);
+   assert.equal(h.child(h.item(0), 'form'), undefined);
+ });
++
++test('UI regression QA-F-001: pending submit retains focus and blocks duplicate mutations', async () => {
++  const data = browserTasks('2027-01-01');
++  let release;
++  const pending = new Promise(resolve => { release = resolve; });
++  const h = browserHarness([browserTasks(), pending, data]); await h.flush();
++  const form = h.child(h.item(0), 'form'); const button = h.child(form, 'button');
++  h.child(form, 'input').value = '2027-01-01'; button.focus();
++  const submission = h.submit(0); await h.flush();
++  assert.equal(h.doc.activeElement, button);
++  assert.equal(button.disabled, false);
++  assert.equal(button.ariaDisabled, 'true');
++  await form.listeners.submit({ preventDefault() {} });
++  assert.equal(h.requests.filter(request => request.options?.method === 'POST').length, 1);
++  release({ task: data.tasks[0] }); await submission;
++  assert.equal(h.doc.activeElement, h.child(h.item(0), 'h2'));
++});

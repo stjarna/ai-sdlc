@@ -1,0 +1,12 @@
+[
+  "engineering-finalize",
+  "REQ-0001",
+  "--expected-engineering-revision",
+  "47522f66c2163cb8b18b5c1d44000f691c6ada6de237933b7d5bdf869c201e68",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-finalize-668fcb3a-f84f-47b9-a91b-6c7db439230f",
+  "--decision",
+  "$sdlc advance engineering"
+]

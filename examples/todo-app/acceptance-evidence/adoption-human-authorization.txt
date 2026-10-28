@@ -1,0 +1,3 @@
+Yes, I authorize adoption into the Engineering/QA work-track model.
+Preserve all existing approvals, baselines and history. Keep both tracks under my ownership until separately assigned.
+Do not start work or approve any new artifacts.

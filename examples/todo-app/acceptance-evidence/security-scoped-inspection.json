@@ -1,0 +1,23 @@
+{
+  "method": "Source inspection plus small explicit regex inventory; not a comprehensive secrets scanner",
+  "files": [
+    "README.md",
+    "package.json",
+    "test/unit.test.mjs",
+    "qa/helpers.mjs",
+    "qa/ui.mjs",
+    "qa/README.md",
+    "qa/integration.test.mjs",
+    "qa/package-lock.json",
+    "qa/package.json",
+    "public/index.html",
+    "public/styles.css",
+    "public/app.js",
+    "scripts/check.mjs",
+    "src/repository.mjs",
+    "src/domain.mjs",
+    "src/server.mjs",
+    "src/http.mjs"
+  ],
+  "secret_pattern_hits": []
+}

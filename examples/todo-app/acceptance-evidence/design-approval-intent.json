@@ -1,0 +1,25 @@
+{
+  "arguments": [
+    "engineering-approve",
+    "REQ-0001",
+    "--kind",
+    "design",
+    "--expected-engineering-revision",
+    "acabf22dfcd4b4f24d079888583a8267d94c836d56bba49d2f46009ae705a32b",
+    "--operation-id",
+    "human-working-app-design-approve-54f990f2-7da2-4137-8946-ffd2201f3f2f",
+    "--decision",
+    "I approve the proposed Technical Design for the PoC.\nI acknowledge that past-date behavior and changing or clearing existing due dates remain unresolved.\nThe UTC reference date is acceptable for reproducible testing, but must not introduce a new business rule.\nPlease record the approval, verify the baseline and keep the current lifecycle state unchanged.\nDo not advance automatically. Wait for my separate authorization to proceed to Implementation Planning.",
+    "--expected-profile-revision",
+    "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+    "--acknowledge-open-item",
+    "U-001",
+    "--acknowledge-open-item",
+    "AQ-001",
+    "--acknowledge-open-item",
+    "FR-003",
+    "--acknowledge-open-item",
+    "AQ-002"
+  ],
+  "reviewed_design": "97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d"
+}

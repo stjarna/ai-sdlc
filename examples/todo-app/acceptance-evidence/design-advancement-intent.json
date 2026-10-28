@@ -1,0 +1,17 @@
+{
+  "arguments": [
+    "engineering-advance",
+    "REQ-0001",
+    "--kind",
+    "design",
+    "--expected-engineering-revision",
+    "4e20c3ac08c931210d64e05c9ce83b7e65ef75431f183abf87e373f1e8b97ea5",
+    "--operation-id",
+    "human-working-app-design-advance-a7e2b3f9-79bc-46e3-8238-91c994124a72",
+    "--decision",
+    "$sdlc advance",
+    "--expected-profile-revision",
+    "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434"
+  ],
+  "actual_human_command": "$sdlc advance"
+}

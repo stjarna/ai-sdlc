@@ -1,0 +1,14 @@
+[
+  "engineering-advance",
+  "REQ-0001",
+  "--kind",
+  "implementation",
+  "--expected-engineering-revision",
+  "77a2820c57f915afc9e9f334741f275a8cd038995d47458e3c6260194d53b3d1",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-focus-advance-428ce3de-fd8d-4ae7-8595-5a9c161de920",
+  "--decision",
+  "Yes, I authorize returning Engineering to Verification and rerunning the approved QA checks against the updated implementation."
+]

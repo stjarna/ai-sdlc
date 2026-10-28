@@ -22,3 +22,5 @@ tmp/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+# Disposable presentation rehearsals; the verified demo archive stays versioned.
+/examples/todo-app/.run/

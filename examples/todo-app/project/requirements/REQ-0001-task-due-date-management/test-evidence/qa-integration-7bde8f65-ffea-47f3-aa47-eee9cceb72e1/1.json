@@ -1,0 +1,7 @@
+{
+  "name": "TC-001 / FR-002 / AC-002: repeated real reads retain permitted undated state",
+  "cases": [
+    "TC-001"
+  ],
+  "status": "passed"
+}

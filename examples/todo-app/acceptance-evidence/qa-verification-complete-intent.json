@@ -1,0 +1,14 @@
+[
+  "qa-advance",
+  "REQ-0001",
+  "--kind",
+  "verification",
+  "--expected-qa-revision",
+  "06c2ce00b4082b64749af290fe9d21cfdc8ec5200168ed65cf22f1f6d08f9f62",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-qa-complete-0633f31b-5bad-438b-b90f-f0630bf925b1",
+  "--decision",
+  "Yes, mark QA verification complete. Preserve all test evidence and unresolved business questions."
+]

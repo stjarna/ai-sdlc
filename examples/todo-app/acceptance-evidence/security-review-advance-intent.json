@@ -1,0 +1,14 @@
+[
+  "engineering-advance",
+  "REQ-0001",
+  "--kind",
+  "verification",
+  "--expected-engineering-revision",
+  "889fc56176748e1c0f9f257ee0e93601313730363bde36fdc20b2205d5fa5eb0",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-security-advance-237d24a9-c634-40f7-8f71-35b368f5b7dc",
+  "--decision",
+  "$sdlc advance engineering"
+]

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task due-date demonstrator</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Local acceptance demonstration</p>
+    <h1>Task due dates</h1>
+    <p>Assign an initial future calendar date, or leave a task undated.</p>
+    <aside>
+      <strong>Limited demonstration</strong>
+      <p>Past-date behavior and changing or clearing assigned dates remain unresolved.
+      Their absence here is not a product rule. Reminders and notifications are excluded.</p>
+      <p>Seeded tasks are held in memory and reset when the server restarts.</p>
+      <p id="reference">Loading the UTC test reference day…</p>
+    </aside>
+    <p id="feedback" role="status" aria-live="polite"></p>
+    <ul id="tasks" aria-label="Seeded tasks"></ul>
+    <noscript>This local demonstrator needs JavaScript to display tasks.</noscript>
+  </main>
+</body>
+</html>

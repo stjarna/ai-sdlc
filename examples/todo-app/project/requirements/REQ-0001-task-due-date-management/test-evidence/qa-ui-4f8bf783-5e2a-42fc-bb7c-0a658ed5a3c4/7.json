@@ -1,0 +1,8 @@
+{
+  "name": "R2: unknown outcome blocks repeat mutation until task state is reloaded",
+  "cases": [
+    "TC-001"
+  ],
+  "status": "passed",
+  "pageErrors": []
+}

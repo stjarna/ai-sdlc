@@ -1,0 +1,9 @@
+{
+  "name": "TC-002/003 / AC-001/002: actual date input assignment 2027-01-01 and independent readback",
+  "cases": [
+    "TC-002",
+    "TC-003"
+  ],
+  "status": "passed",
+  "pageErrors": []
+}

@@ -1,0 +1,46 @@
+{
+  "content": "# Security Review \u2014 local Task Due Date Management demonstrator\n\nReview prepared using Security 1.1.0 at 2026-10-28T21:57:11.296410+00:00. This is a source-bound assessment,\nnot human approval, certification, release authorization or lifecycle advancement.\n\n## Authority and exact reviewed inputs\n\nEngineering source: 683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4\nApproved Plan: 6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f\nApproved implementation: e3195b832a823c3b6412752f88b8187e8e91af254b464ad7be881931d6c97e2a\nApproved Technical Design: 97e48e3c6e0fcfdcb07373d0a2cb420bbb67f374e9599a588516765206db899d\nApproved Analysis: 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598\nQA automation: 849ac49769433728d8dd75afdc31727ea2c779db00c33619b33a8ccf344e09e5\nQA source: 22020008f60e67a62283eab65a5228480884e6afdc4d376d44f915e8362a076f\n\nThe completed QA join is current for these exact inputs; scenario/automation and human\ncode approvals remain valid. All current and historical evidence is preserved. Prior\nQA-F-001 was remediated under explicit authorization, reapproved and actually verified\nin Chrome; it is not fabricated as a new resolved security finding.\n\n## Scope, assets and trust boundaries\n\nInspect the local seeded task/date state, process integrity, fixed static assets and\nseparation from requirements, identity and test evidence. Untrusted boundaries are HTTP\nheaders/path/body and browser DOM rendering. QA dependencies are executable developer\ntooling, separate from the dependency-free application. This is ephemeral local seeded\ndata on loopback, not a multi-user or production deployment. No real-user data or secrets\nwere supplied. The review does not establish authentication or authorization business rules.\n\n## Source inspection \u2014 observed controls, not unexecuted test claims\n\nsrc/server.mjs binds 127.0.0.1 on an ephemeral port. src/http.mjs enforces the expected\nHost, rejects foreign browser Origin mutations, exposes fixed GET/static and initial-date\nroutes only, returns controlled JSON errors and omits permissive CORS. It bounds request\nbodies at 4096 bytes, strictly decodes UTF-8, checks JSON object keys/task identity and\nuses real-calendar validation. No request path is joined into a filesystem path; only\nthree constant public assets are served. No requirements, evidence or identity file is\nserved. No request bodies, credentials or exception stacks are logged in HTTP responses.\nHeaders include CSP restricting script/style/connect to self, nosniff, no-referrer and\nno-store. Request/header timeouts and header count are bounded. These are proportionate\nlocal controls, not an OS sandbox or denial-of-service guarantee.\n\npublic/app.js uses textContent for task titles, dates and messages, with no dynamic HTML,\neval or shell. API date state is represented as calendar text, not code. Pending-submit\nsuppression and unknown-outcome retry blocking preserve data consistency but do not\nconstitute authentication or idempotency for arbitrary clients. The repository keeps\nisolated seeded in-memory records and returns copies. No SQL, durable store, account,\nnetwork synchronization or external application service is introduced.\n\nThe only child-process execution in application-owned tooling is the declared Engineering\nunit/build runner with literal Node argv; QA uses a fixed installed Chrome executable\nand approved test sources. Browser test routing limits test-page requests to the local\nfixture. Runners have host permissions and are not a security sandbox.\n\n## Actual executed evidence considered\n\n- Current Engineering C-UNIT: 41 passed, zero failed; C-BUILD passed. Unit/build evidence\n  alone is not security or browser proof.\n- Current QA-INTEGRATION: six real HTTP tests passed. Supplementary negative assertions\n  verify foreign Origin rejection, malformed JSON, impossible date, extra keys, oversized\n  body/state preservation, unserved artifact/source paths, nosniff and CSP script source.\n  UTF-8 failure handling and Host restrictions were inspected, not separately exercised\n  by those named tests; do not claim every control has dynamic coverage.\n- Current QA-UI: eight real Chrome scenarios passed, including literal hostile seed-title\n  rendering without an image element or injected global. Screenshot/trace and test reports\n  are retained with captured hashes. These are scoped assertions, not a comprehensive XSS\n  or application penetration test.\n- npm audit --package-lock-only --ignore-scripts --json ran in the physical qa directory,\n  exit 0. Locked playwright/playwright-core 1.64.1 returned zero known registry advisories\n  (info/low/moderate/high/critical all zero), including dev dependencies. This is advisory\n  lookup of the exact lockfile, not malware detection or an audit of Node/Chrome/OS binaries.\n  Raw response hash: 6d31e957dc14f2847573c528dd4fdfd3b80883e8f4d401404880b25afa9bf1b6. Output and actual invocation/exit record are retained\n  in evidence/security-npm-audit.json and security-npm-audit-execution.json.\n- A scoped source inventory of 17 text/source/manifest files excluded node_modules and\n  requirements. Explicit private-key/AWS/GitHub-token regex checks found no matches.\n  This limited check is not a comprehensive secrets scanner; no sensitive matches or\n  credentials are copied into reports. Scope is recorded in security-scoped-inspection.json.\n\n## Findings and recommendation\n\nNo open security findings identified within this stated scope; structured findings list\nis empty. There is no previous Security finding to remove or silently mark resolved.\nThe evidence supports presenting the current local PoC for the separate Final Verification\nreadiness decision. No automatic progression is authorized by this recommendation.\n\n## Preserved uncertainty and review limitations\n\nPast-date behavior remains deferred/blocked pending support consultation, and changing\nor clearing assigned dates remains undefined. Acknowledgement is not resolution. The\ntechnical unsupported response chooses neither business acceptance nor rejection. Their\nabsence from executable product acceptance coverage remains in the final report.\n\nLocal processes can access loopback; there is no authenticated multi-user isolation.\nThis is an approved isolated synthetic-data demonstrator limitation, not a claim of\nproduction safety. No internet-facing deployment, production data, TLS, enterprise IAM,\nRBAC, durable retention or recovery has been reviewed or silently added. Runtime/OS/\nbrowser vulnerabilities, supply-chain malware, full DAST, fuzzing, resource-exhaustion,\nload testing and independent penetration testing were not performed. Static inspection\nand selected tests cannot prove absence of vulnerabilities. Dependency advisory results\nreflect only the actual lookup time. No external Security scanner was claimed run.\n\nNo source, QA automation, dependencies, test assertions, business decisions or approvals\nwere modified by this review. All earlier failed/passed evidence remains available.\nSeparate explicit human advancement is required; this report does not certify security,\nauthorize deployment/release, or stage/commit/push anything.\n",
+  "coverage": {
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+    },
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned nullable date state and undated display; no clearing capability."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+    }
+  ],
+  "source_revision": "683d07a8c5f7a769b5d52866d594bf2549d37fc1b6d0634ecb38cd9c25ee2eb4",
+  "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+  "findings": []
+}

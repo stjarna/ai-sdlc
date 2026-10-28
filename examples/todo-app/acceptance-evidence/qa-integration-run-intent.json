@@ -1,0 +1,16 @@
+[
+  "qa-check-run",
+  "REQ-0001",
+  "--check-id",
+  "QA-INTEGRATION",
+  "--expected-qa-revision",
+  "cb2da0b423b717fcb422cfdbe5cd66f887a2a9832858eb965923de5558ce3684",
+  "--expected-source-revision",
+  "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+  "--operation-id",
+  "working-app-qa-integration-run-9b6784b2-dbd7-4082-bdba-9ed99d9316ca",
+  "--actor",
+  "AI assistant using Testing skill",
+  "--decision",
+  "Execute the approved integration check in response to $sdlc start qa after separate scenario/automation approval, readiness advancement and authorized QA dependency setup."
+]

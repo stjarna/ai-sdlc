@@ -1,0 +1,445 @@
+{
+  "operation": "command-context",
+  "ok": true,
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Users' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Expected value' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Initial scope' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Success criteria' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Assumptions' is missing or empty; clarification may be needed.",
+      "line": null
+    },
+    {
+      "severity": "warning",
+      "code": "W_DISCOVERY_INCOMPLETE",
+      "file": "/private/tmp/ai-sdlc-working-app-human-acceptance-osyuopn7/project/requirements/REQ-0001-task-due-date-management/idea.md",
+      "message": "Discovery section 'Open questions' is missing or empty; clarification may be needed.",
+      "line": null
+    }
+  ],
+  "routing": {
+    "command": "start",
+    "stage": "test_automation",
+    "kind": "automation",
+    "review_operation": "qa-review",
+    "write_operation": "qa-write",
+    "read_only": true,
+    "requires_human_decision": true,
+    "track": "qa",
+    "required_role": "QA Lead / Tester",
+    "initialization_required": false
+  },
+  "review": {
+    "active": true,
+    "stage": "test_automation",
+    "revision": "c7e21a50d5f189afaec4af5a5c3c7db7c217651032ef242682f7561ac4f0983f",
+    "analysis_baseline": "0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598",
+    "analysis_handoff": "human-working-app-analysis-advance-33dd5e96-60d2-4eb2-ad14-7de118c23927",
+    "qa_source_revision": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "source_revision": "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+    "drafts": {
+      "strategy": {
+        "baseline_id": "fe334ee142992548d60ab3e07167002b7cfeff44a0d7fa5f6227daebb3f1bae0",
+        "operation_id": "working-app-qa-strategy-5807940e-dbc3-4740-89a1-500b144e889b",
+        "payload": {
+          "_request": {
+            "coverage": {
+              "AC-001": {
+                "disposition": "implemented",
+                "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+              },
+              "AC-002": {
+                "disposition": "implemented",
+                "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+              },
+              "FR-001": {
+                "disposition": "implemented",
+                "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+              },
+              "FR-002": {
+                "disposition": "implemented",
+                "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+              },
+              "FR-003": {
+                "disposition": "blocked",
+                "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+              }
+            },
+            "unresolved": [
+              {
+                "id": "U-001",
+                "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+              },
+              {
+                "id": "AQ-001",
+                "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+              },
+              {
+                "id": "FR-003",
+                "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+              },
+              {
+                "id": "AQ-002",
+                "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+              }
+            ]
+          },
+          "coverage": {
+            "AC-001": {
+              "disposition": "implemented",
+              "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+            },
+            "AC-002": {
+              "disposition": "implemented",
+              "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+            },
+            "FR-001": {
+              "disposition": "implemented",
+              "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+            },
+            "FR-002": {
+              "disposition": "implemented",
+              "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+            },
+            "FR-003": {
+              "disposition": "blocked",
+              "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+            }
+          },
+          "status_after": "test_design",
+          "unresolved": [
+            {
+              "id": "U-001",
+              "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+            },
+            {
+              "id": "AQ-001",
+              "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+            },
+            {
+              "id": "FR-003",
+              "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+            },
+            {
+              "id": "AQ-002",
+              "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+            }
+          ],
+          "content": "# QA Test Strategy \u2014 Task Due Date Management\n\nStatus: proposed for human QA scenario review. No approval, automation or execution.\nInstruction package: Testing 1.1.0, exact pin recorded by the orchestrator.\nAuthority: immutable approved Functional Analysis baseline 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598.\nThe Business dependency and acknowledged unresolved items remain authoritative through\nthat baseline. This strategy does not depend on Technical Design, an Engineering Plan,\nthe historical combined plan, prototype behavior or implemented code.\n\n## Objective and scope\n\nVerify the two specified acceptance paths: an undated task is permitted, and a user can\nassign a supplied future calendar date to an undated task with the exact day/month/year\nretained. Reference FR-001/FR-002 and AC-001/AC-002; do not create another requirements\nsource. Use existing or seeded tasks solely to satisfy the approved use-case precondition.\nTask creation/completion/deletion, reminders and notifications are not introduced here.\n\nFR-003 is blocked. The past-date question U-001/AQ-001 remains deferred pending support\nconsultation. Changing/clearing an already assigned date is AQ-002, still undefined.\nNo functional test may choose acceptance/rejection, date replacement or date removal\nas an expected product outcome. A technical demo's unimplemented-path response is not\nan answer to these questions and cannot be treated as FR-003 acceptance coverage.\n\n## Risk-based cases and data\n\nTC-001 covers absence of an assigned date as a valid task state. TC-002 covers exact\ninitial future-date assignment, parameterized with an ordinary future date and future\nmonth/year/leap-day examples where applicable. These are test data, not a product date\nrange, timezone rule or future-only restriction. TC-003 uses two tasks to observe correct\ntask selection and combine exact assignment with the other task remaining undated.\nTC-004/TC-005 explicitly document blocked past-date and changing/clearing paths.\n\nChoose dates demonstrably in the future under a controlled reference clock for repeatable\nchecks. A test reference day is a fixture, never a new business rule; no production UTC,\nper-user timezone, date-range limit, display locale or today-date policy is inferred.\nCompare calendar day/month/year, not an assumed timestamp or a required display format.\nDo not manufacture an expected answer to a missing rule to make the suite green.\n\n## Verification levels\n\nDevelopment owns unit tests and build checks. QA may review their coverage but will not\ncreate a second unit-test stream or bundle its approval into the Engineering Plan.\nLater integration checks will exercise actual application boundaries to assign and read\nback the selected task's calendar date, and observe a permitted absent date value. Any\nAPI shape or storage representation is an implementation detail inspected later, not\nthe functional oracle. Cross-process persistence is not part of the approved criteria.\n\nLater UI/E2E checks must open the real running interface, identify the intended existing\ntask, leave one task undated, and perform initial assignment through real controls.\nAssert observable resulting state matching AC-001/AC-002. HTTP calls alone, category\nlabels, code inspection or screenshots alone do not establish UI acceptance.\nAutomation wiring and tool choices will be prepared after scenario approval and separate\nadvancement, using available approved interfaces without replacing these expectations.\n\n## Reviews, execution and evidence\n\nPresent this Strategy and the independently versioned Test Scenarios together for one\nexplicit human scenario approval, acknowledging all inherited unresolved items. That\napproval does not advance QA or approve automation. Engineering Plan/code approval is\nindependent. Concrete QA automation later stays under its approved qa/ paths and receives\nits own human review, exact source binding and separate advancement.\n\nDo not execute integration/UI checks until current Engineering implementation is approved\nand made available, and QA scenario/automation approvals and readiness are valid. Use\nactual named qa-check-run operations, preserving case/FR/AC links, reviewed sources,\ncommands, exit status, output and available browser evidence. Failed, unavailable,\nblocked, skipped or not-run results cannot become passes. Inspect assertion quality;\nstructural validation is not business correctness or executed verification.\n\nReport defects with the case, requirement, reviewed source, expected/observed behavior,\nreproduction and evidence. Keep requirements/scenarios authoritative rather than altering\nexpectations to match a defect. Explicit remediation and new current evidence are needed\nfor affected Engineering changes. Require explicit QA completion before the joined gate;\nmissing QA is not successful verification. Security review remains a separate downstream\nresponsibility; technical security-negative checks are selected later against approved\ninterfaces and controls and do not redefine functional acceptance.\n\n## Current limitations and handoff\n\nNo application or QA automation exists yet; no case has executed and no result is passed.\nThe coverage disposition called implemented in the structural schema means planned\nscenario coverage only, not implemented code or successful test execution. The three\nspecified cases cover AC-001/AC-002; both unresolved business topics remain explicit.\nDo not claim full product completeness, retention guarantees, security certification,\nrelease approval or deployment readiness. Engineering artifacts, approvals and ownership\nare unchanged by this QA drafting activity.\n"
+        },
+        "skills": {
+          "testing": {
+            "digest": "883067299a993048d3a88b5c87049a90728a8900702a7f2560a2d728d3770bc3",
+            "version": "1.1.0"
+          }
+        }
+      },
+      "scenarios": {
+        "baseline_id": "84c3b21faea541978595102d431b35d76e8dca945cbdedbbd317c7b9a2bb9bd4",
+        "operation_id": "working-app-qa-scenarios-cb96b7d3-02b4-40e8-8c83-beeb8a103019",
+        "payload": {
+          "_request": {
+            "cases": [
+              {
+                "action": "Leave the due date unspecified for that task and observe its resulting state.",
+                "expected": "The task remains without any assigned date value; this is a permitted state and a due date is not required. No clearing of an existing date is involved.",
+                "id": "TC-001",
+                "preconditions": "An existing task has no assigned due date.",
+                "requirements": [
+                  "FR-002",
+                  "AC-002"
+                ],
+                "status": "specified"
+              },
+              {
+                "action": "Assign the selected future date to the identified task using the available user-facing operation.",
+                "expected": "That task has the assigned date, with day, month and year exactly matching the user selection, rather than remaining undated. Parameterize applicable future calendar boundaries without imposing a business date range.",
+                "id": "TC-002",
+                "preconditions": "An existing task has no assigned date; the user selects a known future calendar date.",
+                "requirements": [
+                  "FR-001",
+                  "AC-001"
+                ],
+                "status": "specified"
+              },
+              {
+                "action": "Assign the selected future date to the first task; leave the second task unspecified.",
+                "expected": "The identified first task records the exact selected calendar date. The second task remains without an assigned date, combining the two approved outcomes without requiring creation or date clearing.",
+                "id": "TC-003",
+                "preconditions": "Two identifiable existing tasks are undated, and a known future date is selected for the first task only.",
+                "requirements": [
+                  "FR-001",
+                  "FR-002",
+                  "AC-001",
+                  "AC-002"
+                ],
+                "status": "specified"
+              },
+              {
+                "action": "Document the past-date scenario as blocked; do not execute it as a product pass/fail acceptance assertion.",
+                "expected": "No approved expected product outcome exists. Neither acceptance nor rejection may be asserted until the deferred business decision and renewed authority are supplied.",
+                "id": "TC-004",
+                "preconditions": "A task and a valid past calendar date are available; U-001/AQ-001 remain deferred.",
+                "requirements": [
+                  "FR-003"
+                ],
+                "status": "blocked"
+              },
+              {
+                "action": "Document changing or clearing the assigned date as undefined; do not automate either as an accepted functional capability.",
+                "expected": "No approved outcome for changing or clearing exists. Do not infer either capability or its prohibition; keep this case blocked pending explicit upstream definition and approval.",
+                "id": "TC-005",
+                "preconditions": "A task already has an assigned due date; AQ-002 remains open.",
+                "requirements": [
+                  "FR-001",
+                  "FR-002"
+                ],
+                "status": "blocked"
+              }
+            ],
+            "coverage": {
+              "AC-001": {
+                "disposition": "implemented",
+                "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+              },
+              "AC-002": {
+                "disposition": "implemented",
+                "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+              },
+              "FR-001": {
+                "disposition": "implemented",
+                "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+              },
+              "FR-002": {
+                "disposition": "implemented",
+                "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+              },
+              "FR-003": {
+                "disposition": "blocked",
+                "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+              }
+            },
+            "unresolved": [
+              {
+                "id": "U-001",
+                "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+              },
+              {
+                "id": "AQ-001",
+                "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+              },
+              {
+                "id": "FR-003",
+                "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+              },
+              {
+                "id": "AQ-002",
+                "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+              }
+            ]
+          },
+          "cases": [
+            {
+              "action": "Leave the due date unspecified for that task and observe its resulting state.",
+              "expected": "The task remains without any assigned date value; this is a permitted state and a due date is not required. No clearing of an existing date is involved.",
+              "id": "TC-001",
+              "preconditions": "An existing task has no assigned due date.",
+              "requirements": [
+                "FR-002",
+                "AC-002"
+              ],
+              "status": "specified"
+            },
+            {
+              "action": "Assign the selected future date to the identified task using the available user-facing operation.",
+              "expected": "That task has the assigned date, with day, month and year exactly matching the user selection, rather than remaining undated. Parameterize applicable future calendar boundaries without imposing a business date range.",
+              "id": "TC-002",
+              "preconditions": "An existing task has no assigned date; the user selects a known future calendar date.",
+              "requirements": [
+                "FR-001",
+                "AC-001"
+              ],
+              "status": "specified"
+            },
+            {
+              "action": "Assign the selected future date to the first task; leave the second task unspecified.",
+              "expected": "The identified first task records the exact selected calendar date. The second task remains without an assigned date, combining the two approved outcomes without requiring creation or date clearing.",
+              "id": "TC-003",
+              "preconditions": "Two identifiable existing tasks are undated, and a known future date is selected for the first task only.",
+              "requirements": [
+                "FR-001",
+                "FR-002",
+                "AC-001",
+                "AC-002"
+              ],
+              "status": "specified"
+            },
+            {
+              "action": "Document the past-date scenario as blocked; do not execute it as a product pass/fail acceptance assertion.",
+              "expected": "No approved expected product outcome exists. Neither acceptance nor rejection may be asserted until the deferred business decision and renewed authority are supplied.",
+              "id": "TC-004",
+              "preconditions": "A task and a valid past calendar date are available; U-001/AQ-001 remain deferred.",
+              "requirements": [
+                "FR-003"
+              ],
+              "status": "blocked"
+            },
+            {
+              "action": "Document changing or clearing the assigned date as undefined; do not automate either as an accepted functional capability.",
+              "expected": "No approved outcome for changing or clearing exists. Do not infer either capability or its prohibition; keep this case blocked pending explicit upstream definition and approval.",
+              "id": "TC-005",
+              "preconditions": "A task already has an assigned due date; AQ-002 remains open.",
+              "requirements": [
+                "FR-001",
+                "FR-002"
+              ],
+              "status": "blocked"
+            }
+          ],
+          "coverage": {
+            "AC-001": {
+              "disposition": "implemented",
+              "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+            },
+            "AC-002": {
+              "disposition": "implemented",
+              "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+            },
+            "FR-001": {
+              "disposition": "implemented",
+              "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+            },
+            "FR-002": {
+              "disposition": "implemented",
+              "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+            },
+            "FR-003": {
+              "disposition": "blocked",
+              "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+            }
+          },
+          "status_after": "test_design",
+          "unresolved": [
+            {
+              "id": "U-001",
+              "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+            },
+            {
+              "id": "AQ-001",
+              "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+            },
+            {
+              "id": "FR-003",
+              "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+            },
+            {
+              "id": "AQ-002",
+              "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+            }
+          ],
+          "content": "# QA Test Scenarios \u2014 Task Due Date Management\n\nStatus: proposed; all cases below are unexecuted. Testing 1.1.0 instruction pin is\nrecorded by the orchestrator. Functional oracle: approved immutable Analysis baseline\n0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598. Technical Design and the old combined plan are\nnot the source of these expected outcomes.\n\n## TC-001 \u2014 Specified\n\nReferences: FR-002, AC-002.\n\nGiven: An existing task has no assigned due date.\n\nWhen: Leave the due date unspecified for that task and observe its resulting state.\n\nThen: The task remains without any assigned date value; this is a permitted state and a due date is not required. No clearing of an existing date is involved.\n\nExecution: not run; no automation is prepared.\n\n## TC-002 \u2014 Specified\n\nReferences: FR-001, AC-001.\n\nGiven: An existing task has no assigned date; the user selects a known future calendar date.\n\nWhen: Assign the selected future date to the identified task using the available user-facing operation.\n\nThen: That task has the assigned date, with day, month and year exactly matching the user selection, rather than remaining undated. Parameterize applicable future calendar boundaries without imposing a business date range.\n\nExecution: not run; no automation is prepared.\n\n## TC-003 \u2014 Specified\n\nReferences: FR-001, FR-002, AC-001, AC-002.\n\nGiven: Two identifiable existing tasks are undated, and a known future date is selected for the first task only.\n\nWhen: Assign the selected future date to the first task; leave the second task unspecified.\n\nThen: The identified first task records the exact selected calendar date. The second task remains without an assigned date, combining the two approved outcomes without requiring creation or date clearing.\n\nExecution: not run; no automation is prepared.\n\n## TC-004 \u2014 Blocked\n\nReferences: FR-003.\n\nGiven: A task and a valid past calendar date are available; U-001/AQ-001 remain deferred.\n\nWhen: Document the past-date scenario as blocked; do not execute it as a product pass/fail acceptance assertion.\n\nThen: No approved expected product outcome exists. Neither acceptance nor rejection may be asserted until the deferred business decision and renewed authority are supplied.\n\nExecution: not run; no automation is prepared.\n\n## TC-005 \u2014 Blocked\n\nReferences: FR-001, FR-002.\n\nGiven: A task already has an assigned due date; AQ-002 remains open.\n\nWhen: Document changing or clearing the assigned date as undefined; do not automate either as an accepted functional capability.\n\nThen: No approved outcome for changing or clearing exists. Do not infer either capability or its prohibition; keep this case blocked pending explicit upstream definition and approval.\n\nExecution: not run; no automation is prepared.\n\n## Coverage and unresolved decisions\n\nTC-001/TC-002/TC-003 provide planned, reviewable coverage of AC-001 and AC-002. Calendar\nboundary values in TC-002 are examples for future date preservation, not extra business\nrules or a timezone requirement. Test data should remain clearly future under a controlled\nfixture reference. Initial absence is distinct from clearing an assigned date.\n\nTC-004 keeps FR-003/U-001/AQ-001 blocked/deferred. TC-005 records AQ-002 without asserting\na change/clear result. Neither blocked case may be assigned an automatic pass. A demo's\nnot-implemented response is not validation of an unspecified product rule.\n\nLater automation must explicitly link every specified case to named integration/UI\nchecks, inspect actual approved interfaces and preserve these functional expectations.\nThere is no assumed API, selector, runtime or transport in this functional case artifact.\nAutomation has a separate review and execution gate. Approval of these scenarios accepts\nonly their reviewed expectations and acknowledged uncertainty; it does not approve\nEngineering work, supply missing business decisions, advance QA or run tests.\n"
+        },
+        "skills": {
+          "testing": {
+            "digest": "883067299a993048d3a88b5c87049a90728a8900702a7f2560a2d728d3770bc3",
+            "version": "1.1.0"
+          }
+        }
+      }
+    },
+    "approvals": {
+      "scenarios": {
+        "valid": true
+      },
+      "automation": {
+        "valid": false,
+        "code": "E_QA_INPUT",
+        "reason": "No current QA automation artifact exists."
+      }
+    },
+    "evidence": [],
+    "integration": {
+      "ready": false,
+      "reasons": [
+        {
+          "code": "E_INTEGRATION_NOT_READY",
+          "message": "QA verification has not explicitly completed."
+        }
+      ],
+      "checks": {},
+      "context": null,
+      "coverage": {}
+    }
+  },
+  "ownership": {
+    "status": "test_automation",
+    "owner": "David Krzystek",
+    "assignee": null,
+    "required_role": "QA Lead / Tester",
+    "assignment_status": "awaiting_assignment",
+    "target_stage": "qa",
+    "since": "2026-10-28T21:09:45Z",
+    "history": [
+      {
+        "operation_id": "track-init-a20521addee2f40bf0c75d4987a0808409cf1d41bcbdbba33c177ab1e5e32338",
+        "action": "initialize",
+        "actor": "David Krzystek",
+        "identity_source": "local_profile",
+        "timestamp": "2026-10-28T21:09:45Z",
+        "expected_revision": null,
+        "from_owner": null,
+        "to_owner": "David Krzystek",
+        "assignee": null,
+        "required_role": "QA Lead / Tester",
+        "assignment_status": "awaiting_assignment",
+        "target_stage": "qa",
+        "lifecycle_id": null,
+        "decision": "Yes, I authorize adoption into the Engineering/QA work-track model.\nPreserve all existing approvals, baselines and history. Keep both tracks under my ownership until separately assigned.\nDo not start work or approve any new artifacts."
+      }
+    ],
+    "needs_reconciliation": false,
+    "next_action": "Assign QA Lead / Tester",
+    "revision": "c7e21a50d5f189afaec4af5a5c3c7db7c217651032ef242682f7561ac4f0983f"
+  },
+  "identity": {
+    "schema_version": "0.1",
+    "display_name": "David Krzystek",
+    "declared_roles": [
+      "Requester"
+    ],
+    "identity_source": "local_profile",
+    "authenticated": false,
+    "roles_enforced": false,
+    "profile_revision": "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+    "file": "/Users/davidkrzystek/.config/ai-sdlc/identity.json"
+  },
+  "identity_diagnostic": null
+}

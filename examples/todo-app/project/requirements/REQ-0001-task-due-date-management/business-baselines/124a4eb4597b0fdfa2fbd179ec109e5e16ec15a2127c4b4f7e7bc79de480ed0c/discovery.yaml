@@ -1,0 +1,76 @@
+schema_version: '0.1'
+request_id: REQ-0001
+operations:
+- id: fixture-198e2c59-b539-4967-a9f2-2fa81252fd62
+  base_revision: b43a05b0fcc6df3119726e6e8737e28d8a5307ce9002c11eebe4018de78f92af
+  records:
+  - id: D-0001
+    kind: user_statement
+    topic: problem_and_value
+    text: People forget commitments. Let them record deadlines against tasks.
+    source:
+      actor: user
+      quote: People forget commitments. Let them record deadlines against tasks.
+- id: fixture-84bfc00e-278a-4649-a966-5d3b81090865
+  base_revision: 2d8785bfaa946c5f1000811995359105332a065309cc45de4e26b3f572e81240
+  records:
+  - id: D-0002
+    kind: question
+    topic: scope
+    text: Should this cover recording deadlines, or reminders as well?
+    source:
+      actor: ai
+- id: fixture-13412e2b-3e73-4969-a9f7-e73a60843968
+  base_revision: 2ddae3b879c0310922a7a6618571b1de2e55ed4cea8567bba5e77495c19fe508
+  records:
+  - id: D-0003
+    kind: user_statement
+    topic: scope_and_exclusions
+    text: Recording dates only. Reminders are outside this first scope.
+    source:
+      actor: user
+      quote: Recording dates only. Reminders are outside this first scope.
+    answers: D-0002
+- id: fixture-19f824a7-71d5-465f-b849-34fc9591dd36
+  base_revision: b2557a5f6067840df1d54bfdfbef62005cc359dfeb504ba59028172879d2e890
+  records:
+  - id: D-0004
+    kind: ai_assumption
+    topic: optionality
+    text: Deadlines can be optional.
+    source:
+      actor: ai
+- id: fixture-74752071-f090-4b8f-b262-4581eeafeac7
+  base_revision: 339b3de69a50a35920525764da6fcbc9798ccbdf105f08ac0e2888ff71178bc7
+  records:
+  - id: D-0005
+    kind: human_decision
+    topic: optionality
+    text: Yes, deadlines are optional.
+    source:
+      actor: user
+      quote: Yes, deadlines are optional.
+    action: confirm
+    target: D-0004
+- id: fixture-3ded7333-24c7-4e06-89d3-23ab49129dd5
+  base_revision: e9f78b88d75a40c953f241a1bd07d9a3150ba4d7aed85d2a34a1f5b9de31f625
+  records:
+  - id: D-0006
+    kind: question
+    topic: past_dates
+    text: Should users be allowed to choose a date in the past?
+    source:
+      actor: ai
+- id: fixture-8bb038f5-3d26-4619-992c-88b133f27147
+  base_revision: fab384627b14d6d42e8fd3495c5ff956e756a0f541fef57c60a22649dec9aaaf
+  records:
+  - id: D-0007
+    kind: human_decision
+    topic: past_dates
+    text: Defer that until I discuss it with support.
+    source:
+      actor: user
+      quote: Defer that until I discuss it with support.
+    action: defer
+    target: D-0006
+    revisit: until I discuss it with support

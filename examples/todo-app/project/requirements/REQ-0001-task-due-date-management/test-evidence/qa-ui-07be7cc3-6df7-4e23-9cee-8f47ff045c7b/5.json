@@ -1,0 +1,9 @@
+{
+  "name": "R1: unrelated draft and active input survive delayed response; submitted form has focus fallback",
+  "cases": [
+    "TC-002",
+    "TC-003"
+  ],
+  "status": "failed",
+  "pageErrors": []
+}

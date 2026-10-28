@@ -1,0 +1,52 @@
+{
+  "content": "# Engineering implementation review \u2014 Task Due Date Management\n\nStatus: prepared for explicit human code approval. Not approved, not advanced.\nDevelopment was explicitly authorized by `$sdlc start engineering` after separate Plan\napproval and readiness advancement. Implementation follows the approved Technical Design\nand Engineering-only Plan. Development 1.1.0 instruction pin is recorded by the CLI.\n\n## Implemented tasks and scope\n\nT-001: dependency-free package.json, local run documentation, named check runner.\nT-002: strict real-calendar validation, exact YYYY-MM-DD preservation, seeded in-memory\nrepository, isolated unit assertions. Reads return copies; separate repositories isolate state.\nT-003: loopback ephemeral HTTP server, fixed asset routes, JSON task read and initial-date\nassignment, bounded UTF-8 JSON/shape checks, controlled errors, same-origin/Host checks,\nCSP/nosniff/no-store headers. No credentials, arbitrary file serving or remote service.\nT-004: plain labelled browser form, optional undated display and exact assigned-date output,\nsafe text rendering, disabled in-flight submission and explicit save-versus-refresh feedback.\nT-005: completed unit/build runner and actual source-bound check evidence for review.\n\nOnly the declared paths were used. No QA source, dependencies or application package\ninstallation. No orchestrator implementation edits or Git operations. Application source\nis the 11 files listed in the accompanying acceptance review evidence. The actual new-file\ndiff is retained outside the project at evidence/engineering-implementation-source.patch.\n\n## Actual Engineering checks\n\nC-UNIT: passed, exit 0; 40 tests, 40 passed, 0 failed/skipped/cancelled.\nC-BUILD: passed, exit 0; syntax validated for seven JS/MJS files, fixed asset references,\nlocal imports and dependency-free package scripts. This is validation, not a bundling build.\nBoth ran through the deterministic CLI against this exact application source fingerprint.\nTheir immutable evidence retains literal arguments, actual output/hash and Analysis links.\nNo HTTP integration or browser test has run. Unit/build evidence cannot prove the full\nuser-facing flow or the effectiveness of all security controls. Code review is pending;\nthis agent's source inspection is not independent human review.\n\n## Preserved uncertainty and limitations\n\nPast-date behavior remains deferred pending support consultation; FR-003 stays blocked.\nChanging/clearing an assigned date remains undefined. The approved demonstrator returns\nan explicit unsupported response with unchanged state for these paths, never a product\nacceptance/rejection rule. Unit boundary checks do not resolve or cover the missing policy.\nUTC reference day is only a testing convention; no new timezone/today-date requirement.\nSeeded fixtures are preconditions, no CRUD/completion; reminders/notifications excluded.\nData is in-memory and resets on restart; no persistence/accounts/sync or production claim.\n\nQA strategy/scenarios were separately approved by the human during Development and remain\nin Test Design. No QA advancement, automation approval or execution is inferred. Current\nQA integration/UI evidence and explicit QA completion are required before the join. Security\nReview, remediation if needed, final verification and all relevant human gates remain ahead.\n\n## Decision\n\nReview the actual source diff and current unit/build evidence. Explicit human implementation\napproval must bind this source and acknowledge the inherited unresolved topics. Approval\ndoes not advance Engineering; await separate authorization before Verification. No release,\ndeployment, Git action or final product readiness is authorized by this review.\n\n## Requested remediation \u2014 review findings R1 and R2\n\nHuman feedback: \u201cYes, fix both findings, add regression tests and rerun verification.\nPresent the results for review before approval.\u201d Recorded through engineering-request-changes.\n\nR1 (P3), public/app.js: task-keyed DOM rows retain existing undated-task forms, draft\nvalues and active controls across unrelated saves. When a successful assignment removes\nthe currently focused form, focus moves to its task heading. No new task business behavior.\n\nR2 (P3), public/app.js: a failed mutation response triggers read-only reconciliation,\nnot an automatic retry. If the requested date is present, report confirmation; if the\ntask remains undated, retain the draft and permit manual retry with the useful original\nerror; if a different date is present, report it without claiming the attempted save\nsucceeded. If readback also fails, disable resubmission and disclose an unknown outcome\nuntil reload. A known successful mutation is rendered even if subsequent refresh fails.\n\nAdded eight controller-level regressions in the existing test/unit.test.mjs, exercising\nthe actual browser script via Node vm with small DOM/fetch doubles: other-task draft/focus\npreservation, focused-control removal, lost successful response, failed readback with\nretry blocked, confirmed no-save/manual retry, saved result with failed refresh, retained\nserver diagnostic and different-date reconciliation. Six initial regressions failed on\nthe original implementation before remediation; earlier failing evidence is retained.\nFinal full Engineering suite: 40 passed, 0 failed; build validation passed, both exit 0\nand recorded against this exact source revision through check-run. These are unit-level\nregressions, not real HTTP/browser or independent QA evidence.\n\nOnly public/app.js and test/unit.test.mjs changed for remediation. Incremental diff:\nevidence/engineering-ui-remediation-source.patch. Full updated source diff:\nevidence/engineering-implementation-v2-source.patch. Earlier source diff, immutable\nimplementation baseline, failing/passing evidence and human decisions remain available.\nQA stage, artifacts, ownership and scenario approval remain unchanged. Application\nsource change is visible in the shared execution fingerprint; no QA automation exists.\nNo dependency installation, approval, advancement or implementation repository edits.\nThis revised implementation requires a fresh explicit human code review decision.\n",
+  "coverage": {
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "Planned exact calendar preservation through domain state and application interface; unit/build evidence only here, independent QA verifies end-to-end behavior."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "Planned optional date representation and undated UI; unit assertions, with independent QA acceptance evidence required later."
+    },
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned domain, HTTP adapter and UI for initial exact future-calendar-date assignment only."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned nullable date state and undated display; no clearing capability."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "Past-date behavior remains deferred; demonstration unimplemented-path reporting is not a product acceptance/rejection rule."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Whether past due dates may be selected remains deferred pending consultation with support."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Past-date policy remains deferred; neither business acceptance nor business rejection is selected."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and outside the executable product acceptance scope."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an already assigned due date remains undefined; no such functional capability is introduced."
+    }
+  ],
+  "source_revision": "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+  "plan": "6875a98c313457dd5fa9f3f5dfb567e66380d87e8f531f1ae47b915b48a26f0f",
+  "completed_tasks": [
+    "T-001",
+    "T-002",
+    "T-003",
+    "T-004",
+    "T-005"
+  ]
+}

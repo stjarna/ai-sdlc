@@ -6,7 +6,7 @@ Approval Gate Increment 4 is implemented, with immutable baselines and
 separate advancement to `ready_for_analysis`. Increment 5 implements AI-assisted Functional
 Analysis for review: drafting, traceability, refinement and recoverable history. Increment 6 adds
 shared procedural approval and separate advancement to Technical Design readiness.
-Technical Design, Story decomposition and the To-Do application remain planned.
+The [sequential engineering slice](docs/engineering.md) adds pinned Architecture, Development, Testing and Security skills, design/plan/code approval gates and source-bound verification through `verified`. The [verified due-date demonstration](examples/todo-app/README.md) is preserved with real human decisions and reproducible rehearsal instructions. Story decomposition and Release execution remain planned.
 Shared native conversational guidance and thin Codex / Claude Code discovery adapters
 are provided. Codex is the PoC acceptance target; Claude Code runtime remains an
 unverified portability target.
@@ -45,12 +45,12 @@ approval and advancement decisions remain required.
 
 - `orchestrator/` — generic Discovery, Business Refinement and Approval skill, templates,
   deterministic operations, Functional Analysis and tests; later workflows remain planned.
-- `examples/todo-app/` — future small pre-existing Node.js/JavaScript To-Do application with in-memory state, **not** part of the orchestrator's generic logic.
+- `examples/todo-app/` — preserved verified in-memory due-date application, SDLC baselines/evidence and rehearsal helper, **not** part of the orchestrator's generic logic.
 - `docs/` — versioned architecture and decisions.
 
 ## Demonstration scope
 
-Implement **Task Due Date Management** in an existing minimal To-Do application. Then change the requirement from date-only to date-and-time and show impact analysis across requirements, design, implementation tasks and tests. Keep the reusable orchestrator independent of the app's business domain and tech stack.
+The completed **Task Due Date Management** acceptance demonstrates initial optional future-date assignment in a minimal seeded in-memory application. Its complete verified request, approvals and evidence are preserved under [examples/todo-app](examples/todo-app/README.md). The later date-only to date-and-time impact-analysis scenario remains future work; it was not implemented or approved by this acceptance. The orchestrator stays independent of this domain and stack.
 
 ## Development approach
 
@@ -66,7 +66,7 @@ the PoC does not technically guarantee human-only authorization.
 Increment 5 starts `functional_analysis` only from a valid approved business handoff.
 The AI drafts semantics; the CLI preserves revisions and validates structure/references.
 Analysis approval and separate advancement are implemented in [Increment 6](docs/analysis-approval.md);
-Technical Design execution remains excluded.
+Technical Design and Engineering/QA execution through `verified` are implemented; see the [domain/work-track contracts](docs/work-tracks.md).
 
 See [the operation contract](orchestrator/scripts/README.md) for environment setup,
 the minimal schema, CLI examples, diagnostics, and limitations; see
@@ -86,3 +86,17 @@ its roles are informational and approval still requires an explicit human decisi
 and explicit `assign`. New requests have a declared requester as owner; pending handoffs
 retain accountability until a confirmed transfer. Assignment does not approve content,
 advance lifecycle or start the next stage.
+
+The domain packages are independently versioned local instruction examples. Human approvals and separate advancement remain mandatory; Engineering and QA can progress independently and join for verification; no parallel AI execution is automatic. There is no new runtime, external AI API, remote registry or automatic Git operation.
+
+The [Engineering/QA work-track extension](docs/work-tracks.md) atomically forks new
+Analysis advancements into independently owned Engineering and QA responsibilities.
+QA functional expectations derive from Analysis before Design; scenario and automation
+approvals are separate from Engineering Plan/code approval. Integrated verification
+rejects incomplete or stale QA. Existing acceptance artifacts are not migrated; explicit
+pre-development adoption preserves history and requires replacing an unapproved combined
+Plan with separate current Engineering and QA artifacts.
+
+New Engineering/QA artifacts use canonical physical filenames with explicit manifest0.2; legacy content.md baselines and approvals remain unchanged. See [Artifact storage and names](docs/artifact-names.md).
+
+[Final preparation and proposed commits](docs/demo-finalization.md) records executed checks, preservation evidence, limitations and the approval boundary. No commits or pushes are automatic.

@@ -1,0 +1,22 @@
+[
+  "engineering-approve",
+  "REQ-0001",
+  "--kind",
+  "implementation",
+  "--expected-engineering-revision",
+  "adc6e356baafe857675231fc37862bd8c6d1f3ccfd8fcf708dd2f53577809288",
+  "--expected-profile-revision",
+  "2f8961b235e94179783cc06a23a4c93d293f5a63581b43cb8e902814842c9434",
+  "--operation-id",
+  "human-working-app-code-v2-approve-c7b0c098-104c-4dc5-a63b-1098ea7220b8",
+  "--decision",
+  "Approved. I acknowledge both unresolved business topics. Keep them open and proceed only to the next authorized lifecycle state.",
+  "--acknowledge-open-item",
+  "U-001",
+  "--acknowledge-open-item",
+  "AQ-001",
+  "--acknowledge-open-item",
+  "FR-003",
+  "--acknowledge-open-item",
+  "AQ-002"
+]

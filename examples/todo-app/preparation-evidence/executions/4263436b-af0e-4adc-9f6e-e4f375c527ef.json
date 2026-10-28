@@ -1,0 +1,12 @@
+{
+  "purpose": "Presentation rehearsal only; not a new SDLC approval or historical acceptance result",
+  "argv": [
+    "node",
+    "scripts/check.mjs",
+    "build"
+  ],
+  "cwd": "/Users/davidkrzystek/Development/Interview/Alza/examples/todo-app/.run/project",
+  "exit_code": 0,
+  "stdout": "Build validation passed: 7 JS/MJS files; static assets, local imports and dependency-free package scripts checked. No HTTP/browser test was run.\n",
+  "stderr": ""
+}

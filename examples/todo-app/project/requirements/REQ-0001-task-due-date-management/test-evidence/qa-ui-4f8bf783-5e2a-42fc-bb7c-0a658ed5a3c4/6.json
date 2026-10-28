@@ -1,0 +1,9 @@
+{
+  "name": "R2: server commits, response lost; readback confirms without duplicate POST",
+  "cases": [
+    "TC-002",
+    "TC-003"
+  ],
+  "status": "passed",
+  "pageErrors": []
+}

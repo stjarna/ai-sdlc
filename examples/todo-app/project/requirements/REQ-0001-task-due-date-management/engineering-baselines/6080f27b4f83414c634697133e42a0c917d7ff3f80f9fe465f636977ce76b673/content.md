@@ -1,0 +1,1 @@
+Yes, I authorize Engineering remediation of the focus defect, followed by regression tests and renewed code review. Keep QA evidence unchanged until the fix is approved.

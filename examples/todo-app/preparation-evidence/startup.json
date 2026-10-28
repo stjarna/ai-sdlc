@@ -1,0 +1,22 @@
+{
+  "purpose": "Fresh rehearsal startup observation, not configuration or historical acceptance evidence",
+  "observed_at_utc": "2026-10-28T22:59:26.287114+00:00",
+  "url": "http://127.0.0.1:63363/",
+  "page_status": 200,
+  "api_status": 200,
+  "api_payload": {
+    "tasks": [
+      {
+        "id": "task-1",
+        "title": "Prepare a presentation",
+        "dueDate": "2026-11-07"
+      },
+      {
+        "id": "task-2",
+        "title": "Read a book",
+        "dueDate": null
+      }
+    ],
+    "referenceDay": "2026-10-28"
+  }
+}

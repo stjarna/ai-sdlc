@@ -1,0 +1,1 @@
+Yes, fix both findings, add regression tests and rerun verification. Present the results for review before approval.

@@ -1,0 +1,14 @@
+{
+  "purpose": "Presentation rehearsal only; not a new SDLC approval or historical acceptance result",
+  "argv": [
+    "npm",
+    "ci",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund"
+  ],
+  "cwd": "/Users/davidkrzystek/Development/Interview/Alza/examples/todo-app/.run/project/qa",
+  "exit_code": 0,
+  "stdout": "\nadded 2 packages in 807ms\n",
+  "stderr": ""
+}

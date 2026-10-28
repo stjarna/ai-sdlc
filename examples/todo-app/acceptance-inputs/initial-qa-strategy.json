@@ -1,0 +1,43 @@
+{
+  "content": "# QA Test Strategy — Task Due Date Management\n\nStatus: proposed for human QA scenario review. No approval, automation or execution.\nInstruction package: Testing 1.1.0, exact pin recorded by the orchestrator.\nAuthority: immutable approved Functional Analysis baseline 0e0144aa03e9ef1e1db88debcbf1152a0f2443e81bfb68b26706ef5c92136598.\nThe Business dependency and acknowledged unresolved items remain authoritative through\nthat baseline. This strategy does not depend on Technical Design, an Engineering Plan,\nthe historical combined plan, prototype behavior or implemented code.\n\n## Objective and scope\n\nVerify the two specified acceptance paths: an undated task is permitted, and a user can\nassign a supplied future calendar date to an undated task with the exact day/month/year\nretained. Reference FR-001/FR-002 and AC-001/AC-002; do not create another requirements\nsource. Use existing or seeded tasks solely to satisfy the approved use-case precondition.\nTask creation/completion/deletion, reminders and notifications are not introduced here.\n\nFR-003 is blocked. The past-date question U-001/AQ-001 remains deferred pending support\nconsultation. Changing/clearing an already assigned date is AQ-002, still undefined.\nNo functional test may choose acceptance/rejection, date replacement or date removal\nas an expected product outcome. A technical demo's unimplemented-path response is not\nan answer to these questions and cannot be treated as FR-003 acceptance coverage.\n\n## Risk-based cases and data\n\nTC-001 covers absence of an assigned date as a valid task state. TC-002 covers exact\ninitial future-date assignment, parameterized with an ordinary future date and future\nmonth/year/leap-day examples where applicable. These are test data, not a product date\nrange, timezone rule or future-only restriction. TC-003 uses two tasks to observe correct\ntask selection and combine exact assignment with the other task remaining undated.\nTC-004/TC-005 explicitly document blocked past-date and changing/clearing paths.\n\nChoose dates demonstrably in the future under a controlled reference clock for repeatable\nchecks. A test reference day is a fixture, never a new business rule; no production UTC,\nper-user timezone, date-range limit, display locale or today-date policy is inferred.\nCompare calendar day/month/year, not an assumed timestamp or a required display format.\nDo not manufacture an expected answer to a missing rule to make the suite green.\n\n## Verification levels\n\nDevelopment owns unit tests and build checks. QA may review their coverage but will not\ncreate a second unit-test stream or bundle its approval into the Engineering Plan.\nLater integration checks will exercise actual application boundaries to assign and read\nback the selected task's calendar date, and observe a permitted absent date value. Any\nAPI shape or storage representation is an implementation detail inspected later, not\nthe functional oracle. Cross-process persistence is not part of the approved criteria.\n\nLater UI/E2E checks must open the real running interface, identify the intended existing\ntask, leave one task undated, and perform initial assignment through real controls.\nAssert observable resulting state matching AC-001/AC-002. HTTP calls alone, category\nlabels, code inspection or screenshots alone do not establish UI acceptance.\nAutomation wiring and tool choices will be prepared after scenario approval and separate\nadvancement, using available approved interfaces without replacing these expectations.\n\n## Reviews, execution and evidence\n\nPresent this Strategy and the independently versioned Test Scenarios together for one\nexplicit human scenario approval, acknowledging all inherited unresolved items. That\napproval does not advance QA or approve automation. Engineering Plan/code approval is\nindependent. Concrete QA automation later stays under its approved qa/ paths and receives\nits own human review, exact source binding and separate advancement.\n\nDo not execute integration/UI checks until current Engineering implementation is approved\nand made available, and QA scenario/automation approvals and readiness are valid. Use\nactual named qa-check-run operations, preserving case/FR/AC links, reviewed sources,\ncommands, exit status, output and available browser evidence. Failed, unavailable,\nblocked, skipped or not-run results cannot become passes. Inspect assertion quality;\nstructural validation is not business correctness or executed verification.\n\nReport defects with the case, requirement, reviewed source, expected/observed behavior,\nreproduction and evidence. Keep requirements/scenarios authoritative rather than altering\nexpectations to match a defect. Explicit remediation and new current evidence are needed\nfor affected Engineering changes. Require explicit QA completion before the joined gate;\nmissing QA is not successful verification. Security review remains a separate downstream\nresponsibility; technical security-negative checks are selected later against approved\ninterfaces and controls and do not redefine functional acceptance.\n\n## Current limitations and handoff\n\nNo application or QA automation exists yet; no case has executed and no result is passed.\nThe coverage disposition called implemented in the structural schema means planned\nscenario coverage only, not implemented code or successful test execution. The three\nspecified cases cover AC-001/AC-002; both unresolved business topics remain explicit.\nDo not claim full product completeness, retention guarantees, security certification,\nrelease approval or deployment readiness. Engineering artifacts, approvals and ownership\nare unchanged by this QA drafting activity.\n",
+  "coverage": {
+    "FR-001": {
+      "disposition": "implemented",
+      "reason": "Planned TC-002/TC-003 cover initial assignment of the exact selected future calendar date; not yet automated or executed."
+    },
+    "FR-002": {
+      "disposition": "implemented",
+      "reason": "Planned TC-001/TC-003 cover permitted undated state; no clearing capability is inferred."
+    },
+    "FR-003": {
+      "disposition": "blocked",
+      "reason": "TC-004 remains blocked: past-date acceptance/rejection has no approved expected outcome."
+    },
+    "AC-001": {
+      "disposition": "implemented",
+      "reason": "TC-002/TC-003 specify exact day/month/year matching and correct task targeting."
+    },
+    "AC-002": {
+      "disposition": "implemented",
+      "reason": "TC-001/TC-003 specify a task with no assigned date as a permitted result."
+    }
+  },
+  "unresolved": [
+    {
+      "id": "U-001",
+      "text": "Past-date behavior remains unresolved and deferred pending consultation with support; no acceptance/rejection rule is selected."
+    },
+    {
+      "id": "AQ-001",
+      "text": "Whether a due date may be in the past remains deferred; acknowledgement does not resolve it."
+    },
+    {
+      "id": "FR-003",
+      "text": "Past-date assignment remains blocked and has no executable product acceptance criterion."
+    },
+    {
+      "id": "AQ-002",
+      "text": "Changing or clearing an existing assigned due date remains undefined; neither is an implied capability."
+    }
+  ]
+}

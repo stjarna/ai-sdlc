@@ -1,0 +1,8 @@
+{
+  "name": "Supplementary approved Design control: seeded hostile text renders literally, not as markup",
+  "cases": [
+    "TC-001"
+  ],
+  "status": "passed",
+  "pageErrors": []
+}

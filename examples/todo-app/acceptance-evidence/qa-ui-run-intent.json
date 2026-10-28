@@ -1,0 +1,16 @@
+[
+  "qa-check-run",
+  "REQ-0001",
+  "--check-id",
+  "QA-UI",
+  "--expected-qa-revision",
+  "43b8e87b704fab6773b770544a68f25dc1f2812a30b19ab6a7e9e410e144ef4d",
+  "--expected-source-revision",
+  "2847a39720175496a832654b75f65ea6c4e311d1aad94963bb9fc0e0d9e7541d",
+  "--operation-id",
+  "working-app-qa-ui-run-8128152d-47e5-4796-9339-cb3ba92b4491",
+  "--actor",
+  "AI assistant using Testing skill",
+  "--decision",
+  "Execute the approved real Chrome UI check in response to $sdlc start qa; preserve actual outcomes and screenshot/trace evidence, with no automatic completion or advancement."
+]
