@@ -1,6 +1,6 @@
 ---
 name: sdlc
-description: Guide an informal business idea through Discovery, business specification refinement, and explicit Product Owner decisions using the AI SDLC Assistant.
+description: Guide an informal business idea through Discovery, business specification refinement, explicit Product Owner decisions, and Functional Analysis using the AI SDLC Assistant.
 ---
 
 # AI SDLC Assistant for Claude Code

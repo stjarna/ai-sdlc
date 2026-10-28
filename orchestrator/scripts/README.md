@@ -1,4 +1,4 @@
-# Discovery, Business Refinement and Approval operation contract
+# AI SDLC operation contract
 
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
@@ -26,6 +26,10 @@ These are tool-facing arguments. The skill derives a title and passes the user's
 description; users need not specify IDs or paths when presenting a business idea.
 `--version` reports the orchestrator version independently of the schema version.
 
+Increment 5 Functional Analysis contracts and the exact specification format are in
+[Functional Analysis](../../docs/functional-analysis.md). `analysis-review` exposes
+verified frozen input before drafting and persisted Analysis after drafting.
+
 ## Schema 0.1
 
 `new` creates `requirements/REQ-0001-<derived-slug>/metadata.yaml` and `idea.md`:
@@ -51,8 +55,10 @@ append-only `lifecycle` entries record each completion, reopening and entry to
 refinement. Increment 4 upgrades a target Epic to schema `0.3` on its first explicit
 PO decision, adding append-only `business_decisions` and support for
 `ready_for_analysis`. Approval itself keeps `business_refinement`; only explicit
-advancement changes that lifecycle state. There is no cancellation or Functional
-Analysis operation. Existing schema `0.1`/`0.2` records remain readable without migration.
+advancement changes that lifecycle state. Schema `0.4` adds `functional_analysis` on
+initial specification generation;
+existing schemas remain readable without migration. There is no cancellation, Analysis
+approval, Technical Design or Story decomposition operation.
 
 Every immediate subdirectory of `requirements/` is treated as an Epic record.
 Each must have a regular, nonsymlink `metadata.yaml`. Ordinary top-level files such
@@ -117,6 +123,16 @@ business correctness or readiness for approval or implementation.
 - `business-advance ID --expected-review-revision SHA256 --expected-business-revision SHA256 --operation-id ID --actor NAME --reason TEXT --approval-id BD-0001`:
   separately validate the selected latest approval, baseline and current source;
   atomically append the transition to `ready_for_analysis`.
+- `analysis-review ID`: read-only verified handoff, frozen business/Discovery input,
+  specification, full Analysis review token, coverage and unresolved items. No semantic
+  evaluation is performed by the CLI.
+- `analysis-generate ID --expected-analysis-review-revision SHA256 --expected-baseline-id SHA256 --expected-handoff-id ID [--expected-analysis-revision SHA256] --operation-id ID --editor NAME --reason TEXT --document-file FILE [--feedback-file FILE]`:
+  initial generation or explicit regeneration of stale Analysis. The existing draft's
+  revision is required when it exists. Initial generation enters `functional_analysis`.
+- `analysis-revise ID`: same arguments, with an existing draft's exact revision;
+  persist an instructed refinement or explicit source reconciliation.
+- `analysis-recover ID`: after inspecting an interrupted Analysis transaction and any
+  abandoned lock, roll forward known contents; reject unrelated edits.
 - `business-recover ID`: after inspecting an interrupted Epic-local transaction,
   roll it forward if no unrelated changes have occurred.
 
@@ -175,5 +191,15 @@ because this increment reads existing files only and never consults Git history.
 For atomic update publication, idempotent retry and inspected stale-lock recovery,
 see the guide. Creation's hard-termination limits remain unchanged.
 
-The CLI never invokes Git or performs Functional Analysis. Unsupported schemas
-and inconsistent existing records block creation/opening rather than being repaired.
+The CLI persists and structurally validates AI-drafted Functional Analysis; it never
+invokes AI APIs, semantically interprets requirements, approves Analysis or invokes Git.
+Unsupported schemas and inconsistent existing records block creation/opening rather than being repaired.
+
+Analysis adds `E_ANALYSIS_INPUT`, `E_ANALYSIS_DOCUMENT`, `E_ANALYSIS_REFERENCE`,
+`E_ANALYSIS_PROVENANCE`, `E_ANALYSIS_COVERAGE`, `E_ANALYSIS_UNRESOLVED`,
+`E_ANALYSIS_HISTORY`, `E_ANALYSIS_MISMATCH`, `E_ANALYSIS_FILE` and
+`E_ANALYSIS_RECOVERY`. Complete review tokens, exact retries, declared attribution,
+fixed artifact allowlists and failure-closed publication retain the earlier conventions.
+The Business review revision and baseline layouts are unchanged; Analysis has its own
+complete token including specification/history. Existing schema `0.4` is retained when
+Discovery/business operations are repeated after reopening.

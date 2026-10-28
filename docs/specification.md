@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.7 (Procedural Business Approval increment)
+**Verze dokumentu:** 0.8 (Functional Analysis increment)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis a další fáze zůstávají plánované
+**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Analysis approval a další fáze zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -87,7 +87,9 @@ project/
 
 **[D/P]** Increment 4 přidává `business-request-changes`, `business-approve` a samostatný `business-advance`. Metadata schéma `0.3` uchovává append-only `business_decisions`; starší schémata zůstávají čitelná. Schválení nemění `business_refinement`; pouze advancement přechází do `ready_for_analysis`. Neměnný baseline obsahuje přesné bajty business dokumentu, původního nápadu, Discovery, metadat před schválením a business historie, s content-addressed manifestem. Schválení váže business revizi i její operaci, zdrojovou revizi a operaci dokončení Discovery. Reopen, nová revize nebo request-changes zneplatní jeho oprávnění; návrat ke stejným bajtům je neobnoví. Podrobnosti: [Business Approval](business-approval.md).
 
-**[O]** Status enumy po `ready_for_analysis`, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
+**[D/P]** Increment 5 využívá existující možnost Epic-wide `specification.md` bez dekompozice Stories. AI nejprve navrhne smysluplnou analýzu pouze z neměnného business baseline vybraného lifecycle handoffem. CLI validuje FR/UC/BR/AC/AQ/AP, pokrytí všech B položek, odkazy na zmrazené Discovery a zachování U/P nejistot. Kontext a exclusions nevyžadují umělé FR. Given/When/Then kontroluje strukturálně; význam, testovatelnost a rozpory posuzuje skill a člověk. Schéma `0.4` zavádí `functional_analysis`, obnovitelnou historii a explicitní reconciliaci po novém business handoffu. Analysis approval, Technical Design a Story decomposition nejsou implementovány. Viz [Functional Analysis](functional-analysis.md).
+
+**[O]** Status enumy po `functional_analysis`, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
 ### Vzor stavů / referencí (ilustrativní, ne finální schéma)
 
@@ -126,9 +128,11 @@ impact_review: {status: not_required}
 flowchart TD
   I[Idea & Discovery] --> B[PO Business Refinement]
   B --> BA{PO Business approval}
-  BA -->|schváleno| A[Functional Analysis]
+  BA -->|schváleno, beze změny stavu| GATE[Business Refinement se schváleným baseline]
+  GATE -->|samostatný explicitní business-advance| READY[ready_for_analysis]
+  READY -->|analysis-generate| A[Functional Analysis]
   BA -->|vráceno k úpravě| B
-  A --> R{Story Functional DoR + human approval}
+  A -. budoucí fáze, mimo Increment 5 .-> R{Story Functional DoR + human approval}
   R -->|blokující otázky / neschváleno| A
   R -->|schváleno, neblokuje| D[Solution Design + Implementation Planning]
   R -->|schváleno, neblokuje| TD[QA Test Design]
@@ -333,8 +337,8 @@ sequenceDiagram
 
 ## 11. Otevřená rozhodnutí před implementací
 
-1. Rozšíření Epic schématu za Increment 4: následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
-2. Rozšíření management skriptů a skillu o Functional Analysis a další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
+1. Rozšíření Epic schématu za Increment 5: následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
+2. Rozšíření management skriptů a skillu o Analysis approval a další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
 3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.

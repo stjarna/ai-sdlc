@@ -1,7 +1,8 @@
 # Procedural Human Business Approval Gate — Increment 4
 
 Increment 4 records explicit Product Owner decisions and separately advances an Epic
-to `ready_for_analysis`. Functional Analysis itself is not implemented. The human
+to `ready_for_analysis`. Functional Analysis drafting is separately implemented in
+[Increment 5](functional-analysis.md). The human
 declares an identity and supplies decision text; neither is authenticated. An
 unrestricted AI agent can invoke these operations while claiming a human identity.
 This PoC does **not** technically guarantee human-only authorization. SHA-256 is
@@ -149,10 +150,11 @@ Important gate diagnostics are `E_ACKNOWLEDGEMENT`, `E_APPROVAL_REQUIRED`,
 `E_BASELINE_MISSING`, `E_BASELINE_INTEGRITY`, `E_BASELINE_CONTEXT`,
 `E_BASELINE_WRITE`, and the existing revision, status, write and idempotency codes.
 
-## Future Functional Analysis handoff
+## Functional Analysis handoff
 
 The advancement event carries the approval and baseline IDs. In `ready_for_analysis`,
-review derives `analysis_input` from that event. A future Analysis operation must
+review derives `analysis_input` from that event, retaining it during
+`functional_analysis`. Increment 5 Analysis operations must
 verify the baseline, consume its frozen business/source artifacts and reference its
 ID in outputs. Unresolved issues remain unresolved. Reopening clears the active
 handoff view while preserving the historical event. Increment 4 does not run Analysis.

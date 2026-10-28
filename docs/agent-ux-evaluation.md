@@ -4,14 +4,16 @@ The shared [workflow](../orchestrator/skill/SKILL.md) and
 [conversation policy](../orchestrator/skill/conversation.md) support Codex CLI/IDE
 and Claude Code CLI/IDE through thin discovery adapters. All hosts use the same
 deterministic CLI, business semantics and artifact contracts. This change adds no
-custom UI or interactive questionnaire. Functional Analysis remains unimplemented.
+custom UI or interactive questionnaire. Functional Analysis drafting/refinement/review
+is included in Increment 5; Analysis approval and later phases remain unimplemented.
 
 ## What is verified and what remains manual
 
 Format validation, resource resolution and the existing automated suite are development
 checks. They do not establish actual host discovery, natural conversation quality,
-tool-control parity or reliable interpretation of a human response. Record real results
-for each surface; do not mark a host passed merely because its Markdown validates.
+tool-control parity or reliable interpretation of a human response. Codex is the PoC
+acceptance target; Claude Code remains an unverified portability target and does not
+block PoC acceptance. Record real results for each surface tested; do not mark a host passed merely because its Markdown validates.
 
 | Surface | Runtime acceptance status |
 |---|---|
@@ -170,3 +172,25 @@ or restart requirements. Native question tools, shell permissions, context reten
 and tool-trace visibility differ. Shared Markdown does not prove runtime parity.
 The agents still provide procedural, unauthenticated human authorization, not a
 technical barrier against an unrestricted agent invoking approval operations.
+
+## Increment 5: Functional Analysis semantic evaluation
+
+Use [the complete To-Do scenario](functional-analysis.md#manual-acceptance-established-to-do-baseline)
+in a disposable approved/advanced project. Codex acceptance should demonstrate:
+
+- A useful first draft before focused clarification, without a long questionnaire.
+- Optional task due dates, unchanged exclusions and full B coverage without invented FRs
+  for business value/exclusions; stable, understandable use cases and alternative flows.
+- Observable Given/When/Then aligned with business evidence, with ambiguity, missing
+  edge cases and contradictions identified rather than hidden behind structural validity.
+- Deferred past-date behavior stays unresolved; possible alternatives remain proposals,
+  never selected rules. New business decisions trigger explicit upstream reconsideration.
+- A real human wording refinement, recoverable prior revision and concise resume in a
+  new conversation. No repeated settled questions, Analysis approval or automatic advance.
+- Exact frozen evidence and revision diagnostics available on request while routine
+  conversation stays business-oriented. Corrupt/stale input blocks writes understandably.
+
+Retain the generated specification, transcript and CLI evidence outside this repository.
+Record semantic findings separately from deterministic validation results. Do not claim
+that static adapter checks or fixture prose establish AI quality. Claude Code can use
+this same guide later; its runtime behavior remains unverified, not a PoC blocker.

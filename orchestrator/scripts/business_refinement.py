@@ -40,23 +40,27 @@ def valid_person(value):
     return discovery.text(value) and not any(ord(char) < 32 for char in value)
 
 
-def validate_lifecycle(events, status, allow_advance=False):
+def validate_lifecycle(events, status, allow_advance=False, allow_analysis=False):
     require(isinstance(events, list) and bool(events), "E_LIFECYCLE", "Lifecycle events must be a nonempty list.", "metadata.yaml")
     current, ids = "discovery", set()
-    for event in events:
+    for index, event in enumerate(events):
         fields = {"id", "action", "from", "to", "base_revision", "actor", "decision", "timestamp"}
-        if isinstance(event, dict) and event.get("action") == "advance" and allow_advance:
+        if isinstance(event, dict) and event.get("action") in (("advance", "analyze") if allow_analysis else ("advance",)) and allow_advance:
             fields |= {"review_revision", "business_revision", "approval_id", "baseline_id"}
+            if event["action"] == "analyze":
+                fields |= {"handoff_id"}
         require(isinstance(event, dict) and set(event) == fields, "E_LIFECYCLE", "Invalid lifecycle event fields.", "metadata.yaml")
         action = event["action"]
-        require(action in (("complete", "reopen", "refine", "advance") if allow_advance else ("complete", "reopen", "refine")), "E_LIFECYCLE", "Unknown lifecycle action.", "metadata.yaml")
-        target = {"complete": "ready_for_refinement", "reopen": "discovery", "refine": "business_refinement", "advance": "ready_for_analysis"}[action]
-        allowed = {"complete": ("discovery",), "reopen": ("ready_for_refinement", "business_refinement", "ready_for_analysis") if allow_advance else ("ready_for_refinement", "business_refinement"), "refine": ("ready_for_refinement",), "advance": ("business_refinement",)}[action]
+        require(action in (("complete", "reopen", "refine", "advance", "analyze") if allow_analysis else ("complete", "reopen", "refine", "advance") if allow_advance else ("complete", "reopen", "refine")), "E_LIFECYCLE", "Unknown lifecycle action.", "metadata.yaml")
+        target = {"complete": "ready_for_refinement", "reopen": "discovery", "refine": "business_refinement", "advance": "ready_for_analysis", "analyze": "functional_analysis"}[action]
+        allowed = {"complete": ("discovery",), "reopen": ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis") if allow_analysis else ("ready_for_refinement", "business_refinement", "ready_for_analysis") if allow_advance else ("ready_for_refinement", "business_refinement"), "refine": ("ready_for_refinement",), "advance": ("business_refinement",), "analyze": ("ready_for_analysis",)}[action]
         require(event["from"] == current and current in allowed and event["to"] == target, "E_LIFECYCLE", "Invalid lifecycle transition chain.", "metadata.yaml")
         require(discovery.valid_operation_id(event["id"]) and event["id"] not in ids, "E_LIFECYCLE", "Invalid or duplicate lifecycle operation ID.", "metadata.yaml")
         require(discovery.valid_revision(event["base_revision"]) and valid_person(event["actor"]) and valid_person(event["decision"]) and valid_person(event["timestamp"]), "E_LIFECYCLE", "Invalid lifecycle evidence.", "metadata.yaml")
-        if action == "advance":
+        if action in ("advance", "analyze"):
             require(all(discovery.valid_revision(event[key]) for key in ("review_revision", "business_revision", "baseline_id")) and isinstance(event["approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", event["approval_id"]), "E_LIFECYCLE", "Invalid approval reference in advancement.", "metadata.yaml")
+        if action == "analyze":
+            require(discovery.valid_operation_id(event["handoff_id"]) and index > 0 and events[index - 1]["id"] == event["handoff_id"] and events[index - 1]["action"] == "advance" and all(events[index - 1][key] == event[key] for key in ("approval_id", "baseline_id", "business_revision")), "E_LIFECYCLE", "Analysis must reference its business handoff.", "metadata.yaml")
         ids.add(event["id"])
         current = target
     require(current == status, "E_LIFECYCLE", "Lifecycle events do not match current status.", "metadata.yaml")
@@ -186,7 +190,7 @@ def read(directory: Path, metadata, source_document, source_state, source_revisi
     validate_history(data, metadata["id"])
     latest = data["revisions"][-1]
     require(content == decode_revision(latest), "E_BUSINESS_MISMATCH", "Current business.md differs from the latest recorded revision.", path.name)
-    current = latest["source_revision"] == source_revision and metadata["status"] in ("business_refinement", "ready_for_analysis")
+    current = latest["source_revision"] == source_revision and metadata["status"] in ("business_refinement", "ready_for_analysis", "functional_analysis")
     if current:
         validate_markdown(content, metadata["id"], source_revision, source_document, source_state)
     try:
@@ -217,9 +221,9 @@ def atomic_bytes(path: Path, content: bytes):
             temporary.unlink()
 
 
-def publish(directory: Path, files: dict[str, bytes]):
+def publish(directory: Path, files: dict[str, bytes], *, analysis=False):
     """Journal a small Epic-local multi-file write; readers reject an unfinished transaction."""
-    journal = directory / ".business-transaction.json"
+    journal = directory / (".analysis-transaction.json" if analysis else ".business-transaction.json")
     before = {}
     for name in files:
         path = directory / name
@@ -241,23 +245,25 @@ def publish(directory: Path, files: dict[str, bytes]):
             journal.unlink()
         raise
     try:
-        recover(directory)
+        recover(directory, analysis=True) if analysis else recover(directory)
     except (OSError, BusinessError) as exc:
-        raise BusinessError("E_WRITE_UNCERTAIN", "Business publication may be partial; inspect and run business-recover.", journal.name) from exc
+        raise BusinessError("E_WRITE_UNCERTAIN", "Publication may be partial; inspect and run " + ("analysis-recover." if analysis else "business-recover."), journal.name) from exc
 
 
-def recover(directory: Path):
-    journal = directory / ".business-transaction.json"
-    require(journal.is_file() and not journal.is_symlink(), "E_BUSINESS_RECOVERY", "No regular transaction journal found.", journal.name)
+def recover(directory: Path, *, analysis=False):
+    journal = directory / (".analysis-transaction.json" if analysis else ".business-transaction.json")
+    recovery_code = "E_ANALYSIS_RECOVERY" if analysis else "E_BUSINESS_RECOVERY"
+    allowed_files = {"metadata.yaml", "specification.md", "analysis-history.yaml"} if analysis else {"metadata.yaml", "business.md", "business-history.yaml"}
+    require(journal.is_file() and not journal.is_symlink(), recovery_code, "No regular transaction journal found.", journal.name)
     try:
         entry = json.loads(journal.read_text(encoding="utf-8"))
-        require(isinstance(entry, dict) and set(entry) == {"before", "after"} and isinstance(entry["before"], dict) and isinstance(entry["after"], dict) and set(entry["before"]) == set(entry["after"]) and set(entry["after"]) <= {"metadata.yaml", "business.md", "business-history.yaml"}, "E_BUSINESS_RECOVERY", "Malformed transaction journal.", journal.name)
+        require(isinstance(entry, dict) and set(entry) == {"before", "after"} and isinstance(entry["before"], dict) and isinstance(entry["after"], dict) and set(entry["before"]) == set(entry["after"]) and bool(entry["after"]) and set(entry["after"]) <= allowed_files, recovery_code, "Malformed transaction journal.", journal.name)
         after = {name: base64.b64decode(value, validate=True) for name, value in entry["after"].items()}
         for name, content in after.items():
             path = directory / name
-            require(not path.is_symlink() and (not path.exists() or path.is_file()), "E_BUSINESS_RECOVERY", "Artifact path changed type.", name)
+            require(not path.is_symlink() and (not path.exists() or path.is_file()), recovery_code, "Artifact path changed type.", name)
             current = digest(path.read_bytes()) if path.exists() else None
-            require(current in (entry["before"][name], digest(content)), "E_BUSINESS_RECOVERY", "Artifact changed outside the interrupted transaction.", name)
+            require(current in (entry["before"][name], digest(content)), recovery_code, "Artifact changed outside the interrupted transaction.", name)
         for name, content in after.items():
             if not (directory / name).exists() or (directory / name).read_bytes() != content:
                 atomic_bytes(directory / name, content)
@@ -268,7 +274,7 @@ def recover(directory: Path):
         finally:
             os.close(fd)
     except (OSError, UnicodeError, ValueError, TypeError, binascii.Error) as exc:
-        raise BusinessError("E_BUSINESS_RECOVERY", str(exc), journal.name) from exc
+        raise BusinessError(recovery_code, str(exc), journal.name) from exc
 
 
 def append(data, epic_id, content: bytes, source_revision, editor, reason, operation_id, mode):

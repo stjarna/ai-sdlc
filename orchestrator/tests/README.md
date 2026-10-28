@@ -31,3 +31,11 @@ while preserving the absence of Functional Analysis.
 The [manual approval acceptance scenario](../../docs/business-approval.md#manual-acceptance-with-the-established-to-do-example)
 requires actual separate human approval and advancement instructions. Automated tests
 do not establish semantic correctness or authenticated human identity.
+
+`test_functional_analysis.py` exercises the real approved-handoff fixtures and CLI,
+source/coverage/Given-When-Then validation, inherited deferrals, resumable revision
+history, feedback, stale tokens, competing writes, reopened/new business cycles,
+idempotent replay and interrupted publication/recovery. Earlier 111 tests remain
+unchanged. [Functional Analysis manual acceptance](../../docs/functional-analysis.md#manual-acceptance-established-to-do-baseline)
+checks meaning, observable outcomes and missing/contradictory behavior, which structural
+tests cannot establish. Claude Code runtime validation is not required for PoC acceptance.

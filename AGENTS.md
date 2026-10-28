@@ -13,7 +13,7 @@ Read these before changing code. Flag conflicting requirements instead of silent
 ## Boundaries
 - `orchestrator/`: generic orchestration skill, templates, workflows, deterministic scripts, tests. No To-Do, Node.js or due-date logic here.
 - `examples/todo-app/`: future minimal existing in-memory Node.js app to demonstrate Task Due Date Management and a date-only to date-and-time change.
-- `docs/`: durable architecture and decisions. Discovery, Business Refinement and procedural Business Approval through ready_for_analysis are implemented. Functional Analysis and later lifecycle remain in design. Approval and advancement require separate explicit human instructions; declared identities are unauthenticated.
+- `docs/`: durable architecture and decisions. Discovery, Business Refinement and procedural Business Approval through ready_for_analysis are implemented. Functional Analysis drafting/refinement/review is implemented in Increment 5. Analysis approval, Technical Design, Story decomposition and later lifecycle remain in design. Approval and advancement require separate explicit human instructions; declared identities are unauthenticated.
 
 ## Working rules
 - Inspect repository and documentation first; propose a small implementation slice with files and acceptance checks before major coding.

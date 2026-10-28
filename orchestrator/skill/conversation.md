@@ -114,7 +114,8 @@ After successful approval, give a brief result and one separate decision:
 Wait for that separate explicit authorization. Even "approve and proceed" in the
 initial message is followed by this separate post-approval decision. A clear "Proceed"
 in response to the single advancement question authorizes that transition. Report
-readiness, not completion of Functional Analysis, which is not implemented.
+readiness, not completion of Functional Analysis. Drafting Analysis is a subsequent
+operation when requested, not part of business approval or advancement.
 
 ## Errors and evidence
 
@@ -132,3 +133,20 @@ recovery rules and keep diagnostics available on request. Tool execution permiss
 not Product Owner approval. A submitted native choice may carry an explicit decision;
 an unsubmitted/preselected choice, timeout or absence of response cannot. The conversation
 is procedural approval, not authenticated human authorization.
+
+## Functional Analysis
+
+Draft first from the verified approved business input, then summarize the result and
+important gaps. Ask focused questions after a useful draft exists. Keep optional dates,
+exclusions and deferrals faithful to the actual evidence; do not invent examples as
+confirmed business behavior. For example: "The draft covers optional task due dates.
+The rule for past dates is still deferred. Would you like to review the scenarios?"
+
+Explain blocked behavior in business terms. A deferred business decision can be carried
+forward but cannot be silently selected as an acceptance criterion. If a human wants a
+new business decision, explain the need to revisit and reapprove business scope before
+incorporating it. Routine wording refinements preserve existing evidence and history.
+
+Keep hashes, input bindings, CLI operations and paths internal unless requested. Resume
+from saved review without repeating answered questions. Positive feedback is not
+Analysis approval. Analysis approval and Technical Design are not available yet.

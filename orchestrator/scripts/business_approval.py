@@ -107,10 +107,10 @@ def validate_bundle(manifest, files, loader):
         metadata = yaml.load(files["metadata.yaml"].decode("utf-8"), Loader=loader)
         document = yaml.load(files["discovery.yaml"].decode("utf-8"), Loader=loader)
         history = yaml.load(files["business-history.yaml"].decode("utf-8"), Loader=loader)
-        require(isinstance(metadata, dict) and metadata.get("id") == manifest["request_id"] and metadata.get("status") == "business_refinement" and metadata.get("schema_version") in ("0.2", "0.3"), "Frozen metadata does not identify a refinement snapshot.", "E_BASELINE_CONTEXT")
+        require(isinstance(metadata, dict) and metadata.get("id") == manifest["request_id"] and metadata.get("status") == "business_refinement" and metadata.get("schema_version") in ("0.2", "0.3", "0.4"), "Frozen metadata does not identify a refinement snapshot.", "E_BASELINE_CONTEXT")
         require(metadata.get("artifacts") == {"idea": manifest["idea_reference"]}, "Frozen idea reference mismatch.", "E_BASELINE_CONTEXT")
-        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], allow_advance=metadata["schema_version"] == "0.3")
-        if metadata["schema_version"] == "0.3":
+        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], allow_advance=metadata["schema_version"] in ("0.3", "0.4"), allow_analysis=metadata["schema_version"] == "0.4")
+        if metadata["schema_version"] in ("0.3", "0.4"):
             validate_decisions(metadata)
         state = discovery.project(document, manifest["request_id"])
         business.validate_history(history, manifest["request_id"])
@@ -233,13 +233,13 @@ def evaluate(metadata, draft, source_revision, integrity_errors):
             reasons.append("source_revision_changed")
         if latest["discovery_completion_id"] != completion_id(metadata):
             reasons.append("discovery_completion_changed")
-        if metadata["status"] not in ("business_refinement", "ready_for_analysis"):
+        if metadata["status"] not in ("business_refinement", "ready_for_analysis", "functional_analysis"):
             reasons.append("discovery_requires_reconciliation")
     if integrity_errors:
         reasons.append("baseline_integrity_failure")
     valid = latest is not None and latest["action"] == "approve" and not reasons
     status = "valid" if valid else "invalid" if integrity_errors else "none" if latest is None else "changes_requested" if latest["action"] == "request_changes" else "stale"
-    advanced = next((event for event in reversed(metadata.get("lifecycle", [])) if event["action"] == "advance"), None) if metadata["status"] == "ready_for_analysis" else None
+    advanced = next((event for event in reversed(metadata.get("lifecycle", [])) if event["action"] == "advance"), None) if metadata["status"] in ("ready_for_analysis", "functional_analysis") else None
     if advanced and (latest is None or latest["id"] != advanced["approval_id"]):
         reasons.append("advancement_approval_mismatch")
         valid, status = False, "invalid"

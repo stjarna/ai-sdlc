@@ -42,6 +42,7 @@ global host settings automatically.
 - [Discovery evidence and resume](../../docs/interactive-discovery.md)
 - [Business Refinement and reconciliation](../../docs/business-refinement.md)
 - [Business Approval and immutable baselines](../../docs/business-approval.md)
+- [Functional Analysis, revisions and acceptance](../../docs/functional-analysis.md)
 - [Manual cross-agent evaluation](../../docs/agent-ux-evaluation.md)
 
 Format/link validation does not establish actual discovery or conversational behavior
@@ -49,4 +50,6 @@ in every host. Run the manual guide separately for both CLI and IDE surfaces and
 record versions and permission modes. Native command traces may remain visible.
 Approval identities are declared and unauthenticated, and execution permission is not
 PO approval. Approval and advancement remain separate explicit human decisions.
-Functional Analysis remains unimplemented.
+Functional Analysis drafting/review is implemented; Analysis approval, Technical Design
+and Story decomposition remain deferred. Claude Code runtime validation is an unverified
+portability target, not a PoC acceptance requirement.

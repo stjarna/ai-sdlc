@@ -1,6 +1,6 @@
 ---
 name: sdlc
-description: Guide an informal business idea through Discovery, business specification refinement, and explicit Product Owner decisions using the AI SDLC Assistant.
+description: Guide an informal business idea through Discovery, business specification refinement, explicit Product Owner decisions, and Functional Analysis using the AI SDLC Assistant.
 ---
 
 # AI SDLC Assistant
@@ -133,8 +133,48 @@ After that separate instruction, obtain a fresh review, verify the selected late
 approval and immutable baseline, and call `business-advance` with fresh tokens, actor,
 reason and operation ID. Verify `ready_for_analysis` and the baseline reference.
 Describe this as marking the request ready for Functional Analysis; do not claim that
-Analysis has run or create Analysis artifacts. Reopening requires fresh completion,
+Analysis has run; use the separate Analysis drafting workflow when requested.
+Reopening requires fresh completion,
 refinement and approval; old approvals never regain authority merely from matching bytes.
+
+## Draft and refine Functional Analysis
+
+Read the [Functional Analysis contract](../../docs/functional-analysis.md) before this
+stage. Use `analysis-review` to obtain the active handoff and verified frozen business
+and Discovery evidence. Draft a meaningful Epic-wide specification first; do not begin
+with an extensive questionnaire. Never use a mutable draft or conversational recollection
+as an alternative approved source. If no valid business advancement exists, explain
+what is missing rather than choosing a historical baseline.
+
+Use stable FR/UC/BR/AC/AQ/AP items, complete business coverage dispositions and the exact
+inherited U/P lines. Context and exclusions need no artificial FRs. Produce observable
+Given/When/Then criteria, supported use cases/alternative flows and business rules.
+Assess clarity, testability, observable outcomes, missing edge cases, contradictions
+and source alignment yourself; the CLI does not judge prose semantics. Preserve deferred
+business decisions. Identify affected behavior without selecting an unapproved option.
+
+Persist through `analysis-generate` using the fresh complete Analysis review token,
+asserted baseline/handoff, operation ID and declared editor/reason. First generation
+enters Functional Analysis; it is not approval. Summarize the generated behavior,
+material gaps and blocked items, then ask one focused question where useful. Let the
+human review the draft and request refinements instead of repeatedly questioning them.
+
+Use `analysis-revise` for explicitly requested refinements with both complete review
+and specification revision. Preserve actual feedback through the optional feedback
+file and retain IDs; retire obsolete items. Feedback is not new business authority.
+New behavior, scope changes or a decision on an inherited business question requires
+explicit Discovery reopening, renewed completion/refinement/approval and separate
+advancement. Keep the old Analysis stale and its history intact until explicit
+regeneration/revision against the new handoff, even if business bytes are identical.
+
+Resume with `open` and `analysis-review`, loading current contents, coverage, unresolved
+items and history rather than repeating settled questions. If an Analysis transaction
+is interrupted, inspect it, establish no writer remains, and use `analysis-recover`;
+retry only the original operation ID and inputs. Never treat a stale draft as current.
+
+Finish with read-only Analysis review and any remaining concerns. No Analysis approval,
+onward advancement, Technical Design, Story decomposition or implementation operation
+is available in this increment. Do not infer any of these from positive feedback.
 
 ## Execute and recover
 

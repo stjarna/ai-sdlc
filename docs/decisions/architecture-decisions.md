@@ -23,6 +23,7 @@ Companion to [the working specification](../specification.md), not a replacement
 | 017 | Approved Increment 3: explicit Requester completion of Discovery, `ready_for_refinement`, AI-drafted `business.md` from confirmed Discovery, revision-controlled human refinement, read-only review, explicit Discovery reopening and source reconciliation. Exact document bytes and attribution remain recoverable in an Epic-local history. No business approval or Functional Analysis in this increment. See [Business Refinement](../business-refinement.md). | D/P |
 | 018 | Approved Increment 4 implements procedural business approval: declared approver identity, exact artifact revision, timestamp, decision, append-only audit, immutable approved baseline and separate lifecycle transition. Procedural approval does not technically prevent an unrestricted AI agent from invoking approval operations and must not be called guaranteed human-only authorization. No cryptographic receipts or signing infrastructure. See [Business Approval](../business-approval.md). | D/P |
 | 019 | Metadata schema 0.3 appends PO decisions; approval freezes five exact supporting artifacts under a content-addressed manifest before atomic metadata publication. Complete review revision, business revision operation and Discovery completion operation bind authority. Request changes supersedes approval; reopen/revision requires fresh approval even if bytes return to an earlier value. Only explicit business-advance enters ready_for_analysis; no Analysis implementation. | D/P |
+| 020 | Increment 5 uses the existing Epic-wide specification option before Story decomposition: constrained Markdown FR/UC/BR/AC/AQ/AP, explicit business coverage and unchanged inherited U/P evidence. Draft first from the handoff-selected immutable baseline; AI owns semantic quality, the CLI owns structural/provenance validation. Schema 0.4 starts functional_analysis, preserves recoverable revisions, explicit reconciliation, concurrency/idempotency and inspected recovery. No Analysis approval or later phases. See [Functional Analysis](../functional-analysis.md). | D/P |
 
 ## Rejected / deferred
 - **Rejected:** storing state only in chat; `checkpoint.md`; giant bootstrap Story; automatic release of a ready Epic; Release nested under Epic; treating self-review as independent; copying specialist skills into orchestrator.
@@ -30,7 +31,7 @@ Companion to [the working specification](../specification.md), not a replacement
 
 ## Remaining open design work
 - Host catalog installation and cross-host invocation beyond the checkout-based CLI.
-- Functional Analysis consuming the immutable approved input; later lifecycle states and Story/Release schemas.
+- Analysis approval with a separate onward transition; later lifecycle states and Story/Release schemas.
 - FR/AC/TC references and test-to-requirement traceability without duplicated authorities.
 - Concurrent ID allocation, migration and compatibility policy.
 - Skill discovery and version manifest implementation for the demo.
