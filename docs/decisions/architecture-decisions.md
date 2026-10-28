@@ -6,8 +6,8 @@ Companion to [the working specification](../specification.md), not a replacement
 |---|---|---|
 | 001 | One generic orchestration skill coordinates domain-specific, approved external skills, rather than owning every engineering rule. | D |
 | 002 | Git-native local-first Markdown/YAML and source code are authoritative. Stable IDs; no separate checkpoint subsystem. | D |
-| 003 | Epic → Story, independent from module/team mapping; Stories can change with traceable impact review. | D |
-| 004 | Requester confirmation is not PO approval. Discovery saves locally without automatic commit/push. Approvals bind to particular revisions. | D |
+| 003 | Epic → Story, independent from module/team mapping; Stories can change with traceable impact review. `move-story` is limited to the same Epic, preserving Story ID and parent; cross-Epic moves must be rejected without mutation. | D |
+| 004 | Requester confirmation is not PO approval. Discovery saves locally without automatic commit/push. PO approves the business artifact before functional analysis. Approvals bind to particular revisions. | D |
 | 005 | Analysis produces functional requirements, acceptance criteria and scenarios. Prototypes and screenshots are versioned references, not self-authorizing specifications. | D |
 | 006 | Flexible Definition of Ready allows owned nonblocking warnings; blocking unknowns prevent advancing. | D |
 | 007 | Agent must inspect existing code before solution design. Tech Lead approves design and implementation plan before coding. Major changes require reassessment. | D |
@@ -17,7 +17,7 @@ Companion to [the working specification](../specification.md), not a replacement
 | 011 | Epic readiness, business Release Planning and joint Release Readiness are distinct. Release may contain multiple complete Epics; deployment is external. Only ready Epics in PoC release plans. | D/P |
 | 012 | Security and governance are cross-cutting; permissions, sandbox, CI and Git protections enforce critical rules beyond prompt instructions. | D |
 | 013 | Federated ownership of specialist skills with central governance; immutable revision references, compatibility review and controlled upgrades. | D/T |
-| 014 | Public repo with generic `orchestrator/` and separate `examples/todo-app/`. PoC: existing minimal Node.js To-Do app, Due Date epic and change to include time. | P |
+| 014 | Confirmed PoC scenario (ADR-0001): public repo with generic `orchestrator/` and separate `examples/todo-app/`; existing minimal in-memory Node.js To-Do app, Task Due Date Management and a date-only to date-and-time requirements change. | D/P |
 
 ## Rejected / deferred
 - **Rejected:** storing state only in chat; `checkpoint.md`; giant bootstrap Story; automatic release of a ready Epic; Release nested under Epic; treating self-review as independent; copying specialist skills into orchestrator.

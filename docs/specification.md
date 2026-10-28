@@ -18,7 +18,7 @@
 2. **[D]** Složka Story má tvar `S<NN>-<module-slug>--<change-slug>`; např. `S03-customer-account--manage-price-alerts`.
 3. **[D]** Machine-readable YAML metadata; lidsky čitelné Markdown artefakty, bez duplicitních autoritativních popisů. Změny souborů, ID, vazeb a validace provádí deterministické skripty, ne improvizované příkazy LLM.
 4. **[D]** Lidská schválení jsou oddělená od AI analýz; schválení musí referencovat konkrétní revizi artefaktu. Git diff říká *co*, `decisions.md` také *proč*.
-5. **[D]** Epic i Stories se průběžně zpřesňují: přibývají, mění se, přemisťují nebo se logicky ruší; ID a historii zachovat. Dopady změn na rozpracovanou práci vyvolají `impact_review`, ne automatické přepsání kódu.
+5. **[D]** Epic i Stories se průběžně zpřesňují: přibývají, mění se nebo se logicky ruší; Story lze přemístit pouze v rámci stejného Epicu. ID, rodičovský Epic a historii zachovat. Dopady změn na rozpracovanou práci vyvolají `impact_review`, ne automatické přepsání kódu.
 6. **[D]** Role reprezentují odpovědnosti, ne nutně různé osoby. Business Requester může být zároveň Product Owner, přesto potvrzení nápadu není business approval.
 7. **[D]** Orchestrátor automaticky vybírá důvěryhodné specializované skilly podle činnosti, pokud jsou dostupné; zkušený uživatel může výběr přepsat v mezích bezpečnostní politiky.
 8. **[D]** Security a governance jsou průřezové, od Discovery po Release; instrukce skillu nejsou bezpečnostní hranice. Skutečná omezení vynucují oprávnění, sandbox, Git/CI a další nástroje.
@@ -107,6 +107,8 @@ impact_review: {status: not_required}
 - Workflow: `refine`, `analyze`, `design`, `implement`, `review`, `release plan` a kontroly readiness.
 - Skill lifecycle: `version`, `check-update`, `upgrade`, `changelog`, `doctor`.
 
+**[D]** `move-story` mění umístění Story pouze uvnitř stejného Epicu; zachovává její ID a `parent`. Přesun do jiného Epicu musí odmítnout bez změny souborů. Převod Stories mezi Epicy není součástí tohoto rozhraní.
+
 **[P]** Migrace schématu, robustní paralelní číslování požadavků, push notifikace a integrace s Jira/Azure DevOps jsou mimo PoC. Kontrola verzí musí při nekompatibilitě bezpečně skončit. Notifikace o změnách v PoC fungují při `open` / `list --pending-impact`, nikoli jako automaticky doručené zprávy týmům.
 
 ## 6. Role a přechody SDLC
@@ -114,17 +116,26 @@ impact_review: {status: not_required}
 ```mermaid
 flowchart TD
   I[Idea & Discovery] --> B[PO Business Refinement]
-  B --> A[Functional Analysis]
-  A --> R{Story Functional DoR}
+  B --> BA{PO Business approval}
+  BA -->|schváleno| A[Functional Analysis]
+  BA -->|vráceno k úpravě| B
+  A --> R{Story Functional DoR + human approval}
+  R -->|blokující otázky / neschváleno| A
   R -->|schváleno, neblokuje| D[Solution Design + Implementation Planning]
   R -->|schváleno, neblokuje| TD[QA Test Design]
-  D --> T[Tech Lead approval]
-  T --> IM[Implementation + developer tests]
+  D --> T{Tech Lead approves design + implementation plan}
+  T -->|schváleno| IM[Implementation + developer tests]
+  T -->|vráceno k úpravě| D
+  IM --> AIR[Independent AI code review]
+  AIR --> HCR{Human code review + approval}
+  HCR -->|vráceno k úpravě| IM
+  HCR -->|schváleno| G[Git/CI quality gate]
+  G -->|passed| V[Story verification]
+  G -->|failed / blocked / not_run| IM
   TD --> QR[QA approves scenarios]
-  QR --> AT[Generate automated QA tests]
+  QR -->|schváleno| AT[Generate automated QA tests]
   AT --> QAR[QA reviews automated tests]
-  IM --> V[Story verification]
-  QAR --> V
+  QAR -->|schváleno| V
   V --> E[Epic ready_for_release]
   E --> RP[PO/PM Release Planning]
   RP --> RR[Release Readiness + approval]
@@ -142,6 +153,8 @@ flowchart TD
 ### 6.2 Business Refinement — Product Owner
 
 **[D]** `business.md`: business value, priority, cílová skupina, initial/out-of-scope, úspěch/metriky, omezení, závislosti a otevřené body. PO může založit první navržené Stories; další mohou vzniknout během analýzy, designu i implementace. Navržená Story není automaticky připravená k implementaci. Překryv Requester/PO neznamená přeskočení produktového rozhodnutí.
+
+**[D]** Před přechodem do Functional Analysis musí Product Owner schválit konkrétní revizi `business.md`; schválení zaznamenává identitu, čas a revizi. Potvrzení nápadu Requesterem toto business approval nenahrazuje.
 
 ### 6.3 Business / Functional Analysis
 
@@ -287,6 +300,8 @@ sequenceDiagram
 
 ## 10. PoC vs cílová architektura
 
+**[D] Potvrzený demonstrační scénář:** podle ADR-0001 rozšířit existující minimální JavaScript/Node.js To-Do aplikaci s daty v paměti o **Task Due Date Management**. Následná změna požadavku z data na datum a čas předvede impact review specifikace, designu, implementačního plánu a testů. Demo aplikace patří do `examples/todo-app/`; `orchestrator/` zůstává obecný a nezávislý na její doméně a stacku.
+
 | Oblast | PoC | Budoucí produkční rozvoj |
 |---|---|---|
 | Git-native Epic/Story management a rozhodnutí | Ano, demonstrační workflow | Multi-team konflikt/ID/permissions |
@@ -307,7 +322,7 @@ sequenceDiagram
 
 1. Finální formální YAML/Markdown schéma: status enums, approval object, stabilní ID FR/AC/TC/tasks, validace a migrations policy.
 2. Konkrétní repozitářová struktura skillu, bezpečné deterministické management skripty a interoperabilní invocation syntax.
-3. Konkrétní PoC business scénář, demo app, počty Stories, minimální testovací rozsah a Defintion of Done.
+3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.
 6. Povinné vs volitelné specializované skilly v demo katalogu; co při absenci skillu a při konfliktech pravidel.
