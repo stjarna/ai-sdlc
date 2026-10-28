@@ -1,4 +1,4 @@
-# Discovery and Business Refinement operation contract
+# Discovery, Business Refinement and Approval operation contract
 
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
@@ -8,6 +8,8 @@ documented in [Interactive Discovery](../../docs/interactive-discovery.md).
 Increment 3 lifecycle, business document format, revision history, reconciliation
 and manual acceptance are documented in
 [Business Refinement](../../docs/business-refinement.md).
+Increment 4 decisions, immutable baselines, separate advancement and manual acceptance
+are documented in [Business Approval](../../docs/business-approval.md).
 
 From the orchestrator repository root:
 
@@ -46,7 +48,11 @@ compatibility for retained cancelled records so their IDs remain reserved. Incre
 3 upgrades an Epic to schema `0.2` only on explicit Discovery completion. Schema
 `0.2` supports `discovery`, `ready_for_refinement` and `business_refinement`; its
 append-only `lifecycle` entries record each completion, reopening and entry to
-refinement. There is no cancellation, business approval or Analysis operation.
+refinement. Increment 4 upgrades a target Epic to schema `0.3` on its first explicit
+PO decision, adding append-only `business_decisions` and support for
+`ready_for_analysis`. Approval itself keeps `business_refinement`; only explicit
+advancement changes that lifecycle state. There is no cancellation or Functional
+Analysis operation. Existing schema `0.1`/`0.2` records remain readable without migration.
 
 Every immediate subdirectory of `requirements/` is treated as an Epic record.
 Each must have a regular, nonsymlink `metadata.yaml`. Ordinary top-level files such
@@ -98,7 +104,19 @@ business correctness or readiness for approval or implementation.
   persist a human-refined draft or reconcile a stale one. The CLI validates structure
   and Discovery IDs, not the meaning of the prose.
 - `business-review ID`: read-only draft, revision, source coverage and `current`
-  flag. An outdated draft is visible for comparison only, with `current: false`.
+  flag, plus `review_revision`, `open_items`, and the latest approval/feedback with
+  validity reasons and `can_advance`. An outdated draft is visible for comparison
+  only, with `current: false`.
+- `business-request-changes ID --expected-review-revision SHA256 --expected-business-revision SHA256 --operation-id ID --reviewer NAME --reason TEXT --feedback TEXT`:
+  append declared PO feedback against the exact reviewed snapshot. It supersedes an
+  earlier approval without changing the draft or leaving `business_refinement`.
+- `business-approve ID --expected-review-revision SHA256 --expected-business-revision SHA256 --operation-id ID --approver NAME --reason TEXT --decision TEXT [--acknowledge-open-item U-001 ...]`:
+  freeze all five supporting artifacts and append explicit procedural approval.
+  Acknowledgements must exactly cover every displayed U/P item. State stays
+  `business_refinement`. Declared identities are unauthenticated.
+- `business-advance ID --expected-review-revision SHA256 --expected-business-revision SHA256 --operation-id ID --actor NAME --reason TEXT --approval-id BD-0001`:
+  separately validate the selected latest approval, baseline and current source;
+  atomically append the transition to `ready_for_analysis`.
 - `business-recover ID`: after inspecting an interrupted Epic-local transaction,
   roll it forward if no unrelated changes have occurred.
 
@@ -107,6 +125,12 @@ includes current content, SHA-256 revision, source revision, reconciliation flag
 revision metadata (historical bytes remain in `business-history.yaml`). Revisions
 hash exact bytes. The business document format and recovery constraints are in the
 linked Increment 3 guide.
+`review_revision` hashes metadata, idea, Discovery, business and business history exact
+bytes. `approval` reports the latest decision, validity reasons, `can_advance` and the
+active immutable `analysis_input` reference. `open_items` lists unresolved U/P items.
+Baseline integrity failures produce read-only review diagnostics with `ok: false`;
+mutations fail closed. Exact gate retries preserve the original decision/transition
+and return the current Epic view; they never reinstate historical authority.
 
 All output is JSON on stdout. `ok` describes structural success only, accompanied
 by `operation`, `diagnostics`, and either `epic` (new/open/update) or `validated_ids`
@@ -134,6 +158,12 @@ Increment 3 also uses `E_LIFECYCLE`, `E_BUSINESS_DOCUMENT`,
 `E_BUSINESS_HISTORY`, `E_BUSINESS_MISMATCH`, `E_BUSINESS_FILE`,
 `E_BUSINESS_RECOVERY`, `E_WRITE_UNCERTAIN`, `E_REVISION_CONFLICT`,
 `E_READ_CONFLICT`, `E_IDEMPOTENCY` and `E_STATUS` with file-specific JSON diagnostics.
+Increment 4 adds `E_BUSINESS_DECISIONS`, `E_ACKNOWLEDGEMENT`,
+`E_APPROVAL_REQUIRED`, `E_APPROVAL_STALE`, `E_APPROVAL_SUPERSEDED`,
+`E_BASELINE_MISSING`, `E_BASELINE_INTEGRITY`, `E_BASELINE_CONTEXT` and
+`E_BASELINE_WRITE`. Baseline preparation failures create no approval; retained orphans
+can be verified and reused by an exact retry. Metadata publication uncertainty uses
+`E_WRITE_UNCERTAIN`. See the approval guide for commit points and inspected recovery.
 
 Creation and updates use a transient `.sdlc-discovery.lock/` directory at the project root;
 cooperating concurrent local writers fail closed. The lock is removed after normal
@@ -145,5 +175,5 @@ because this increment reads existing files only and never consults Git history.
 For atomic update publication, idempotent retry and inspected stale-lock recovery,
 see the guide. Creation's hard-termination limits remain unchanged.
 
-The CLI never invokes Git or creates approval/Analysis states. Unsupported schemas
+The CLI never invokes Git or performs Functional Analysis. Unsupported schemas
 and inconsistent existing records block creation/opening rather than being repaired.

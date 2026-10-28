@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.6 (Business Refinement increment)
+**Verze dokumentu:** 0.7 (Procedural Business Approval increment)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; Discovery management, Interactive Discovery a Business Refinement Increment 3 implementovány k revizi; schválení a další fáze zůstávají plánované
+**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis a další fáze zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -85,7 +85,9 @@ project/
 
 **[D/P]** Increment 3 přidává explicitní dokončení a znovuotevření Discovery, stav `ready_for_refinement`, AI návrh a lidské iterace `business.md` a read-only review. Metadata schéma `0.2` se použije jen po explicitním dokončení, starší `0.1` zůstává čitelné. `business-history.yaml` v Epicu uchovává plné bajty každé revize, SHA-256, předchozí revizi, editorovo deklarované jméno, důvod, čas a ID operace. Potvrzené Discovery záznamy jsou zdrojem business textu; nedořešené otázky a návrhy AI zůstávají oddělené. Po znovuotevření zůstává draft zachován, ale stale, dokud není výslovně sladěn s novou zdrojovou revizí. Podrobnosti: [Business Refinement](business-refinement.md). Business approval a Functional Analysis nejsou součástí Incrementu 3.
 
-**[O]** Status enumy po Business Refinement, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
+**[D/P]** Increment 4 přidává `business-request-changes`, `business-approve` a samostatný `business-advance`. Metadata schéma `0.3` uchovává append-only `business_decisions`; starší schémata zůstávají čitelná. Schválení nemění `business_refinement`; pouze advancement přechází do `ready_for_analysis`. Neměnný baseline obsahuje přesné bajty business dokumentu, původního nápadu, Discovery, metadat před schválením a business historie, s content-addressed manifestem. Schválení váže business revizi i její operaci, zdrojovou revizi a operaci dokončení Discovery. Reopen, nová revize nebo request-changes zneplatní jeho oprávnění; návrat ke stejným bajtům je neobnoví. Podrobnosti: [Business Approval](business-approval.md).
+
+**[O]** Status enumy po `ready_for_analysis`, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
 ### Vzor stavů / referencí (ilustrativní, ne finální schéma)
 
@@ -165,7 +167,7 @@ flowchart TD
 
 **[D]** Před přechodem do Functional Analysis musí Product Owner schválit konkrétní revizi `business.md`; schválení zaznamenává identitu, čas a revizi. Potvrzení nápadu Requesterem toto business approval nenahrazuje.
 
-**[D/P]** Business approval bude samostatný Increment 4. PoC zvolí procedurální schválení s deklarovanou identitou, konkrétní revizí, časem, rozhodnutím a append-only auditem; schválení a lifecycle transition jsou samostatné operace. Schválený baseline musí být neměnný a revizně vázaný. Tento mechanismus technicky nebrání neomezenému AI agentovi vyvolat schvalovací operaci, proto jej nelze označovat za garantovaně human-only. Kryptografické receipts ani podpisovou infrastrukturu PoC nepřidává.
+**[D/P]** Increment 4 používá procedurální schválení s deklarovanou identitou, konkrétní revizí, časem, rozhodnutím a append-only auditem; schválení a lifecycle transition jsou samostatné operace vyžadující oddělený explicitní lidský pokyn. Otevřené U/P body vyžadují explicitní acknowledgement, který je neřeší ani nepotvrzuje návrhy AI. Schválený baseline je write-once s kontrolou integrity. Commit point schválení je atomické zveřejnění metadat poté, co je baseline trvale uložen. Tento mechanismus technicky nebrání neomezenému AI agentovi vyvolat schvalovací operaci, proto jej nelze označovat za garantovaně human-only. Kryptografické receipts ani podpisovou infrastrukturu PoC nepřidává.
 
 ### 6.3 Business / Functional Analysis
 
@@ -331,8 +333,8 @@ sequenceDiagram
 
 ## 11. Otevřená rozhodnutí před implementací
 
-1. Rozšíření Epic schématu za Increment 3: approval records, následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
-2. Rozšíření management skriptů a skillu o workflow po Business Refinement, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
+1. Rozšíření Epic schématu za Increment 4: následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
+2. Rozšíření management skriptů a skillu o Functional Analysis a další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
 3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.

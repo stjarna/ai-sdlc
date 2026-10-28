@@ -288,13 +288,13 @@ class BusinessRefinementTests(unittest.TestCase):
         self.assertEqual(len(result["epic"]["business"]["history"]), 2)
         self.assertEqual(result["epic"]["business"]["history"][1]["previous"], first_revision)
 
-    def test_old_lifecycle_compatibility_and_no_approval_or_analysis_operations(self):
+    def test_old_lifecycle_compatibility_and_no_analysis_operations(self):
         self.assertTrue(self.cli("validate")["ok"])
         self.assertEqual(self.opened()["metadata"]["schema_version"], "0.1")
         help_text = subprocess.run([sys.executable, str(SCRIPT), "--project", str(self.project), "--help"], capture_output=True, text=True).stdout
-        self.assertNotIn("business-approve", help_text)
+        self.assertIn("business-approve", help_text)
         self.assertNotIn("functional-analysis", help_text)
-        self.assertNotIn("business-advance", help_text)
+        self.assertIn("business-advance", help_text)
 
 
 if __name__ == "__main__":

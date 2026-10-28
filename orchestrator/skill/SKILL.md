@@ -1,9 +1,9 @@
 ---
 name: sdlc
-description: Guide sourced Discovery and Business Refinement, persist reviewed business drafts with traceable revisions, and resume local requests with the AI SDLC Orchestrator.
+description: Guide sourced Discovery and Business Refinement, persist traceable revisions, and record explicit procedural Product Owner approval with separate lifecycle advancement.
 ---
 
-# Interactive Discovery and Business Refinement
+# Discovery, Business Refinement and Procedural Approval
 
 Read the [operation contract](../scripts/README.md) for environment setup. For the
 record schema, update payloads and recovery rules, read the
@@ -12,6 +12,8 @@ checkout's `orchestrator/` directory together; host catalog installation is sepa
 For completion, document format, revision history and recovery, read
 [Business Refinement](../../docs/business-refinement.md). All CLI operations are
 tool-facing; the user need not supply revision hashes or operation IDs.
+For explicit PO decisions, immutable input and the separate advancement operation,
+read [Business Approval](../../docs/business-approval.md).
 
 ## Start or resume
 
@@ -139,10 +141,59 @@ revise against the new source revision and previous business revision.
 
 Use `business-review` before seeking any later approval. Report the exact revision,
 source coverage, unresolved issues and `current` flag. If `current: false`, label
-the old draft as needing reconciliation and do not present it as current. Never
-approve or transition to Analysis. On `E_BUSINESS_RECOVERY`, inspect the journal,
+the old draft as needing reconciliation and do not present it as current. On
+`E_BUSINESS_RECOVERY`, inspect the journal,
 verify no writer is active, then run `business-recover` and retry the original
 operation ID. On a stale revision, reopen and reconcile; never overwrite blindly.
 
-This increment does not create Stories, implement approval or Analysis, commit,
-push, install skills or call external AI APIs. No separate context checkpoint is used.
+## Obtain an explicit Product Owner decision
+
+Run `business-review` and show the exact document and business digest, source revision,
+traceability, latest PO feedback/decision, unresolved issues and proposed assumptions.
+Explain any stale approval or integrity error. Human semantic review remains required.
+Do not interpret a positive conversation, Discovery completion, silence or implementation
+approval for this tool as approval of a particular business document.
+
+If the PO requests changes, capture their actual words, declared identity and reason.
+Use `business-request-changes` with fresh review/business revisions and an operation ID.
+This records feedback without editing the draft and supersedes any prior approval.
+Apply only explicitly requested refinements through the existing revision operations;
+new substantive requirements still require sourced Discovery reconciliation.
+
+Before `business-approve`, obtain explicit approval of the exact business revision,
+the PO's declared identity, reason and acknowledgement of every displayed unresolved
+`U-...` item and unconfirmed `P-...` proposal. Record the actual approval text. Use
+`--acknowledge-open-item` for exactly those acknowledged IDs. Acknowledgement accepts
+the uncertainty; it does not resolve questions or confirm an AI proposal. If the scope
+of a human response is ambiguous, clarify rather than invent a decision.
+
+Use the review revision and business digest from the reviewed snapshot. On conflict,
+review the changed content and seek a renewed decision; never retry against a new
+revision while treating the previous approval as applying automatically. Exact retries
+use the original operation ID and inputs. Inspect `approval.valid` and `replayed` in
+the response: replaying a historical approval does not restore its current authority.
+
+The PoC records **declared, unauthenticated identities**. It cannot technically prevent
+an unrestricted AI agent from invoking approval operations while claiming a human
+identity. Never describe this procedural gate as guaranteed human-only authorization.
+
+## Advance only on a separate explicit instruction
+
+After approval, report that the lifecycle is still `business_refinement`. Stop and
+wait for a separate explicit human instruction before invoking `business-advance`.
+Do not bundle approval and advancement or infer advancement from approval wording.
+With that separate instruction, reopen the review, check the selected latest approval
+is valid, and use fresh review/business revisions, approval ID, declared actor, reason
+and operation ID. Report `ready_for_analysis` and the immutable baseline reference.
+Do not perform Functional Analysis or create its artifacts in this increment.
+
+When reopening after approval/advancement, preserve decisions/baselines and explain
+that renewed Discovery completion, refinement and approval will be required. Earlier
+approval cannot regain authority merely because document bytes match. For baseline
+corruption/deletion, report the exact diagnostic; never replace it from the draft.
+For `E_BASELINE_WRITE`, inspect orphan/pending files and any abandoned lock, then retry
+the exact operation only after confirming no writer is active. Uncertain metadata
+publication is recovered through the original operation ID, not a new approval.
+
+This increment does not create Stories, implement Functional Analysis, commit, push,
+install skills or call external AI APIs. No separate context checkpoint is used.

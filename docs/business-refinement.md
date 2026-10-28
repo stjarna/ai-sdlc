@@ -5,6 +5,8 @@ requirements or begin Functional Analysis. The Requester explicitly completes
 Discovery; a Product Owner then refines `business.md`. The same person may fill both
 roles, but completion is not approval. The human declares an identity; the PoC does
 not authenticate it and cannot prevent an unrestricted agent from calling operations.
+The separately implemented [Increment 4 approval gate](business-approval.md) extends
+this workflow with explicit PO decisions and independently authorized advancement.
 
 ## Lifecycle and artifacts
 

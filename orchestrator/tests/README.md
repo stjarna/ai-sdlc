@@ -1,4 +1,4 @@
-# Discovery and Business Refinement tests
+# Discovery, Business Refinement and Approval tests
 
 From the repository root, after the setup in [the operation contract](../scripts/README.md):
 
@@ -19,3 +19,15 @@ document revisions, concurrency, interrupted multi-file publication, reopening a
 reconciliation. Conversational question quality and semantic fidelity require the
 separate [Discovery manual evaluation](../../docs/interactive-discovery.md#manual-conversational-evaluation)
 and [Business Refinement manual acceptance](../../docs/business-refinement.md#manual-acceptance-task-due-date-management).
+
+`test_business_approval.py` uses fictional identities and decisions to exercise
+approval versus advancement, feedback/reapproval, exact frozen context, acknowledgements,
+stale/reverted revisions, reopening after advancement, concurrent writers, baseline
+corruption/deletion, abrupt exits and idempotent recovery. These fixtures do not
+constitute human approval of a real Epic. The original 76 tests remain; the obsolete
+Increment 3 assertion that approval commands must be absent is updated for Increment 4,
+while preserving the absence of Functional Analysis.
+
+The [manual approval acceptance scenario](../../docs/business-approval.md#manual-acceptance-with-the-established-to-do-example)
+requires actual separate human approval and advancement instructions. Automated tests
+do not establish semantic correctness or authenticated human identity.

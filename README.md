@@ -1,10 +1,10 @@
 # AI-SDLC
 
 **Status:** Discovery management, Interactive Discovery Increment 2 and Discovery
-Completion/Business Refinement Increment 3 are implemented for review. The skill
-persists sourced Discovery history and traceable business drafts. Business approval,
-Functional Analysis, later SDLC stages and the To-Do application demonstration remain
-planned.
+Completion/Business Refinement Increment 3 are implemented. Procedural Business
+Approval Gate Increment 4 is implemented for review, with immutable baselines and
+separate advancement to `ready_for_analysis`. Functional Analysis, later SDLC stages
+and the To-Do application demonstration remain planned.
 
 A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
@@ -18,10 +18,12 @@ A reusable Git-native AI-powered SDLC orchestration capability for existing soft
   review a conversation; includes a fictional demonstration and manual evaluation guide.
 - [Business Refinement](docs/business-refinement.md) — complete/reopen Discovery,
   draft and revise `business.md`, review traceability and recover interrupted writes.
+- [Business Approval](docs/business-approval.md) — explicit PO decisions, unresolved
+  item acknowledgement, immutable baselines and separate advancement; includes manual acceptance.
 
 ## Repository layout
 
-- `orchestrator/` — generic Discovery and Business Refinement skill, templates,
+- `orchestrator/` — generic Discovery, Business Refinement and Approval skill, templates,
   deterministic operations and tests; later workflows remain planned.
 - `examples/todo-app/` — future small pre-existing Node.js/JavaScript To-Do application with in-memory state, **not** part of the orchestrator's generic logic.
 - `docs/` — versioned architecture and decisions.
@@ -38,6 +40,9 @@ New Epics start in `discovery`. Increment 2 adds a separate authoritative
 updates. Increment 3 requires explicit Requester completion before Business
 Refinement, retains every business draft revision and supports source reconciliation.
 Existing requests without history remain valid.
+Increment 4 records declared, unauthenticated PO identity and explicit decisions.
+Approval keeps the Epic in refinement. Advancement requires a separate operation;
+the PoC does not technically guarantee human-only authorization.
 
 See [the operation contract](orchestrator/scripts/README.md) for environment setup,
 the minimal schema, CLI examples, diagnostics, and limitations; see
