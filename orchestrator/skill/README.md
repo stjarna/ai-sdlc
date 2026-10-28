@@ -1,14 +1,52 @@
-# Discovery, Business Refinement and Approval skill
+# AI SDLC Assistant in Codex and Claude Code
 
-[SKILL.md](SKILL.md) guides Interactive Discovery, Business Refinement and procedural
-Product Owner approval and routes
-persistence to the deterministic operations in `../scripts/`. See the
-[Discovery guide](../../docs/interactive-discovery.md) for update records, resume,
-review and manual conversational evaluation, and the
-[Business Refinement guide](../../docs/business-refinement.md) for completion,
-document traceability, revision history, reconciliation and manual acceptance. The
-[Business Approval guide](../../docs/business-approval.md) covers explicit approval,
-acknowledgement of unresolved items, immutable baselines and separately authorized advancement.
-Keep the sibling scripts and templates together when using this checkout.
-Host catalog installation and Functional Analysis remain deferred. Declared PO
-identities are unauthenticated; this is not technically guaranteed human-only authorization.
+[SKILL.md](SKILL.md) is the common workflow for both agents.
+[conversation.md](conversation.md) defines concise business-facing interaction,
+natural-language decisions and optional technical detail. Deterministic operations,
+revision/provenance checks and audit contracts stay in the existing CLI.
+
+## Native discovery adapters
+
+| Host | Project entry | Optional explicit entry |
+|---|---|---|
+| Codex CLI / IDE | [.agents/skills/sdlc/SKILL.md](../../.agents/skills/sdlc/SKILL.md) | `$sdlc` or `/skills` |
+| Claude Code CLI / IDE | [.claude/skills/sdlc/SKILL.md](../../.claude/skills/sdlc/SKILL.md) | `/sdlc` |
+
+Natural requests such as "Help me clarify this business idea" can select the skill.
+The adapters contain only loading and host instructions; they both read the same
+shared workflow and conversation policy. They do not install tools, change execution
+permissions or run approval operations during discovery. No optional UI control is
+required: plain-text conversation is the common fallback.
+
+Open this complete checkout in the host's CLI or IDE to use the project entries.
+They resolve `../../../orchestrator/skill/SKILL.md` from their own directory, not from
+the session working directory. Shared links and the CLI then resolve from that
+canonical package location. In a new session, confirm that the intended `sdlc` entry
+is visible; reload/restart where the host requires it. Avoid registering another
+copy of the shared entry under the same name. Personal/managed skills can conflict
+with or shadow a project entry; inspect the actual selected skill path during setup.
+
+The orchestrator package and the **target project** are separate. Tell the assistant
+which project to operate on; an external disposable target may need explicit host
+file access. Do not silently create business artifacts in the orchestration checkout.
+Keep `orchestrator/`, supporting documentation and the adapters together at the selected
+package revision. Copying only a wrapper into a personal or unrelated project skill
+directory breaks its relative resource links. Portable installation/plugin packaging
+is not implemented here; use the full checkout or explicitly load the canonical skill
+from its known package location when native discovery is unavailable. Do not modify
+global host settings automatically.
+
+## Contracts and evaluation
+
+- [CLI setup and operation contracts](../scripts/README.md)
+- [Discovery evidence and resume](../../docs/interactive-discovery.md)
+- [Business Refinement and reconciliation](../../docs/business-refinement.md)
+- [Business Approval and immutable baselines](../../docs/business-approval.md)
+- [Manual cross-agent evaluation](../../docs/agent-ux-evaluation.md)
+
+Format/link validation does not establish actual discovery or conversational behavior
+in every host. Run the manual guide separately for both CLI and IDE surfaces and
+record versions and permission modes. Native command traces may remain visible.
+Approval identities are declared and unauthenticated, and execution permission is not
+PO approval. Approval and advancement remain separate explicit human decisions.
+Functional Analysis remains unimplemented.

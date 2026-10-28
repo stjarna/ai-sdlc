@@ -1,199 +1,158 @@
 ---
 name: sdlc
-description: Guide sourced Discovery and Business Refinement, persist traceable revisions, and record explicit procedural Product Owner approval with separate lifecycle advancement.
+description: Guide an informal business idea through Discovery, business specification refinement, and explicit Product Owner decisions using the AI SDLC Assistant.
 ---
 
-# Discovery, Business Refinement and Procedural Approval
+# AI SDLC Assistant
 
-Read the [operation contract](../scripts/README.md) for environment setup. For the
-record schema, update payloads and recovery rules, read the
-[Interactive Discovery guide](../../docs/interactive-discovery.md). Keep this
-checkout's `orchestrator/` directory together; host catalog installation is separate.
-For completion, document format, revision history and recovery, read
-[Business Refinement](../../docs/business-refinement.md). All CLI operations are
-tool-facing; the user need not supply revision hashes or operation IDs.
-For explicit PO decisions, immutable input and the separate advancement operation,
-read [Business Approval](../../docs/business-approval.md).
+Use the shared [conversation policy](conversation.md) throughout the interaction.
+This file owns workflow and persistence mechanics for every host; discovery adapters
+only load it. Keep the complete `orchestrator/` package together. Resolve resources
+from this skill's actual location, independently of the target project's directory.
 
-## Start or resume
+Read the [CLI contract](../scripts/README.md) for environment and operation arguments.
+Load the [Discovery record guide](../../docs/interactive-discovery.md) when capturing
+or correcting evidence, the [Business Refinement guide](../../docs/business-refinement.md)
+when drafting/revising, and the [Approval guide](../../docs/business-approval.md) before
+PO decisions or advancement. These define artifact/operation contracts; the conversation
+policy defines default presentation. Handle commands and technical parameters internally.
 
-Establish the target project from workspace or explicit user context. Ask if it is
-ambiguous; the orchestrator checkout is not automatically the target project.
-Resolve an existing request from known ID/context, asking if multiple ideas match.
-`validate` returns local IDs and `open` retrieves their titles. Do not guess IDs or
-silently create a duplicate request when the user intends to continue an existing one.
+## Resolve and resume
 
-For a new idea, derive a concise title and pass the user's original description to
-`new` without adding requirements. Users need not provide technical IDs or paths.
-Read the returned original idea, metadata, revision and any history. Use `open`
-before resuming: load `discovery` and `discovery_state`, including earlier answers,
-corrections, unconfirmed assumptions and deferred questions. Legacy requests without
-history remain valid; do not automatically treat AI-written legacy prose as confirmed.
+Identify the target project from explicit user/workspace context. The package checkout
+is not automatically the target project. Ask only when the project or request is
+ambiguous. Resolve existing requests using persisted titles/IDs through `validate`
+and `open`; do not guess an ID or create a duplicate when the user intends to resume.
 
-## Conduct the conversation
+For a new request, derive a title and pass the original description to `new` without
+adding requirements. Before continuing saved work, `open` it and read current lifecycle,
+Discovery resolutions/corrections, business revision, reconciliation and approval state.
+Use the artifacts rather than chat recollection as the authoritative current state.
+A lost conversational approval context requires a fresh review and decision.
 
-Identify the uncertainty that most affects the user's goal, scope, risk or a later
-solution decision. Normally ask one meaningful question at a time, in the user's
-language. Explain briefly why it matters when useful. Adapt to the answer rather
-than following a questionnaire. Do not demand completion of every content category.
-Relevant topics can include the problem, desired outcome, users, scope/exclusions,
-capabilities, business rules, dependencies, constraints, quality expectations and
-success criteria; these are considerations, not a mandatory sequence.
+## Persist Discovery evidence
 
-Read saved answers before asking. Do not repeat answered questions. Leave deferred
-questions aside until their revisit condition, user instruction or a material change
-justifies revisiting them; explain that reason. An explicitly unknown answer remains
-unknown. Ask what is needed to resolve ambiguity instead of choosing a business rule.
+Use the conversation policy to select the next useful question or offer a review.
+Persist meaningful evidence before continuing, using `discovery-update`, the revision
+returned by `open`, an operation ID and a temporary JSON changes file. Let the CLI
+assign record IDs; use returned IDs when linking later records.
 
-## Capture evidence and decisions
+- Capture supplied facts as `user_statement` with their actual supporting quotation.
+  A quotation records what was said, not independent verification. Clarify uncertain
+  interpretations rather than assigning a business rule.
+- Keep AI proposals as `ai_assumption`. Only an explicit, sourced human decision can
+  confirm one. Silence, tool permissions and unrelated positive feedback do not.
+- Persist a focused `question` before asking it; link its answer using `answers` or
+  a human `answer` decision. Read saved answers before asking again.
+- Preserve distinct open, unknown and deferred states. Record a revisit condition
+  only when supplied. Revisit deferrals only on their condition, user instruction
+  or a material change, explaining why it matters.
+- Use sourced `human_decision` records for confirmation, rejection and explicit choices.
+  Correct an active statement/substantive decision with linked `correct`; keep earlier
+  evidence. Reject and replace an incorrect AI assumption rather than relabeling it.
 
-- Store explicitly supplied information as `user_statement`, with a supporting exact
-  quotation. A user statement records what they said, not independent verification.
-  Paraphrase only without changing meaning; ask if the interpretation is uncertain.
-- Store your unconfirmed proposals as `ai_assumption`. Show a proposal before seeking
-  confirmation; neither silence nor an unrelated answer confirms it.
-- Store the focused `question` before asking it so interruption does not lose context.
-  Link the subsequent user answer using `answers`, or a human decision with `answer`.
-- Record explicit "I don't know" as `unknown` and explicit postponement as `defer`,
-  with the user's quotation. Save a revisit condition only when actually provided.
-- Use a sourced `human_decision` to confirm/reject a particular assumption or record
-  an explicit choice. If "yes" could refer to several proposals, clarify first.
-- Correct a statement or substantive decision with a linked `correct` record and
-  user evidence. Keep the old record. Reject and replace an incorrect AI proposal;
-  never relabel it as a user fact or rewrite previously captured history.
-
-Persist each meaningful answer before continuing. Keep `idea.md` and metadata intact;
-`discovery.yaml` is the authoritative evolving history. An assistant cannot create
-authentic human evidence by labeling its own words as a user quotation.
-
-## Invoke deterministic operations
-
-Use `scripts/sdlc.py` relative to the parent `orchestrator/` directory with the setup
-from the contract. Pass content through literal arguments or safe shell quoting.
-Use `discovery-update` with the revision from `open`, a newly generated operation ID
-and a JSON changes file containing typed records. Let the script assign record IDs;
-link new records after their assigned IDs are returned. Never manage IDs, change
-metadata or edit history with improvised shell commands or direct model edits.
-
-On a successful response, read the persisted state before deciding what to ask next.
-Keep the same operation ID, revision and payload for retries. For a busy or uncertain
-write result, retry the exact request once; if unresolved, report the code and file.
-Never delete a lock or change an operation ID to bypass a failure. On a revision
-conflict, reopen, reconcile the saved records with the user's answer, and submit a
-new operation only if it is still needed. Do not silently repair malformed artifacts.
-
-## Review Discovery
-
-On a review/summary request, reopen and derive a human-readable view from the current
-history and resolution state. Summarize active user statements and explicit decisions,
-show unconfirmed assumptions separately, distinguish open/unknown/deferred questions,
-and cite relevant record IDs. Follow corrections rather than repeating superseded
-answers. Include original context where relevant, clearly identifying its provenance.
-
-Offer a reasoned AI assessment of whether the content is developed enough for human
-review, with the important gaps. This is advisory. Structural validation and legacy
-empty-section warnings do not establish business correctness or readiness. Never fill
-gaps to make the document look complete or report approval that has not occurred.
+Keep the original idea and metadata intact during Discovery updates. Legacy requests
+without history remain readable; legacy AI prose is not automatically confirmed evidence.
+Review the derived current statements, decisions, assumptions and remaining questions.
+Structural completeness and the AI's readiness assessment are advisory, not approval.
 
 ## Complete or reopen Discovery
 
-Before completion, reopen the Epic and present a concise review of active confirmed
-statements/decisions, open/unknown/deferred questions and proposed assumptions with
-record IDs. Ask the Requester for an explicit completion decision. Do not infer it
-from a positive summary or an AI recommendation. Capture their declared identity
-and exact words. Invoke `discovery-complete` with the current Epic revision and a
-stable operation ID. The result is `ready_for_refinement`, not business approval.
-The operation reports remaining unresolved questions and proposed assumptions; do
-not hide them or describe completion as proof of business readiness.
+Present a concise review and obtain an explicit Requester completion decision with a
+declared identity. Use an identity already declared for that role in this interaction;
+ask when missing. Invoke `discovery-complete` with the reviewed Epic revision, actual
+decision and operation ID, then verify `ready_for_refinement`. A review request or
+AI readiness recommendation alone cannot authorize completion. The user may continue
+Discovery instead. Completion does not approve the business specification.
 
-When a substantive Discovery correction is needed after completion, explain that
-the draft will need reconciliation. Obtain an explicit Requester reopen decision,
-then use `discovery-reopen`. Preserve `business.md` and its history. Continue
-Discovery through sourced `discovery-update` records, then request a new explicit
-completion. Do not silently merge the changed source into the draft.
+For substantive source changes after completion, explain that the draft will require
+reconciliation and obtain explicit reopening authorization. Use `discovery-reopen`,
+preserve existing draft/history/decisions/baselines, append sourced Discovery changes,
+then obtain renewed completion. Do not silently merge sources into the draft.
 
-## Draft and refine the business specification
+## Draft and refine business requirements
 
-For a request in `ready_for_refinement`, derive the current source sets from
-`discovery.yaml`. Follow corrections and resolutions. Treat current user statements,
-explicit substantive human decisions and confirmed AI assumptions as confirmed;
-show open/unknown/deferred questions and proposed assumptions separately. Do not
-use superseded statements, rejected assumptions or AI prose from `idea.md` as
-confirmed facts. `idea.md` provides original context, not replacement evidence.
+Derive confirmed content from current user statements, substantive human decisions,
+and explicitly confirmed AI assumptions, following correction and resolution chains.
+Keep unresolved questions and proposed assumptions separate. Original idea prose is
+context, not substitute evidence. Preserve source traceability inside the artifact.
 
-Draft a human-readable `business.md` using the exact section and ID format in the
-Business Refinement guide. Cover business value, target users, scope, exclusions,
-success measures, constraints and dependencies where supported. Give each confirmed
-item a stable `B-...` ID and cite its `D-...` source IDs. Use `U-...` for unresolved
-issues and `P-...` for unconfirmed proposals. Include every current source record in
-its correct category. Do not invent a requirement to fill an empty subsection.
-Present the draft and its traceability to the Product Owner for iterative review;
-the CLI's structural validation does not establish semantic correctness.
+Draft `business.md` in the documented format with stable B/U/P IDs and supporting
+Discovery references. Cover value, users, scope, exclusions, success measures,
+constraints and dependencies where supported; do not invent content to fill sections.
+Include every current source record in its correct category. Present business wording
+for human review using the conversation policy, with technical evidence available.
 
-Write a UTF-8 draft file in a temporary working location and call
-`business-generate` with the source revision returned by `open`, an operation ID,
-declared editor and reason. For later human changes, show the diff and use
-`business-revise` with both current source and business revisions. Retain IDs for
-the same requirement; give new requirements new IDs. If the Product Owner introduces
-a new substantive fact, reopen Discovery and capture it as a sourced human decision
-before including it as confirmed. For an outdated draft, explicitly regenerate or
-revise against the new source revision and previous business revision.
+Persist the initial or stale regenerated draft through `business-generate`, or an
+explicit human refinement through `business-revise`, using the current source and
+business revisions and declared editor/reason. Preserve IDs for the same requirement.
+New substantive requirements require sourced Discovery reconciliation. Do not treat a
+request labelled "wording only" as permission to silently change business meaning.
 
-Use `business-review` before seeking any later approval. Report the exact revision,
-source coverage, unresolved issues and `current` flag. If `current: false`, label
-the old draft as needing reconciliation and do not present it as current. On
-`E_BUSINESS_RECOVERY`, inspect the journal,
-verify no writer is active, then run `business-recover` and retry the original
-operation ID. On a stale revision, reopen and reconcile; never overwrite blindly.
+Use `business-review` after refinement. If `current: false`, explain that the draft
+requires reconciliation and do not present it as ready for approval. Explicitly
+regenerate/revise against the new source and previous business revision when authorized.
 
-## Obtain an explicit Product Owner decision
+## Record Product Owner decisions
 
-Run `business-review` and show the exact document and business digest, source revision,
-traceability, latest PO feedback/decision, unresolved issues and proposed assumptions.
-Explain any stale approval or integrity error. Human semantic review remains required.
-Do not interpret a positive conversation, Discovery completion, silence or implementation
-approval for this tool as approval of a particular business document.
+Use the conversation policy to present a review, interpret the human's response and
+obtain any missing identity or unresolved-item acknowledgements. Retain the reviewed
+business revision, review revision and item mapping internally in the native conversation;
+never ask the user to copy them. No separate checkpoint subsystem is needed.
 
-If the PO requests changes, capture their actual words, declared identity and reason.
-Use `business-request-changes` with fresh review/business revisions and an operation ID.
-This records feedback without editing the draft and supersedes any prior approval.
-Apply only explicitly requested refinements through the existing revision operations;
-new substantive requirements still require sourced Discovery reconciliation.
+For changes, use `business-request-changes` with fresh reviewed tokens, declared PO,
+reason and actual feedback. Verify its audit entry and unchanged lifecycle. Feedback
+is not approval or blanket permission to edit requirements; revise only as instructed.
 
-Before `business-approve`, obtain explicit approval of the exact business revision,
-the PO's declared identity, reason and acknowledgement of every displayed unresolved
-`U-...` item and unconfirmed `P-...` proposal. Record the actual approval text. Use
-`--acknowledge-open-item` for exactly those acknowledged IDs. Acknowledgement accepts
-the uncertainty; it does not resolve questions or confirm an AI proposal. If the scope
-of a human response is ambiguous, clarify rather than invent a decision.
+For approval, require explicit assent to the identified reviewed document and explicit
+acknowledgement of each outstanding issue/proposal. Preserve the human's actual words;
+do not expand a short response into a fabricated formal quotation. The reason field
+may summarize the context but must not be presented as a human quotation. Reuse only
+an identity declared in the current interaction, never a Git/login identity or an actor
+from an old audit record. If nothing relevant changed and the user already supplied a
+complete explicit decision, execute it without an extra ceremonial confirmation.
 
-Use the review revision and business digest from the reviewed snapshot. On conflict,
-review the changed content and seek a renewed decision; never retry against a new
-revision while treating the previous approval as applying automatically. Exact retries
-use the original operation ID and inputs. Inspect `approval.valid` and `replayed` in
-the response: replaying a historical approval does not restore its current authority.
+Re-read `business-review` before approval and compare it with the snapshot actually
+presented. Use that reviewed revision and its exact acknowledged item mapping in
+`business-approve`. If the context changed or was lost, show a fresh review and obtain
+renewed assent rather than silently applying the old approval to the latest content.
+Verify the recorded decision, exact baseline integrity, current revision and preserved
+unresolved items. Confirm that the request remains in Business Refinement.
 
-The PoC records **declared, unauthenticated identities**. It cannot technically prevent
-an unrestricted AI agent from invoking approval operations while claiming a human
-identity. Never describe this procedural gate as guaranteed human-only authorization.
+Declared identities are unauthenticated. This procedural conversation cannot technically
+prevent an unrestricted AI agent from invoking approval tools while claiming a human
+identity; never describe it as guaranteed human-only authorization. Host execution
+permission, skill invocation and approval of this assistant's implementation are not
+Product Owner approval of an application business specification.
 
-## Advance only on a separate explicit instruction
+## Advance separately
 
-After approval, report that the lifecycle is still `business_refinement`. Stop and
-wait for a separate explicit human instruction before invoking `business-advance`.
-Do not bundle approval and advancement or infer advancement from approval wording.
-With that separate instruction, reopen the review, check the selected latest approval
-is valid, and use fresh review/business revisions, approval ID, declared actor, reason
-and operation ID. Report `ready_for_analysis` and the immutable baseline reference.
-Do not perform Functional Analysis or create its artifacts in this increment.
+After reporting business approval, stop for a separate explicit advancement instruction.
+Do not bundle approval and advancement, even when the user initially asks for both.
+After that separate instruction, obtain a fresh review, verify the selected latest
+approval and immutable baseline, and call `business-advance` with fresh tokens, actor,
+reason and operation ID. Verify `ready_for_analysis` and the baseline reference.
+Describe this as marking the request ready for Functional Analysis; do not claim that
+Analysis has run or create Analysis artifacts. Reopening requires fresh completion,
+refinement and approval; old approvals never regain authority merely from matching bytes.
 
-When reopening after approval/advancement, preserve decisions/baselines and explain
-that renewed Discovery completion, refinement and approval will be required. Earlier
-approval cannot regain authority merely because document bytes match. For baseline
-corruption/deletion, report the exact diagnostic; never replace it from the draft.
-For `E_BASELINE_WRITE`, inspect orphan/pending files and any abandoned lock, then retry
-the exact operation only after confirming no writer is active. Uncertain metadata
-publication is recovered through the original operation ID, not a new approval.
+## Execute and recover
 
-This increment does not create Stories, implement Functional Analysis, commit, push,
-install skills or call external AI APIs. No separate context checkpoint is used.
+Use the documented Python environment and deterministic CLI through permitted native
+tools. Pass literal/safely quoted content. Do not directly mutate metadata, histories,
+IDs, approvals or baselines. Keep all CLI validation, revision checks and audit rules.
+
+Inspect the persisted response after writes. Exact retries retain the original operation
+ID, expected revisions and payload; a replay never restores superseded approval authority.
+On a conflict, reopen and reconcile; a new approval needs renewed human assent. For a
+busy/uncertain result, retry the exact request once where safe; if unresolved, explain
+its impact and retain technical diagnostics for inspection. Do not delete/bypass locks.
+
+For `E_BUSINESS_RECOVERY`, inspect the journal and establish that no writer is active
+before explicit recovery through `business-recover`. For baseline preparation failures,
+inspect pending/orphan data and any abandoned lock before an exact retry. Missing or
+corrupt approved baselines require known-good restoration, never replacement from the
+draft. Do not silently repair malformed artifacts or report an uncertain write as success.
+
+No automatic Git actions, skill installation, external AI APIs, custom UI or later SDLC
+implementation are part of this skill. Respect the user's explicit task boundaries.

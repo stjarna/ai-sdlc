@@ -5,10 +5,12 @@ Completion/Business Refinement Increment 3 are implemented. Procedural Business
 Approval Gate Increment 4 is implemented for review, with immutable baselines and
 separate advancement to `ready_for_analysis`. Functional Analysis, later SDLC stages
 and the To-Do application demonstration remain planned.
+Shared native conversational guidance and thin Codex / Claude Code discovery adapters
+are provided for review. Cross-agent runtime acceptance remains a separate manual check.
 
 A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
-## Documentation and Codex handover
+## Documentation and agent setup
 
 - [Working specification](docs/specification.md) — detailed design; **[D]** accepted, **[P]** PoC boundary, **[T]** target, **[O]** open.
 - [Architecture decision register](docs/decisions/architecture-decisions.md) — rationale, rejected/deferred approaches and open implementation questions.
@@ -20,6 +22,19 @@ A reusable Git-native AI-powered SDLC orchestration capability for existing soft
   draft and revise `business.md`, review traceability and recover interrupted writes.
 - [Business Approval](docs/business-approval.md) — explicit PO decisions, unresolved
   item acknowledgement, immutable baselines and separate advancement; includes manual acceptance.
+- [Agent setup and shared skill](orchestrator/skill/README.md) — Codex and Claude Code
+  native entries using one workflow, conversation policy and CLI.
+- [Cross-agent conversational evaluation](docs/agent-ux-evaluation.md) — manual scenarios
+  and evidence requirements for each CLI and IDE surface.
+
+## Use the assistant
+
+Open this complete checkout in Codex or Claude Code and describe the business idea or
+request you want to continue. Optional explicit entries are `$sdlc` / `/skills` in Codex
+and `/sdlc` in Claude Code. Specify the target project when it is outside this checkout.
+The agent handles CLI operations and revision parameters internally, presents concise
+business reviews, and provides technical evidence when requested. Separate explicit
+approval and advancement decisions remain required.
 
 ## Repository layout
 
