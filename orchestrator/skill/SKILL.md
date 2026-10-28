@@ -1,14 +1,17 @@
 ---
 name: sdlc
-description: Guide interactive requirements Discovery from an informal business idea, persist sourced statements and explicit decisions, and resume or review local requests with the AI SDLC Orchestrator.
+description: Guide sourced Discovery and Business Refinement, persist reviewed business drafts with traceable revisions, and resume local requests with the AI SDLC Orchestrator.
 ---
 
-# Interactive Discovery
+# Interactive Discovery and Business Refinement
 
 Read the [operation contract](../scripts/README.md) for environment setup. For the
 record schema, update payloads and recovery rules, read the
 [Interactive Discovery guide](../../docs/interactive-discovery.md). Keep this
 checkout's `orchestrator/` directory together; host catalog installation is separate.
+For completion, document format, revision history and recovery, read
+[Business Refinement](../../docs/business-refinement.md). All CLI operations are
+tool-facing; the user need not supply revision hashes or operation IDs.
 
 ## Start or resume
 
@@ -90,6 +93,56 @@ review, with the important gaps. This is advisory. Structural validation and leg
 empty-section warnings do not establish business correctness or readiness. Never fill
 gaps to make the document look complete or report approval that has not occurred.
 
-The Epic remains in `discovery`. This increment does not transition to refinement or
-Analysis, create Stories, implement later stages, commit, push, install skills or call
-external AI APIs. No separate context checkpoint is used.
+## Complete or reopen Discovery
+
+Before completion, reopen the Epic and present a concise review of active confirmed
+statements/decisions, open/unknown/deferred questions and proposed assumptions with
+record IDs. Ask the Requester for an explicit completion decision. Do not infer it
+from a positive summary or an AI recommendation. Capture their declared identity
+and exact words. Invoke `discovery-complete` with the current Epic revision and a
+stable operation ID. The result is `ready_for_refinement`, not business approval.
+The operation reports remaining unresolved questions and proposed assumptions; do
+not hide them or describe completion as proof of business readiness.
+
+When a substantive Discovery correction is needed after completion, explain that
+the draft will need reconciliation. Obtain an explicit Requester reopen decision,
+then use `discovery-reopen`. Preserve `business.md` and its history. Continue
+Discovery through sourced `discovery-update` records, then request a new explicit
+completion. Do not silently merge the changed source into the draft.
+
+## Draft and refine the business specification
+
+For a request in `ready_for_refinement`, derive the current source sets from
+`discovery.yaml`. Follow corrections and resolutions. Treat current user statements,
+explicit substantive human decisions and confirmed AI assumptions as confirmed;
+show open/unknown/deferred questions and proposed assumptions separately. Do not
+use superseded statements, rejected assumptions or AI prose from `idea.md` as
+confirmed facts. `idea.md` provides original context, not replacement evidence.
+
+Draft a human-readable `business.md` using the exact section and ID format in the
+Business Refinement guide. Cover business value, target users, scope, exclusions,
+success measures, constraints and dependencies where supported. Give each confirmed
+item a stable `B-...` ID and cite its `D-...` source IDs. Use `U-...` for unresolved
+issues and `P-...` for unconfirmed proposals. Include every current source record in
+its correct category. Do not invent a requirement to fill an empty subsection.
+Present the draft and its traceability to the Product Owner for iterative review;
+the CLI's structural validation does not establish semantic correctness.
+
+Write a UTF-8 draft file in a temporary working location and call
+`business-generate` with the source revision returned by `open`, an operation ID,
+declared editor and reason. For later human changes, show the diff and use
+`business-revise` with both current source and business revisions. Retain IDs for
+the same requirement; give new requirements new IDs. If the Product Owner introduces
+a new substantive fact, reopen Discovery and capture it as a sourced human decision
+before including it as confirmed. For an outdated draft, explicitly regenerate or
+revise against the new source revision and previous business revision.
+
+Use `business-review` before seeking any later approval. Report the exact revision,
+source coverage, unresolved issues and `current` flag. If `current: false`, label
+the old draft as needing reconciliation and do not present it as current. Never
+approve or transition to Analysis. On `E_BUSINESS_RECOVERY`, inspect the journal,
+verify no writer is active, then run `business-recover` and retry the original
+operation ID. On a stale revision, reopen and reconcile; never overwrite blindly.
+
+This increment does not create Stories, implement approval or Analysis, commit,
+push, install skills or call external AI APIs. No separate context checkpoint is used.

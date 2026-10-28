@@ -1,10 +1,13 @@
-# Discovery operation contract
+# Discovery and Business Refinement operation contract
 
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
 The conversational entrypoint is [SKILL.md](../skill/SKILL.md).
 Interactive updates, provenance rules, recovery and the manual evaluation guide are
 documented in [Interactive Discovery](../../docs/interactive-discovery.md).
+Increment 3 lifecycle, business document format, revision history, reconciliation
+and manual acceptance are documented in
+[Business Refinement](../../docs/business-refinement.md).
 
 From the orchestrator repository root:
 
@@ -38,9 +41,12 @@ All five fields are required; unknown fields, duplicate YAML keys (including nes
 keys), aliases, merge keys, non-string mapping keys, unsafe YAML tags, and malformed YAML
 are rejected. The title must be nonempty single-line text. IDs are canonical ASCII
 `REQ-0001` through `REQ-9999`; exhaustion fails explicitly rather than wrapping.
-The only supported record statuses are `discovery` and `cancelled`: the latter is
-read-only compatibility for retained cancelled records so their IDs remain reserved.
-There is no cancellation operation or transition to any other lifecycle state.
+Schema `0.1` supports `discovery` and `cancelled`: the latter is read-only
+compatibility for retained cancelled records so their IDs remain reserved. Increment
+3 upgrades an Epic to schema `0.2` only on explicit Discovery completion. Schema
+`0.2` supports `discovery`, `ready_for_refinement` and `business_refinement`; its
+append-only `lifecycle` entries record each completion, reopening and entry to
+refinement. There is no cancellation, business approval or Analysis operation.
 
 Every immediate subdirectory of `requirements/` is treated as an Epic record.
 Each must have a regular, nonsymlink `metadata.yaml`. Ordinary top-level files such
@@ -78,6 +84,29 @@ business correctness or readiness for approval or implementation.
   exactly `{"records": [...]}`. An empty list initializes history. This operation
   never changes metadata or the original idea; existing requests without history
   remain valid. See the linked guide for the record schema and examples.
+- `discovery-complete ID --expected-revision SHA256 --operation-id ID --requester NAME --decision TEXT`:
+  explicitly record Requester completion and enter `ready_for_refinement`. It requires
+  persisted Discovery history and returns unresolved questions and proposed assumptions.
+  This is not business approval.
+- `discovery-reopen ID --expected-revision SHA256 --operation-id ID --requester NAME --decision TEXT`:
+  explicitly return from refinement to Discovery. An existing draft/history is kept
+  but marked for reconciliation.
+- `business-generate ID --expected-source-revision SHA256 [--expected-business-revision SHA256] --operation-id ID --editor NAME --reason TEXT --document-file FILE`:
+  persist an AI-written initial draft or explicit regeneration of a stale draft.
+  A stale draft requires its current business revision as the expected revision.
+- `business-revise ID --expected-source-revision SHA256 --expected-business-revision SHA256 --operation-id ID --editor NAME --reason TEXT --document-file FILE`:
+  persist a human-refined draft or reconcile a stale one. The CLI validates structure
+  and Discovery IDs, not the meaning of the prose.
+- `business-review ID`: read-only draft, revision, source coverage and `current`
+  flag. An outdated draft is visible for comparison only, with `current: false`.
+- `business-recover ID`: after inspecting an interrupted Epic-local transaction,
+  roll it forward if no unrelated changes have occurred.
+
+`open` adds `source_revision` and optional `business` to the Epic view. `business`
+includes current content, SHA-256 revision, source revision, reconciliation flag and
+revision metadata (historical bytes remain in `business-history.yaml`). Revisions
+hash exact bytes. The business document format and recovery constraints are in the
+linked Increment 3 guide.
 
 All output is JSON on stdout. `ok` describes structural success only, accompanied
 by `operation`, `diagnostics`, and either `epic` (new/open/update) or `validated_ids`
@@ -100,6 +129,11 @@ validation failure, and 2 for argparse usage errors (which use stderr).
 | `W_DISCOVERY_INCOMPLETE` | Missing/empty business section; not a structural error |
 
 History/update-specific diagnostics are listed in the Interactive Discovery guide.
+Increment 3 also uses `E_LIFECYCLE`, `E_BUSINESS_DOCUMENT`,
+`E_BUSINESS_REFERENCE`, `E_BUSINESS_PROVENANCE`, `E_BUSINESS_COVERAGE`,
+`E_BUSINESS_HISTORY`, `E_BUSINESS_MISMATCH`, `E_BUSINESS_FILE`,
+`E_BUSINESS_RECOVERY`, `E_WRITE_UNCERTAIN`, `E_REVISION_CONFLICT`,
+`E_READ_CONFLICT`, `E_IDEMPOTENCY` and `E_STATUS` with file-specific JSON diagnostics.
 
 Creation and updates use a transient `.sdlc-discovery.lock/` directory at the project root;
 cooperating concurrent local writers fail closed. The lock is removed after normal
@@ -111,5 +145,5 @@ because this increment reads existing files only and never consults Git history.
 For atomic update publication, idempotent retry and inspected stale-lock recovery,
 see the guide. Creation's hard-termination limits remain unchanged.
 
-The CLI never invokes Git or changes approval/readiness states. Unsupported schemas
+The CLI never invokes Git or creates approval/Analysis states. Unsupported schemas
 and inconsistent existing records block creation/opening rather than being repaired.

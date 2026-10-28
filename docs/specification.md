@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.5 (Interactive Discovery increment)
+**Verze dokumentu:** 0.6 (Business Refinement increment)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; Discovery management implementován, Interactive Discovery implementováno k revizi, ostatní fáze zůstávají plánované
+**Stav:** návrhový dokument pro PoC a case study; Discovery management, Interactive Discovery a Business Refinement Increment 3 implementovány k revizi; schválení a další fáze zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -83,7 +83,9 @@ project/
 
 **[D/P]** Increment 2 zachovává metadata schéma a původní `idea.md`. Volitelný `discovery.yaml` je samostatně verzovaná autoritativní historie typovaných záznamů a jejich provenience. Přehled Discovery se odvozuje z této historie. Skripty spravují ID záznamů, reference, atomický zápis, lokální zámek, revize a idempotenci; význam požadavků a další otázku určuje skill. Kontrakt, příklady a omezení uvádí [Interactive Discovery](interactive-discovery.md).
 
-**[O]** Finální status enumy pro další fáze, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
+**[D/P]** Increment 3 přidává explicitní dokončení a znovuotevření Discovery, stav `ready_for_refinement`, AI návrh a lidské iterace `business.md` a read-only review. Metadata schéma `0.2` se použije jen po explicitním dokončení, starší `0.1` zůstává čitelné. `business-history.yaml` v Epicu uchovává plné bajty každé revize, SHA-256, předchozí revizi, editorovo deklarované jméno, důvod, čas a ID operace. Potvrzené Discovery záznamy jsou zdrojem business textu; nedořešené otázky a návrhy AI zůstávají oddělené. Po znovuotevření zůstává draft zachován, ale stale, dokud není výslovně sladěn s novou zdrojovou revizí. Podrobnosti: [Business Refinement](business-refinement.md). Business approval a Functional Analysis nejsou součástí Incrementu 3.
+
+**[O]** Status enumy po Business Refinement, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
 ### Vzor stavů / referencí (ilustrativní, ne finální schéma)
 
@@ -151,7 +153,7 @@ flowchart TD
 
 ### 6.1 Idea & Discovery — Requester
 
-**[D/P] Implementované incrementy:** `new` automaticky přiděluje nejvyšší existující lokální číselné ID + 1 a zakládá stav `discovery`; zachované zrušené Epicy rezervují svá ID. Duplicitní ID a strukturálně nekonzistentní záznamy operaci zablokují. `open` a `validate` zůstávají read-only a přijímají i starší Epicy bez historie. Increment 2 přidává adaptivní konverzační zpřesňování a `discovery-update`: původní nápad nemění, ukládá typované výroky uživatele, AI předpoklady, otázky a explicitní lidská rozhodnutí do `discovery.yaml`. Rozlišuje nezodpovězené, neznámé a odložené otázky. Potvrzení celého Discovery a přechod do `ready_for_refinement` nejsou implementovány; následující odstavce popisují plánovaný celý workflow.
+**[D/P] Implementované incrementy:** `new` automaticky přiděluje nejvyšší existující lokální číselné ID + 1 a zakládá stav `discovery`; zachované zrušené Epicy rezervují svá ID. Duplicitní ID a strukturálně nekonzistentní záznamy operaci zablokují. `open` a `validate` zůstávají read-only a přijímají i starší Epicy bez historie. Increment 2 přidává adaptivní konverzační zpřesňování a `discovery-update`: původní nápad nemění, ukládá typované výroky uživatele, AI předpoklady, otázky a explicitní lidská rozhodnutí do `discovery.yaml`. Rozlišuje nezodpovězené, neznámé a odložené otázky. Increment 3 přidává explicitní `discovery-complete`, `discovery-reopen`, `business-generate`, `business-revise`, `business-review` a obnovu přerušeného zápisu. Dokončení Discovery není business approval.
 
 **[D]** `$sdlc new` ihned vytvoří *lokální* pracovní Epic (`metadata.yaml`, `idea.md`). Přirozená konverzace pokrývá problém, cílové uživatele, hodnotu, cíle, počáteční scope, success criteria, předpoklady, otevřené otázky a hypotézy dotčených oblastí. Žádný závazný design ani automatická dekompozice na Stories.
 
@@ -162,6 +164,8 @@ flowchart TD
 **[D]** `business.md`: business value, priority, cílová skupina, initial/out-of-scope, úspěch/metriky, omezení, závislosti a otevřené body. PO může založit první navržené Stories; další mohou vzniknout během analýzy, designu i implementace. Navržená Story není automaticky připravená k implementaci. Překryv Requester/PO neznamená přeskočení produktového rozhodnutí.
 
 **[D]** Před přechodem do Functional Analysis musí Product Owner schválit konkrétní revizi `business.md`; schválení zaznamenává identitu, čas a revizi. Potvrzení nápadu Requesterem toto business approval nenahrazuje.
+
+**[D/P]** Business approval bude samostatný Increment 4. PoC zvolí procedurální schválení s deklarovanou identitou, konkrétní revizí, časem, rozhodnutím a append-only auditem; schválení a lifecycle transition jsou samostatné operace. Schválený baseline musí být neměnný a revizně vázaný. Tento mechanismus technicky nebrání neomezenému AI agentovi vyvolat schvalovací operaci, proto jej nelze označovat za garantovaně human-only. Kryptografické receipts ani podpisovou infrastrukturu PoC nepřidává.
 
 ### 6.3 Business / Functional Analysis
 
@@ -327,8 +331,8 @@ sequenceDiagram
 
 ## 11. Otevřená rozhodnutí před implementací
 
-1. Rozšíření minimálního Epic Discovery schématu: další status enums, approval object, Story/Release schéma, stabilní ID FR/AC/TC/tasks, validace a migrations policy.
-2. Rozšíření management skriptů a skillu o další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; první checkout-based vstup a tři operace mají kontrakt výše.
+1. Rozšíření Epic schématu za Increment 3: approval records, následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
+2. Rozšíření management skriptů a skillu o workflow po Business Refinement, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
 3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.

@@ -1,9 +1,10 @@
 # AI-SDLC
 
-**Status:** Discovery management is implemented; Interactive Discovery Increment 2
-is implemented for review. The skill guides clarification and persists typed history
-through `discovery-update`. Lifecycle progression, later SDLC stages and the To-Do
-application demonstration remain planned.
+**Status:** Discovery management, Interactive Discovery Increment 2 and Discovery
+Completion/Business Refinement Increment 3 are implemented for review. The skill
+persists sourced Discovery history and traceable business drafts. Business approval,
+Functional Analysis, later SDLC stages and the To-Do application demonstration remain
+planned.
 
 A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
@@ -15,10 +16,13 @@ A reusable Git-native AI-powered SDLC orchestration capability for existing soft
 - [Codex instructions](AGENTS.md) — required reading and safe implementation workflow.
 - [Interactive Discovery](docs/interactive-discovery.md) — start, persist, resume and
   review a conversation; includes a fictional demonstration and manual evaluation guide.
+- [Business Refinement](docs/business-refinement.md) — complete/reopen Discovery,
+  draft and revise `business.md`, review traceability and recover interrupted writes.
 
 ## Repository layout
 
-- `orchestrator/` — generic Discovery skill, template, deterministic operations and tests; later workflows remain planned.
+- `orchestrator/` — generic Discovery and Business Refinement skill, templates,
+  deterministic operations and tests; later workflows remain planned.
 - `examples/todo-app/` — future small pre-existing Node.js/JavaScript To-Do application with in-memory state, **not** part of the orchestrator's generic logic.
 - `docs/` — versioned architecture and decisions.
 
@@ -29,10 +33,11 @@ Implement **Task Due Date Management** in an existing minimal To-Do application.
 ## Development approach
 
 Read `AGENTS.md`, the specification, and the decision register before changes.
-New Epics start in `discovery` and no lifecycle transitions are implemented.
-Increment 2 adds a separate authoritative `discovery.yaml`; the initial idea and
-metadata remain intact during conversational updates. Existing requests without
-history remain valid.
+New Epics start in `discovery`. Increment 2 adds a separate authoritative
+`discovery.yaml`; the initial idea and metadata remain intact during conversational
+updates. Increment 3 requires explicit Requester completion before Business
+Refinement, retains every business draft revision and supports source reconciliation.
+Existing requests without history remain valid.
 
 See [the operation contract](orchestrator/scripts/README.md) for environment setup,
 the minimal schema, CLI examples, diagnostics, and limitations; see

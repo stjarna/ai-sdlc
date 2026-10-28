@@ -20,14 +20,16 @@ Companion to [the working specification](../specification.md), not a replacement
 | 014 | Confirmed PoC scenario (ADR-0001): public repo with generic `orchestrator/` and separate `examples/todo-app/`; existing minimal in-memory Node.js To-Do app, Task Due Date Management and a date-only to date-and-time requirements change. | D/P |
 | 015 | First approved increment: generic `new`, read-only `open` and `validate`; schema 0.1 with metadata separate from idea content. Allocate highest existing local Epic number + 1, retaining cancelled IDs; reject duplicates and inconsistent records. Create only `discovery`; conversational refinement, Requester confirmation and lifecycle transitions follow later. See [operation contract](../../orchestrator/scripts/README.md). | D/P |
 | 016 | Approved Increment 2: adaptive clarification in the host skill; authoritative append-only typed history in optional `discovery.yaml`, separate from unchanged original idea and metadata. Deterministic updates use artifact revisions, a common local write lock, atomic publication and persisted operation IDs for idempotent retries. Sourced human decisions resolve assumptions/questions; review is derived from history and does not approve or advance the Epic. See [Interactive Discovery](../interactive-discovery.md). | D/P |
+| 017 | Approved Increment 3: explicit Requester completion of Discovery, `ready_for_refinement`, AI-drafted `business.md` from confirmed Discovery, revision-controlled human refinement, read-only review, explicit Discovery reopening and source reconciliation. Exact document bytes and attribution remain recoverable in an Epic-local history. No business approval or Functional Analysis in this increment. See [Business Refinement](../business-refinement.md). | D/P |
+| 018 | PoC business approval is deferred to Increment 4: explicit operation, declared approver identity, exact artifact revision, timestamp, decision, append-only audit, immutable approved baseline and separate lifecycle transition. Procedural approval does not technically prevent an unrestricted AI agent from invoking approval operations and must not be called guaranteed human-only authorization. No cryptographic receipts or signing infrastructure. | D/P |
 
 ## Rejected / deferred
 - **Rejected:** storing state only in chat; `checkpoint.md`; giant bootstrap Story; automatic release of a ready Epic; Release nested under Epic; treating self-review as independent; copying specialist skills into orchestrator.
 - **Deferred:** greenfield bootstrap; corporate skill catalog and identity infrastructure; Jira/Teams integration; incomplete-Epic release planning; production deployment; unverified cross-host portability.
 
 ## Remaining open design work
-- Host catalog installation, cross-host invocation and commands beyond the first three operations.
-- Schema extensions beyond Epic Discovery 0.1, lifecycle transitions and approval records/revision binding.
+- Host catalog installation and cross-host invocation beyond the checkout-based CLI.
+- Business approval records/revision binding and subsequent lifecycle transition; no approval operation is part of Increment 3.
 - FR/AC/TC references and test-to-requirement traceability without duplicated authorities.
 - Concurrent ID allocation, migration and compatibility policy.
 - Skill discovery and version manifest implementation for the demo.

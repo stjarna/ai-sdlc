@@ -17,10 +17,11 @@ import unicodedata
 
 import yaml
 import discovery_history as history
+import business_refinement as business
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.2.0"
+ORCHESTRATOR_VERSION = "0.3.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 SECTIONS = (
@@ -109,6 +110,8 @@ class Epic:
     revision: str | None = None
     discovery: dict | None = None
     discovery_state: dict | None = None
+    source_revision: str | None = None
+    business: dict | None = None
 
     def payload(self) -> dict:
         return {
@@ -116,6 +119,7 @@ class Epic:
             "idea": self.idea,
             "revision": self.revision, "discovery": self.discovery,
             "discovery_state": self.discovery_state,
+            "source_revision": self.source_revision, "business": self.business,
         }
 
 
@@ -164,25 +168,33 @@ def read_epic(directory: Path) -> Epic:
         epic.diagnostics.append(error("E_METADATA", metadata_path, "Metadata must be a mapping."))
         return epic
     epic.metadata = data
-    if set(data) != FIELDS:
+    version = data.get("schema_version")
+    expected_fields = FIELDS if version == SCHEMA_VERSION else FIELDS | {"lifecycle"}
+    if set(data) != expected_fields:
         epic.diagnostics.append(error(
             "E_METADATA", metadata_path,
-            f"Expected exactly these fields: {', '.join(sorted(FIELDS))}.",
+            f"Expected exactly these fields: {', '.join(sorted(expected_fields))}.",
         ))
-    if data.get("schema_version") != SCHEMA_VERSION:
+    if version not in (SCHEMA_VERSION, "0.2"):
         epic.diagnostics.append(error(
             "E_SCHEMA_VERSION", metadata_path,
-            f"Supported schema_version is the string '{SCHEMA_VERSION}'; no migration was performed.",
+            "Supported schema_version values are the strings '0.1' and '0.2'.",
         ))
     if not valid_id(data.get("id")):
         epic.diagnostics.append(error("E_EPIC_ID", metadata_path, "Expected REQ-0001 through REQ-9999."))
     if not valid_title(data.get("title")):
         epic.diagnostics.append(error("E_TITLE", metadata_path, "Title must be nonempty, single-line text."))
     # Cancelled records reserve IDs; this CLI provides no cancellation transition.
-    if data.get("status") not in ("discovery", "cancelled"):
+    statuses = ("discovery", "cancelled") if version == SCHEMA_VERSION else ("discovery", "ready_for_refinement", "business_refinement")
+    if data.get("status") not in statuses:
         epic.diagnostics.append(error(
-            "E_STATUS", metadata_path, "Supported record statuses are discovery and cancelled."
+            "E_STATUS", metadata_path, f"Supported record statuses are {', '.join(statuses)}."
         ))
+    if version == "0.2":
+        try:
+            business.validate_lifecycle(data["lifecycle"], data.get("status"))
+        except (KeyError, business.BusinessError) as exc:
+            epic.diagnostics.append(error("E_LIFECYCLE", metadata_path, str(exc)))
     artifacts = data.get("artifacts")
     if not isinstance(artifacts, dict) or set(artifacts) != {"idea"}:
         epic.diagnostics.append(error(
@@ -201,7 +213,7 @@ def read_epic(directory: Path) -> Epic:
             relative.is_absolute() or ".." in relative.parts
             or not idea_path.is_relative_to(directory.resolve())
             or idea_path == metadata_path.resolve()
-            or idea_path == (directory / "discovery.yaml").resolve()
+            or idea_path in {(directory / "discovery.yaml").resolve(), (directory / "business.md").resolve(), (directory / "business-history.yaml").resolve()}
         ):
             epic.diagnostics.append(error(
                 "E_ARTIFACT_PATH", metadata_path, "The idea artifact must stay inside its Epic directory."
@@ -246,6 +258,18 @@ def read_epic(directory: Path) -> Epic:
     contents = [metadata_bytes, idea_bytes, discovery_bytes]
     fingerprints = [hashlib.sha256(content).hexdigest() if content is not None else None for content in contents]
     epic.revision = hashlib.sha256(json.dumps(fingerprints).encode()).hexdigest()
+    epic.source_revision = hashlib.sha256(json.dumps(fingerprints[1:]).encode()).hexdigest()
+    if not any(item.severity == "error" for item in epic.diagnostics):
+        try:
+            epic.business = business.read(directory, data, epic.discovery, epic.discovery_state, epic.source_revision)
+            if (metadata_path.read_bytes() != metadata_bytes or idea_path.read_bytes() != idea_bytes
+                    or (discovery_path.read_bytes() if discovery_path.exists() else None) != discovery_bytes
+                    or (directory / ".business-transaction.json").exists()):
+                epic.diagnostics.append(error("E_READ_CONFLICT", directory, "Artifacts changed during the read; reopen and retry."))
+        except business.BusinessError as exc:
+            epic.diagnostics.append(error(exc.code, directory / exc.filename, str(exc)))
+        except OSError as exc:
+            epic.diagnostics.append(error("E_READ", directory, str(exc)))
     return epic
 
 
@@ -452,6 +476,143 @@ def discovery_update(project: Path, epic_id: str, expected_revision: str, operat
         return result("discovery-update", updated.diagnostics, epic=updated.payload(), replayed=False, record_ids=[record["id"] for record in operation["records"]])
 
 
+def selected_epic(root: Path, epic_id: str) -> Epic:
+    if not valid_id(epic_id):
+        raise Rejected([error("E_EPIC_ID", root / "requirements", "Expected REQ-0001 through REQ-9999.")])
+    epics, diagnostics = scan(root)
+    require_valid(diagnostics)
+    selected = [epic for epic in epics if epic.metadata["id"] == epic_id]
+    if not selected:
+        raise Rejected([error("E_EPIC_NOT_FOUND", root / "requirements", f"Epic {epic_id} was not found.")])
+    return selected[0]
+
+
+def unresolved_discovery(epic: Epic) -> dict:
+    state = epic.discovery_state or {"questions": [], "assumptions": []}
+    return {"questions": [item for item in state["questions"] if item["status"] != "answered"], "assumptions": [item for item in state["assumptions"] if item["status"] == "proposed"]}
+
+
+def lifecycle_change(project: Path, epic_id: str, expected_revision: str, operation_id: str, actor: str, decision: str, action: str) -> dict:
+    root = project_path(project)
+    if action not in ("complete", "reopen") or not history.valid_revision(expected_revision) or not history.valid_operation_id(operation_id) or not business.valid_person(actor) or not business.valid_person(decision):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Expected a SHA-256 revision, unique operation ID, declared identity and explicit decision.")])
+    with project_lock(root):
+        epic = selected_epic(root, epic_id)
+        path = epic.directory / "metadata.yaml"
+        events = epic.metadata.get("lifecycle", [])
+        for event in events:
+            if event["id"] == operation_id:
+                if event["base_revision"] != expected_revision or event["actor"] != actor or event["decision"] != decision or event["action"] != action:
+                    raise Rejected([error("E_IDEMPOTENCY", path, "Lifecycle operation ID was reused with different inputs.")])
+                return result(f"discovery-{action}", epic.diagnostics, epic=epic.payload(), replayed=True, unresolved=unresolved_discovery(epic))
+        if epic.revision != expected_revision:
+            raise Rejected([error("E_REVISION_CONFLICT", path, "Discovery revision changed; reopen and reconcile.")])
+        allowed = "discovery" if action == "complete" else ("ready_for_refinement", "business_refinement")
+        if epic.metadata["status"] not in ((allowed,) if isinstance(allowed, str) else allowed):
+            raise Rejected([error("E_STATUS", path, f"Cannot {action} from {epic.metadata['status']}.")])
+        if action == "complete" and epic.discovery is None:
+            raise Rejected([error("E_DISCOVERY_HISTORY", epic.directory / "discovery.yaml", "Persist Discovery history before completion.")])
+        target = "ready_for_refinement" if action == "complete" else "discovery"
+        event = {"id": operation_id, "action": action, "from": epic.metadata["status"], "to": target, "base_revision": expected_revision, "actor": actor, "decision": decision, "timestamp": business.timestamp()}
+        candidate = dict(epic.metadata)
+        candidate.update(schema_version="0.2", status=target, lifecycle=[*events, event])
+        checked = read_epic(epic.directory)
+        require_valid(checked.diagnostics)
+        if checked.revision != expected_revision:
+            raise Rejected([error("E_REVISION_CONFLICT", path, "Discovery changed during lifecycle preparation.")])
+        atomic_history_write(path, yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True))
+        updated = read_epic(epic.directory)
+        require_valid(updated.diagnostics)
+        return result(f"discovery-{action}", updated.diagnostics, epic=updated.payload(), replayed=False, unresolved=unresolved_discovery(updated))
+
+
+def business_write(project: Path, epic_id: str, expected_source: str, expected_business: str | None, operation_id: str, editor: str, reason: str, document_path: Path, mode: str) -> dict:
+    root = project_path(project)
+    if not history.valid_revision(expected_source) or not history.valid_operation_id(operation_id) or not business.valid_person(editor) or not business.valid_person(reason) or (expected_business is not None and not history.valid_revision(expected_business)):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Expected valid source/business revisions, operation ID, editor and reason.")])
+    try:
+        content = document_path.read_bytes()
+    except OSError as exc:
+        raise Rejected([error("E_UPDATE_INPUT", document_path, str(exc))]) from exc
+    with project_lock(root):
+        epic = selected_epic(root, epic_id)
+        ledger_path = epic.directory / "business-history.yaml"
+        current = epic.business
+        ledger = None
+        if current is not None:
+            try:
+                ledger = yaml.load(ledger_path.read_text(encoding="utf-8"), Loader=StrictLoader)
+            except (OSError, UnicodeError, yaml.YAMLError) as exc:
+                raise Rejected([error("E_BUSINESS_HISTORY", ledger_path, str(exc))]) from exc
+            for entry in ledger["revisions"]:
+                if entry["operation_id"] == operation_id:
+                    if entry["digest"] != business.digest(content) or entry["source_revision"] != expected_source or entry["base_revision"] != expected_business or entry["editor"] != editor or entry["reason"] != reason or entry["mode"] != mode:
+                        raise Rejected([error("E_IDEMPOTENCY", ledger_path, "Business operation ID was reused with different inputs.")])
+                    return result(f"business-{mode}", epic.diagnostics, epic=epic.payload(), replayed=True)
+        if epic.metadata["status"] != "ready_for_refinement" and not (mode == "revise" and epic.metadata["status"] == "business_refinement"):
+            raise Rejected([error("E_STATUS", epic.directory / "metadata.yaml", "Business writing requires ready_for_refinement or business_refinement.")])
+        if mode == "generate" and current is not None and not current["needs_reconciliation"]:
+            raise Rejected([error("E_STATUS", ledger_path, "Generate is for the initial or stale draft; use revise for a current draft.")])
+        if mode == "revise" and current is None:
+            raise Rejected([error("E_BUSINESS_HISTORY", ledger_path, "No business draft exists to revise.")])
+        if epic.source_revision != expected_source or (current["revision"] if current else None) != expected_business:
+            raise Rejected([error("E_REVISION_CONFLICT", ledger_path, "Source or business draft changed; reopen and reconcile.")])
+        try:
+            coverage = business.validate_markdown(content, epic_id, expected_source, epic.discovery, epic.discovery_state)
+            candidate = business.append(ledger, epic_id, content, expected_source, editor, reason, operation_id, mode)
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
+        files = {"business.md": content, "business-history.yaml": yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True).encode("utf-8")}
+        if epic.metadata["status"] == "ready_for_refinement":
+            metadata = dict(epic.metadata)
+            metadata["status"] = "business_refinement"
+            metadata["lifecycle"] = [*metadata["lifecycle"], {"id": operation_id, "action": "refine", "from": "ready_for_refinement", "to": "business_refinement", "base_revision": epic.revision, "actor": editor, "decision": reason, "timestamp": business.timestamp()}]
+            files["metadata.yaml"] = yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True).encode("utf-8")
+        checked = read_epic(epic.directory)
+        require_valid(checked.diagnostics)
+        if checked.revision != epic.revision or (checked.business["revision"] if checked.business else None) != expected_business:
+            raise Rejected([error("E_REVISION_CONFLICT", ledger_path, "Epic changed during business write preparation.")])
+        try:
+            business.publish(epic.directory, files)
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
+        updated = read_epic(epic.directory)
+        require_valid(updated.diagnostics)
+        return result(f"business-{mode}", updated.diagnostics, epic=updated.payload(), replayed=False, coverage=coverage)
+
+
+def business_review(project: Path, epic_id: str) -> dict:
+    root = project_path(project)
+    epic = selected_epic(root, epic_id)
+    confirmed, unresolved, proposed = business.source_sets(epic.discovery, epic.discovery_state)
+    return result("business-review", epic.diagnostics, epic=epic.payload(), current=bool(epic.business and not epic.business["needs_reconciliation"]), source_records={"confirmed": sorted(confirmed), "unresolved": sorted(unresolved), "proposed": sorted(proposed)})
+
+
+def business_recover(project: Path, epic_id: str) -> dict:
+    root = project_path(project)
+    with project_lock(root):
+        if not valid_id(epic_id):
+            raise Rejected([error("E_EPIC_ID", root, "Invalid Epic ID.")])
+        matches = []
+        for directory in (root / "requirements").iterdir():
+            path = directory / "metadata.yaml"
+            if directory.is_dir() and not directory.is_symlink() and path.is_file() and not path.is_symlink():
+                try:
+                    data = yaml.load(path.read_text(encoding="utf-8"), Loader=StrictLoader)
+                except (OSError, UnicodeError, yaml.YAMLError):
+                    continue
+                if isinstance(data, dict) and data.get("id") == epic_id:
+                    matches.append(directory)
+        if len(matches) != 1:
+            raise Rejected([error("E_EPIC_NOT_FOUND", root / "requirements", "Expected one matching Epic for recovery.")])
+        try:
+            business.recover(matches[0])
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, matches[0] / exc.filename, str(exc))]) from exc
+        epic = selected_epic(root, epic_id)
+        return result("business-recover", epic.diagnostics, epic=epic.payload())
+
+
 def read_changes(path: Path) -> list:
     def mapping(pairs):
         result = {}
@@ -485,12 +646,38 @@ def main(argv: list[str] | None = None) -> int:
     update.add_argument("--expected-revision", required=True)
     update.add_argument("--operation-id", required=True)
     update.add_argument("--changes-file", required=True, type=Path)
+    for name, who in (("discovery-complete", "requester"), ("discovery-reopen", "requester")):
+        command = commands.add_parser(name, help="Explicitly complete or reopen Discovery")
+        command.add_argument("id")
+        command.add_argument("--expected-revision", required=True)
+        command.add_argument("--operation-id", required=True)
+        command.add_argument(f"--{who}", required=True)
+        command.add_argument("--decision", required=True)
+    for name in ("business-generate", "business-revise"):
+        command = commands.add_parser(name, help="Persist an AI-drafted or human-refined business document")
+        command.add_argument("id")
+        command.add_argument("--expected-source-revision", required=True)
+        command.add_argument("--expected-business-revision")
+        command.add_argument("--operation-id", required=True)
+        command.add_argument("--editor", required=True)
+        command.add_argument("--reason", required=True)
+        command.add_argument("--document-file", required=True, type=Path)
+    commands.add_parser("business-review", help="Read draft, source coverage and reconciliation state").add_argument("id")
+    commands.add_parser("business-recover", help="Roll forward an inspected interrupted business publication").add_argument("id")
     args = parser.parse_args(argv)
     try:
         if args.operation == "new":
             output = new_epic(args.project, args.title, args.idea)
         elif args.operation == "discovery-update":
             output = discovery_update(args.project, args.id, args.expected_revision, args.operation_id, read_changes(args.changes_file))
+        elif args.operation in ("discovery-complete", "discovery-reopen"):
+            output = lifecycle_change(args.project, args.id, args.expected_revision, args.operation_id, args.requester, args.decision, args.operation.removeprefix("discovery-"))
+        elif args.operation in ("business-generate", "business-revise"):
+            output = business_write(args.project, args.id, args.expected_source_revision, args.expected_business_revision, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("business-"))
+        elif args.operation == "business-review":
+            output = business_review(args.project, args.id)
+        elif args.operation == "business-recover":
+            output = business_recover(args.project, args.id)
         else:
             output = inspect_epics(args.project, args.operation, args.id)
     except Rejected as exc:
