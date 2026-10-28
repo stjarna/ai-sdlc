@@ -340,6 +340,12 @@ class AnalysisOwnershipTests(unittest.TestCase):
         self.assertEqual(advanced['ownership']['assignment_status'],'awaiting_assignment')
         self.assertTrue(advanced['analysis_approval']['valid'])
         self.assertEqual(frozen,{p.name:p.read_bytes() for p in baseline.iterdir()})
+        # Historical scalar-ownership fixture: new advancement now creates tracks.
+        # Keep the old on-disk assignment contract covered without bypassing the
+        # production fork; track-specific assignment is tested independently.
+        legacy=dict(advanced['metadata']);legacy.pop('work_tracks',None)
+        (directory/'metadata.yaml').write_text(yaml.safe_dump(legacy,sort_keys=False,allow_unicode=True))
+        advanced=sdlc.inspect_epics(project,'open','REQ-0001')['epic']
         assigned=sdlc.ownership_change(project,'REQ-0001',advanced['revision'],'assign-design-readiness','Fixture Actor','Fixture: assign Architect.','Fixture Architect')['epic']
         self.assertTrue(assigned['analysis_approval']['valid'])
         self.assertEqual(assigned['metadata']['status'],'ready_for_technical_design')

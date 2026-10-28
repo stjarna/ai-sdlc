@@ -1,0 +1,21 @@
+name: testing
+description: Testing expertise for the sequential SDLC engineering slice.
+version: 1.0.0
+owner: QA / Quality Engineering
+stages:
+- implementation_planning
+- development
+- verification
+- security_review
+- final_verification
+inputs:
+- Approved Analysis and plan
+- Reviewed implementation
+outputs:
+- Integration and UI test evidence
+- Final verification report
+standards:
+- Requirement-to-test traceability
+- Actual execution evidence
+dependencies: {}
+orchestrator: '0.9'

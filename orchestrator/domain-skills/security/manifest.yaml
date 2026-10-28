@@ -1,0 +1,18 @@
+name: security
+description: Security expertise for independently owned Engineering and QA work tracks.
+version: 1.1.0
+owner: Application Security
+stages:
+- technical_design
+- security_review
+inputs:
+- Technical Design
+- Source-bound implementation evidence
+outputs:
+- Security considerations
+- Findings and remediation review
+standards:
+- Threat and risk assessment
+- OWASP secure design principles
+dependencies: {}
+orchestrator: '0.10'

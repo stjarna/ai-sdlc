@@ -1,5 +1,6 @@
 """Functional Analysis approval policy over shared local approval infrastructure."""
 from __future__ import annotations
+from engineering_contract import STAGES as ENGINEERING_STAGES
 
 import json
 import re
@@ -101,11 +102,11 @@ def validate_bundle(directory, manifest, files, loader):
     common.validate_files(manifest, files, BASELINE_FILES)
     try:
         metadata = yaml.load(files["metadata.yaml"].decode("utf-8"), Loader=loader)
-        require(isinstance(metadata, dict) and metadata.get("schema_version") in ("0.4", "0.5") and metadata.get("status") == "functional_analysis" and metadata.get("id") == manifest["request_id"], "Invalid frozen Analysis metadata.", "E_BASELINE_CONTEXT")
-        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], True, True, metadata["schema_version"] == "0.5")
+        require(isinstance(metadata, dict) and metadata.get("schema_version") in ("0.4", "0.5", "0.6") and metadata.get("status") == "functional_analysis" and metadata.get("id") == manifest["request_id"], "Invalid frozen Analysis metadata.", "E_BASELINE_CONTEXT")
+        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], True, True, metadata["schema_version"] in ("0.5", "0.6"), metadata["schema_version"] == "0.6")
         ownership.validate(metadata)
         business_gate.validate_decisions(metadata)
-        if metadata["schema_version"] == "0.5":
+        if metadata["schema_version"] in ("0.5", "0.6"):
             validate_decisions(metadata)
         ledger = yaml.load(files["analysis-history.yaml"].decode("utf-8"), Loader=loader)
         analysis.validate_history(ledger, metadata["id"], directory, loader)
@@ -181,7 +182,7 @@ def evaluate(epic, integrity_errors, loader):
     else:
         if epic.analysis is None or any(latest[k] != v for k, v in context(epic.analysis).items()):
             reasons.append("analysis_revision_or_handoff_changed")
-        if epic.analysis is None or epic.analysis["needs_reconciliation"] or not epic.approval["valid"] or epic.metadata["status"] not in ("functional_analysis", "ready_for_technical_design"):
+        if epic.analysis is None or epic.analysis["needs_reconciliation"] or not epic.approval["valid"] or epic.metadata["status"] not in ("functional_analysis", "ready_for_technical_design", *ENGINEERING_STAGES):
             reasons.append("upstream_requires_reconciliation")
     if latest and latest["action"] == "approve" and not integrity_errors and epic.analysis is not None:
         _, frozen = read_baseline(epic.directory, latest["baseline_id"], loader)
@@ -189,7 +190,7 @@ def evaluate(epic, integrity_errors, loader):
             reasons.append("supporting_artifacts_changed")
     if integrity_errors:
         reasons.append("baseline_integrity_failure")
-    advanced = next((e for e in reversed(epic.metadata.get("lifecycle", [])) if e["action"] == "analysis_advance"), None) if epic.metadata["status"] == "ready_for_technical_design" else None
+    advanced = next((e for e in reversed(epic.metadata.get("lifecycle", [])) if e["action"] == "analysis_advance"), None) if epic.metadata["status"] in ("ready_for_technical_design", *ENGINEERING_STAGES) else None
     if advanced and (latest is None or latest["id"] != advanced["approval_id"]):
         reasons.append("advancement_approval_mismatch")
     valid = latest is not None and latest["action"] == "approve" and not reasons

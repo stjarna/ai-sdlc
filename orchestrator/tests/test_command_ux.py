@@ -174,7 +174,7 @@ class RoutingTests(unittest.TestCase):
                     self.assertEqual(route['write_operation'],{'approve':approve,'changes':changes,'advance':advance}.get(command))
 
     def test_unknown_command_and_status_are_rejected(self):
-        for command,status in (('implement','discovery'),('approve','technical_design')):
+        for command,status in (('implement','discovery'),('approve','release')):
             with self.assertRaises(ValueError):command_ux.route(command,status)
 
     def test_missing_and_ambiguous_context_never_guess_or_write(self):

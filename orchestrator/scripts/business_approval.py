@@ -1,6 +1,7 @@
 """Procedural business decisions and immutable Epic-local input baselines."""
 
 from __future__ import annotations
+from engineering_contract import STAGES as ENGINEERING_STAGES
 
 from datetime import datetime
 import json
@@ -105,13 +106,13 @@ def validate_bundle(manifest, files, loader):
         metadata = yaml.load(files["metadata.yaml"].decode("utf-8"), Loader=loader)
         document = yaml.load(files["discovery.yaml"].decode("utf-8"), Loader=loader)
         history = yaml.load(files["business-history.yaml"].decode("utf-8"), Loader=loader)
-        require(isinstance(metadata, dict) and metadata.get("id") == manifest["request_id"] and metadata.get("status") == "business_refinement" and metadata.get("schema_version") in ("0.2", "0.3", "0.4", "0.5"), "Frozen metadata does not identify a refinement snapshot.", "E_BASELINE_CONTEXT")
+        require(isinstance(metadata, dict) and metadata.get("id") == manifest["request_id"] and metadata.get("status") == "business_refinement" and metadata.get("schema_version") in ("0.2", "0.3", "0.4", "0.5", "0.6"), "Frozen metadata does not identify a refinement snapshot.", "E_BASELINE_CONTEXT")
         ownership.validate(metadata)
         require(metadata.get("artifacts") == {"idea": manifest["idea_reference"]}, "Frozen idea reference mismatch.", "E_BASELINE_CONTEXT")
-        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], allow_advance=metadata["schema_version"] in ("0.3", "0.4", "0.5"), allow_analysis=metadata["schema_version"] in ("0.4", "0.5"), allow_analysis_approval=metadata["schema_version"] == "0.5")
-        if metadata["schema_version"] in ("0.3", "0.4", "0.5"):
+        business.validate_lifecycle(metadata["lifecycle"], metadata["status"], allow_advance=metadata["schema_version"] in ("0.3", "0.4", "0.5", "0.6"), allow_analysis=metadata["schema_version"] in ("0.4", "0.5", "0.6"), allow_analysis_approval=metadata["schema_version"] in ("0.5", "0.6"), allow_engineering=metadata["schema_version"] == "0.6")
+        if metadata["schema_version"] in ("0.3", "0.4", "0.5", "0.6"):
             validate_decisions(metadata)
-        if metadata["schema_version"] == "0.5":
+        if metadata["schema_version"] in ("0.5", "0.6"):
             from analysis_approval import validate_decisions as validate_analysis_decisions
             validate_analysis_decisions(metadata)
         state = discovery.project(document, manifest["request_id"])
@@ -178,13 +179,13 @@ def evaluate(metadata, draft, source_revision, integrity_errors):
             reasons.append("source_revision_changed")
         if latest["discovery_completion_id"] != completion_id(metadata):
             reasons.append("discovery_completion_changed")
-        if metadata["status"] not in ("business_refinement", "ready_for_analysis", "functional_analysis", "ready_for_technical_design"):
+        if metadata["status"] not in ("business_refinement", "ready_for_analysis", "functional_analysis", "ready_for_technical_design", *ENGINEERING_STAGES):
             reasons.append("discovery_requires_reconciliation")
     if integrity_errors:
         reasons.append("baseline_integrity_failure")
     valid = latest is not None and latest["action"] == "approve" and not reasons
     status = "valid" if valid else "invalid" if integrity_errors else "none" if latest is None else "changes_requested" if latest["action"] == "request_changes" else "stale"
-    advanced = next((event for event in reversed(metadata.get("lifecycle", [])) if event["action"] == "advance"), None) if metadata["status"] in ("ready_for_analysis", "functional_analysis", "ready_for_technical_design") else None
+    advanced = next((event for event in reversed(metadata.get("lifecycle", [])) if event["action"] == "advance"), None) if metadata["status"] in ("ready_for_analysis", "functional_analysis", "ready_for_technical_design", *ENGINEERING_STAGES) else None
     if advanced and (latest is None or latest["id"] != advanced["approval_id"]):
         reasons.append("advancement_approval_mismatch")
         valid, status = False, "invalid"

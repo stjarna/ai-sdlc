@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.11 (Ownership and Handoff)
+**Verze dokumentu:** 0.13 (Engineering and QA work tracks)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Increment 6 implementuje sdílenou infrastrukturu a Analysis approval k revizi; Technical Design a další fáze zůstávají plánované
+**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Increment 6 implementuje sdílenou infrastrukturu a Analysis approval k revizi; sekvenční engineering slice rozšiřuje PoC přes Technical Design, plán, vývoj, ověření a Security Review do verified; Stories a Release execution zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -95,7 +95,15 @@ project/
 
 **[D/P]** Rozšíření Ownership & Handoff přidává do metadat volitelnou append-only historii vlastníka a přiřazení. Nový požadavek má vždy vlastníka/requestera z lokálního profilu nebo explicitní deklarace. Po autorizovaném advancementu se atomicky zachová vlastník a vytvoří pending handoff pro Product Ownera, Business Analytika nebo Engineering Leada / Architekta podle další fáze. Teprve samostatně potvrzené přiřazení převádí vlastníka a assignee; nemění lifecycle ani platnost schváleného obsahu. Příkazy `inbox`, `pending assignments`, `assign` doplňují existující UX. Staré záznamy se čtou bez migrace; jednoznačně zaznamenaný Requester určuje historického vlastníka, při nejasnosti se agent doptá. Žádné RBAC, notifikace, SLA ani provedení Technical Design. Viz [Ownership](ownership.md).
 
-**[O]** Status enumy po `ready_for_technical_design`, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
+**[D/P]** Sekvenční engineering increment používá lokální nezávisle verzované Architecture, Development, Testing a Security instrukce se schváleným content pinem. Schema `0.6` přidává append-only engineering historii; artefakty a schválení používají existující neměnné baseline a atomický metadata commit point. Design a plán mají samostatná lidská schválení a advancement; vývoj začíná až explicitně, unit/build následuje lidský code/automation review, integration/UI, Security a finální report. `verified` není release approval. Starší návrh paralelního QA/engineering zůstává cílovou možností; tento increment jej neprovádí. Kontrakty a omezení: [Sequential engineering](engineering.md).
+
+**[D/P]** Explicitní Analysis advancement nyní atomicky vytváří Engineering a QA work track se společným neměnným Analysis baseline. Každý má vlastní odpovědnost, přiřazení, revize a lidské rozhodnutí. QA strategie a scénáře vycházejí přímo z Analysis bez závislosti na Technical Design; Engineering Plan obsahuje jen vývoj a unit/build, QA scénáře a automation mají vlastní review. Integrované ověření vyžaduje oba aktuální schválené výstupy a skutečnou QA execution/completion evidenci. Fork není Git branch ani automatický paralelní AI runtime. Starší sekvenční artefakty se nemigrují; jejich explicitní adopce zachová Design a vyžaduje novou Engineering-only revizi dosud neschváleného kombinovaného plánu. Kontrakty: [Work tracks](work-tracks.md).
+
+**[D/P]** Identita dokumentu pro člověka je oddělená od content-addressed úložiště. Read-only projekce přidává typový název, titul a odkaz na přesný existující soubor; `content.md`, historické baseline a hashe se nepřejmenovávají ani nepřepisují. Žádné kopie, aliasy nebo migrace. Viz [Artifact names](artifact-names.md).
+
+**[D/P]** Nové Engineering/QA baseline používají manifest `0.2` s explicitním názvem dokumentu a kanonickým fyzickým souborem (`technical-design.md`, `code-review.md`, `security-review.md` atd.). Čtečka zachovává striktní podporu historického `0.1`/`content.md` beze změn hashů, auditů a schválení. Staré soubory se nemigrují; odkazy je výslovně označují jako legacy. Fyzický název a zobrazovaný filename se shodují. Viz [Artifact storage](artifact-names.md).
+
+**[O]** Status enumy po `verified`, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
 ### Vzor stavů / referencí (ilustrativní, ne finální schéma)
 
@@ -142,7 +150,22 @@ flowchart TD
   AA -->|vráceno k úpravě| A
   AA -->|schváleno, beze změny lifecycle| AB[Functional Analysis se schváleným baseline]
   AB -->|samostatný explicitní analysis-advance| ATD[ready_for_technical_design]
-  ATD -. budoucí fáze, mimo Increment 6 .-> R{Story Functional DoR + human approval}
+  ATD --> ED[Engineering: Technical Design + Security by design]
+  ATD --> QD[QA: Strategy and functional scenarios from Analysis]
+  QD --> QH{Human QA scenario review}
+  QH --> QAU[QA automation preparation]
+  QAU --> QAH{Human QA automation review}
+  ED --> HD{Human Design approval}
+  HD -->|separate advancement and draft request| EP[Engineering-only Implementation Plan]
+  EP --> HP{Human Engineering Plan approval}
+  HP -->|separate advancement and start| DEV[Development + unit tests + build]
+  DEV --> HC{Human Engineering code approval}
+  HC -->|separate advancement| TV[Joined integration and UI verification]
+  QAH -->|separate QA readiness and actual checks| TV
+  TV --> SEC[Security Review]
+  SEC -->|findings: explicit remediation| DEV
+  SEC --> FV[Final Verification Report]
+  FV -. future Story and release model .-> R{Story Functional DoR + human approval}
   R -->|blokující otázky / neschváleno| A
   R -->|schváleno, neblokuje| D[Solution Design + Implementation Planning]
   R -->|schváleno, neblokuje| TD[QA Test Design]
@@ -329,6 +352,8 @@ sequenceDiagram
 
 **[D] Potvrzený demonstrační scénář:** podle ADR-0001 rozšířit existující minimální JavaScript/Node.js To-Do aplikaci s daty v paměti o **Task Due Date Management**. Následná změna požadavku z data na datum a čas předvede impact review specifikace, designu, implementačního plánu a testů. Demo aplikace patří do `examples/todo-app/`; `orchestrator/` zůstává obecný a nezávislý na její doméně a stacku.
 
+**[D/P] Dokončená akceptace:** Task Due Date Management dosáhl Engineering i QA `verified` se skutečnými lidskými rozhodnutími, opravou nalezené chyby a provedenými HTTP/Chrome testy. Trvalá kopie aplikace, auditů a neměnných baseline je v [examples/todo-app](../examples/todo-app/README.md). Rehearsal běží v oddělené ignorované kopii; původní artefakty a hashe se nemění. Změna datum → datum a čas, Stories a Release zůstávají budoucí práce, nikoli dokončená část této akceptace.
+
 | Oblast | PoC | Budoucí produkční rozvoj |
 |---|---|---|
 | Git-native Epic/Story management a rozhodnutí | Ano, demonstrační workflow | Multi-team konflikt/ID/permissions |
@@ -347,8 +372,8 @@ sequenceDiagram
 
 ## 11. Otevřená rozhodnutí před implementací
 
-1. Rozšíření Epic schématu za Increment 6: následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
-2. Rozšíření management skriptů a skillu o Technical Design a další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
+1. Rozšíření Epic schématu za sekvenční engineering slice: následné status enums, Story/Release schéma, stabilní ID FR/AC/TC/tasks a širší migrations policy.
+2. Rozšíření management skriptů a skillu za sekvenční engineering slice, instalace do hostitelského katalogu a interoperabilní invocation syntax; checkout-based CLI pro dosavadní operace má zdokumentovaný kontrakt.
 3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.

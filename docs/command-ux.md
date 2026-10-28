@@ -165,3 +165,9 @@ views need no active Epic selection. Requests keep an accountable owner while wa
 for the next role; nomination and assignment confirmation remain explicit. Creation
 now requires a local profile or declared requester, and legacy requester evidence is
 used only for ownership, never to impersonate the current actor.
+
+## Sequential engineering extension
+
+The separately authorized [engineering slice](engineering.md) now consumes the approved Analysis handoff through Technical Design, planning, controlled development, verification, Security review and a final report. Earlier increment scope statements describe their historical boundaries. The extension preserves approval separation, existing audit/baseline formats and declared identity semantics.
+
+For new Analysis advancements, the [Engineering/QA fork](work-tracks.md) now creates two independently owned pending tracks. Existing non-fork records retain their historical contracts; adoption and upstream reconciliation are explicit.

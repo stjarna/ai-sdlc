@@ -1,0 +1,5 @@
+# Preserve exact bytes used by approval manifests and instruction fingerprints.
+/examples/todo-app/project/** -text
+/examples/todo-app/acceptance-evidence/** -text
+/examples/todo-app/acceptance-inputs/** -text
+/orchestrator/domain-skills/** -text

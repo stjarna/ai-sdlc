@@ -41,6 +41,13 @@ def read_baseline(directory, baseline_id, root_name, names, validate):
     business.require(path.exists(), "E_BASELINE_MISSING", "Approved baseline is missing; restore it from a known-good copy.", f"{root_name}/{baseline_id}")
     business.require(path.is_dir() and not path.is_symlink(), "E_BASELINE_INTEGRITY", "Baseline must be a nonsymlink directory.", f"{root_name}/{baseline_id}")
     try:
+        if callable(names):
+            manifest_file = path / "manifest.json"
+            business.require(manifest_file.is_file() and not manifest_file.is_symlink(),
+                             "E_BASELINE_INTEGRITY", "Manifest must be a regular nonsymlink file.")
+            # The selector must return a closed, schema-validated file set. The normal
+            # canonical identity/hash checks below still apply to the bytes actually read.
+            names = names(json.loads(manifest_file.read_bytes().decode("utf-8")))
         business.require({p.name for p in path.iterdir()} == set(names) | {"manifest.json"}, "E_BASELINE_INTEGRITY", "Unexpected or missing baseline files.")
         contents = {}
         for name in (*names, "manifest.json"):
@@ -113,12 +120,15 @@ def exact_acknowledgements(acknowledged, items, message):
 
 def persist_decision(epic, candidate, expected, read, token, validate, write):
     """Caller holds the project lock. Baseline publication precedes this commit point."""
-    for name in ("business_decisions", "analysis_decisions", "lifecycle"):
+    for name in ("business_decisions", "analysis_decisions", "lifecycle", "engineering_history"):
         previous = epic.metadata.get(name, [])
         business.require(candidate.get(name, [])[:len(previous)] == previous, "E_APPROVAL_AUDIT", "Approval persistence must preserve every audit prefix.", "metadata.yaml")
     from ownership import preserve_prefix
     preserve_prefix(epic.metadata, candidate)
+    from work_tracks import preserve_prefix as preserve_tracks
+    preserve_tracks(epic.metadata, candidate)
     validate(candidate)
     checked = read(epic.directory)
+    business.require(checked.metadata == epic.metadata, "E_REVISION_CONFLICT", "Metadata changed during the operation; preserve unrelated track updates and retry from current state.", "metadata.yaml")
     business.require(token(checked) == expected, "E_REVISION_CONFLICT", "Artifacts changed while preparing the gate operation.", "metadata.yaml")
     write(epic.directory / "metadata.yaml", candidate)

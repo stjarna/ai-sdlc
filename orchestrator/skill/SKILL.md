@@ -1,6 +1,6 @@
 ---
 name: sdlc
-description: Guide an informal business idea through Discovery, business specification refinement, explicit Product Owner decisions, and Functional Analysis using the AI SDLC Assistant.
+description: Guide business ideas through Discovery, human approvals, Functional Analysis and independently owned Engineering and QA work tracks.
 ---
 
 # AI SDLC Assistant
@@ -10,12 +10,26 @@ This file owns workflow and persistence mechanics for every host; discovery adap
 only load it. Keep the complete `orchestrator/` package together. Resolve resources
 from this skill's actual location, independently of the target project's directory.
 
+For Engineering or QA work, read [work-track contracts](../../docs/work-tracks.md) and the domain-skill workflow below. [Engineering contracts](../../docs/engineering.md) also describe the retained legacy sequence.
+
 Read the [CLI contract](../scripts/README.md) for environment and operation arguments.
 Load the [Discovery record guide](../../docs/interactive-discovery.md) when capturing
 or correcting evidence, the [Business Refinement guide](../../docs/business-refinement.md)
 when drafting/revising, and the [Approval guide](../../docs/business-approval.md) before
 PO decisions or advancement. These define artifact/operation contracts; the conversation
 policy defines default presentation. Handle commands and technical parameters internally.
+
+## Present identifiable artifacts
+
+Follow the [canonical storage contract](../../docs/artifact-names.md). New Engineering/QA
+artifacts use manifest 0.2 and physical canonical filenames; only deterministic tools
+publish them. Use returned `document.name`/`link` matching the actual basename, and
+`document.title` in prose. Legacy 0.1 baselines must remain byte-for-byte unchanged:
+use their explicit “Title (legacy content.md)” links, never a fictional canonical path.
+Core documents are in `epic.documents`; aggregate status/details indexes both tracks.
+Keep revision/request context and verify authority independently of naming. Pinned old
+domain instructions describing content.md concern legacy format, not new publication.
+Never create aliases/copies or manually rename a baseline to improve presentation.
 
 ## Resolve and resume
 
@@ -205,13 +219,18 @@ that the Analysis is approved and remains in Functional Analysis. Stop and wait 
 separate explicit advancement instruction, even if approval initially asked for both.
 
 Only after that separate instruction, review again, verify the latest effective approval
-and baseline, and use `analysis-advance`. Verify pending Engineering Lead / Architect
-handoff with the current owner retained; offer nomination and confirm any assignment
-separately. Report readiness for Technical Design;
-do not start it. After advancement, Analysis editing is blocked. Explicit upstream
-reopening preserves historical decisions/baselines and requires renewed reconciliation
-and fresh approval. A same-byte revision or replay cannot restore old authority.
-Technical Design, Story decomposition and implementation remain outside this increment.
+and baseline, and use `analysis-advance`. Verify the automatic fork: Engineering and QA
+both reference this exact approved Analysis baseline, retain the current accountable
+owner, and await separate assignments to Engineering Lead and QA Lead / Tester. Report
+both workstreams as ready and ask which assignment the user wants to address first.
+Creating, assigning or advancing a track does not start its work. Do not draft either
+track's artifacts until requested. Approval alone must not create the fork.
+
+After advancement, Analysis editing is blocked. Explicit upstream reopening preserves
+all historical decisions/baselines. A subsequent Analysis handoff requires explicit
+impact assessment and `track-reconcile` for both tracks before renewed work; do not
+copy their artifacts or revive old approvals automatically. A same-byte revision or
+replay cannot restore old authority. Story decomposition remains excluded.
 
 ## Execute and recover
 
@@ -231,5 +250,97 @@ inspect pending/orphan data and any abandoned lock before an exact retry. Missin
 corrupt approved baselines require known-good restoration, never replacement from the
 draft. Do not silently repair malformed artifacts or report an uncertain write as success.
 
-No automatic Git actions, skill installation, external AI APIs, custom UI or later SDLC
+No automatic Git actions, skill installation, external AI APIs, custom UI or unapproved downstream
 implementation are part of this skill. Respect the user's explicit task boundaries.
+
+## Engineering and QA with domain skills
+
+Read [work-track contracts](../../docs/work-tracks.md) before acting. Resolve `skills`,
+verify approved pins and load only the relevant domain `SKILL.md` and references. Domain
+packages supply expertise; only orchestrator operations mutate governance. Do not copy
+skills into Epics, load arbitrary remote packages or hide unavailable/incompatible pins.
+Pinning reproduces instructions, not deterministic model output.
+
+Use `track-review`, `open` and track-aware command context to reconstruct both tracks.
+Keep an explicitly selected track in the conversation and revalidate it before writes.
+For ambiguous `start`, `review`, `approve`, `advance` or `assign`, ask one question:
+“Engineering or QA?” Never pick the most recently changed artifact. `status` and `details`
+may summarize both; `inbox` and `pending assignments` show separate track responsibilities.
+Independent workstreams do not authorize automatic parallel agents or background work.
+
+### Engineering
+
+On an explicit start/drafting request, use Architecture and Security to prepare Technical
+Design from the approved Analysis and inspected code. Preserve unresolved/blocked behavior
+and distinguish technical proposals from requirements. Persist via `engineering-write`,
+present the review and obtain explicit Design approval with required acknowledgements.
+Wait for separate advancement before Implementation Planning.
+
+On request, use Development to prepare an Engineering-only Implementation Plan: ordered
+tasks, dependencies, declared source paths, FR/AC links and unit/build checks. Do not
+bundle QA scenarios, functional expectations or QA automation approval into this plan.
+QA work may proceed independently; incomplete QA does not prevent Engineering plan
+approval. After Plan approval, wait for separate advancement and then explicit
+`development-start` authorization. Keep forked Engineering source outside reserved `qa/`.
+
+Implement authorized tasks with native host tools, keeping unit tests alongside code.
+Use named checks for actual unit/build evidence. Present the actual code diff, completed
+tasks, developer tests and results for human code review; self-review is not independent
+review. Approval binds the unchanged Engineering source. Wait for separate advancement.
+This code approval does not approve QA scenarios or separate QA automation.
+
+### QA
+
+On `start qa`, use Testing to prepare independently revisioned strategy and functional
+scenarios directly from the same frozen Functional Analysis and its acceptance criteria.
+Technical Design and the Engineering plan are not prerequisites. Persist via `qa-write`;
+reference FR/AC IDs and retain inherited uncertainty, without duplicating authoritative
+requirements. Design/code/prototype observations cannot replace functional expectations.
+
+Present the strategy and scenarios together for one explicit human scenario approval.
+There is no separate mandatory strategy signoff. Revalidate both revisions and required
+acknowledgements for `qa-approve`; approval does not advance. Wait for separate
+advancement to automation. Later approved Design interfaces may inform automation,
+without redefining its expected behavior.
+
+Prepare QA automation only within its declared reserved `qa/` paths and record actual
+source/interface bindings through QA operations. Do not modify Engineering source or its
+plan. Obtain separate human automation review and approval, then separate advancement to
+verification readiness. Scenario approval does not approve generated automation.
+
+### Join, evidence and remediation
+
+Before integration/UI execution, verify the required current Engineering outputs/code
+approval and QA strategy/scenario/automation approvals. Use `qa-check-run` for named
+approved checks and retain actual statuses, output, requirement links and the complete
+source contract. A check label, HTTP-only test or fixture command is not proof of actual
+UI interaction. Missing tools, failures and stale/unexecuted checks stay visible.
+
+QA must explicitly complete current verification after its required checks pass. The
+integrated gate must report incomplete QA as a blocker, never success. Only after valid
+Engineering outputs, current QA reviews/evidence and explicit QA completion may a separate
+Engineering verification advancement progress toward Security. Neither track silently
+advances the other. An unrelated Engineering revision leaves functional QA scenarios
+valid, while affected automation or execution may require adaptation/reruns.
+
+Use Security for source-bound review and actual findings, not invented scans or
+certification. Remediation needs explicit authorization, preserved findings/failed evidence,
+fresh checks and relevant human reviews. Do not change QA expectations to match a defect.
+Authoritative Analysis changes require impact assessment and reconciliation for both
+tracks. Final verification records the exact joined inputs and remaining uncertainty;
+`verified` is not release approval or deployment authorization.
+
+### Legacy and in-progress compatibility
+
+Requests without tracks keep their recorded legacy workflow. Do not silently add tracks,
+rewrite approved Design or reinterpret a combined Plan as independent QA approval.
+Before development, an explicit `tracks-adopt` decision can reconcile an eligible legacy
+request whose combined Plan is unapproved. Explain the effect and obtain authorization:
+retain approved Design and every historical baseline/decision, mark the old combined
+Plan as historical, prepare a fresh Engineering-only Plan, and draft QA from Analysis.
+The old combined Plan must not become approvable after adoption. Do not apply this to
+an acceptance project merely because implementation of compatibility support was requested.
+
+Keep all identity setup, tokens, revision comparisons, retries and operation IDs internal.
+Use the existing procedural identity and audit controls. Ask one human decision at a
+time; approval, advancement, starting work and assignment remain distinct instructions.

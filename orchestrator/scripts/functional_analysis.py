@@ -8,6 +8,7 @@ import re
 
 import yaml
 
+from engineering_contract import STAGES as ENGINEERING_STAGES
 import business_refinement as business
 import business_approval as approval
 import discovery_history as discovery
@@ -42,7 +43,7 @@ def references(text):
 
 
 def handoff(metadata):
-    if metadata["status"] not in ("ready_for_analysis", "functional_analysis", "ready_for_technical_design"):
+    if metadata["status"] not in ("ready_for_analysis", "functional_analysis", "ready_for_technical_design", *ENGINEERING_STAGES):
         return None
     return next((event for event in reversed(metadata["lifecycle"]) if event["action"] == "advance"), None)
 
@@ -225,7 +226,7 @@ def read(epic, loader):
     token = review_revision(epic)
     paths = [epic.directory / name for name in FILES]
     if not any(p.exists() for p in paths):
-        require(epic.metadata["status"] not in ("functional_analysis", "ready_for_technical_design"), "Analysis state requires specification and history.", "E_ANALYSIS_HISTORY", FILES[1])
+        require(epic.metadata["status"] not in ("functional_analysis", "ready_for_technical_design", *ENGINEERING_STAGES), "Analysis state requires specification and history.", "E_ANALYSIS_HISTORY", FILES[1])
         return None, token
     require(all(p.exists() for p in paths), "Specification and history must both exist.", "E_ANALYSIS_HISTORY", FILES[1])
     data = read_history(epic.directory, epic.metadata["id"], loader)

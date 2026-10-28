@@ -64,7 +64,7 @@ initial specification generation;
 existing schemas remain readable without migration. Schema `0.5` adds append-only
 `analysis_decisions` on the first Analysis decision and `ready_for_technical_design`
 through separate explicit advancement. Newer schemas are preserved by all writers.
-There is no cancellation, Technical Design or Story decomposition operation.
+There is no cancellation or Story decomposition operation. The [sequential engineering extension](../../docs/engineering.md) implements Technical Design and later fixed engineering operations through `verified`.
 
 Every immediate subdirectory of `requirements/` is treated as an Epic record.
 Each must have a regular, nonsymlink `metadata.yaml`. Ordinary top-level files such
@@ -256,3 +256,32 @@ profile or explicit `new --requester NAME`; the requester is always initial owne
 actors use the local profile or explicit `--actor`. Roles derive from lifecycle.
 Advancement atomically retains the owner and marks the next-role handoff pending.
 Assignment never approves, advances, starts a stage or rewrites an immutable baseline.
+
+## Domain skills and sequential engineering
+
+[Engineering contracts](../../docs/engineering.md) define exact artifact schemas, all
+CLI flags, lifecycle/gates, controlled check execution, recovery and manual acceptance.
+`skills` discovers approved local instruction pins. `engineering-review` reads a current
+Analysis-authorized engineering cycle. `engineering-write`, `engineering-approve`,
+`engineering-request-changes` and `engineering-advance` handle design/plan/implementation;
+`development-start`, `check-run`, `security-remediate` and `engineering-finalize` complete
+the fixed sequential slice. Schema `0.6` adds append-only `engineering_history` without
+read-time migration or changes to old hashes. Approval never advances or starts work.
+
+## Engineering and QA work tracks
+
+[Work-track contracts](../../docs/work-tracks.md) define independent ownership, revisions,
+QA artifacts and the joined verification gate. New `analysis-advance` atomically creates
+both pending tracks. Legacy metadata reads without migration. `command-context` and
+`assign` accept `--track engineering|qa`; shared `start` is stage/track aware. `status`
+can aggregate, while ambiguous actions return `E_TRACK_AMBIGUOUS`.
+
+Use `track-review`, explicit `tracks-adopt` / `track-reconcile`, and independent
+`qa-review`, `qa-write`, `qa-approve`, `qa-request-changes`, `qa-advance`, `qa-check-run`.
+QA tokens exclude unrelated Engineering updates; code/automation execution uses separate
+source pins. New Engineering plans require only unit/build checks; legacy combined plans
+retain their prior contract. Full command flags and JSON schemas are in the linked guide.
+
+## Artifact presentation fields
+
+[Artifact storage](../../docs/artifact-names.md) defines canonical physical filenames for new Engineering/QA manifest0.2 snapshots and backward-compatible reading of content.md/0.1. Existing immutable hashes and approvals are not migrated. Returned `document.name` and links match physical basenames; `canonical_name` and explicit `legacy` distinguish old storage. Core payloads and aggregate status/details retain document indexes. Lifecycle and mutation CLI arguments are unchanged; old reader binaries need updating for format0.2.

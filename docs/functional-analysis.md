@@ -271,3 +271,7 @@ to the exact revision operation, complete review, Business handoff and acknowled
 open items. Analysis editing is blocked after separate advancement; explicit reopening
 starts a new cycle without deleting historical evidence. Technical Design and a workflow
 engine remain excluded.
+
+## Sequential engineering extension
+
+The separately authorized [engineering slice](engineering.md) now consumes the approved Analysis handoff through Technical Design, planning, controlled development, verification, Security review and a final report. Earlier increment scope statements describe their historical boundaries. The extension preserves approval separation, existing audit/baseline formats and declared identity semantics.

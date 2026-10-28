@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 
+from engineering_contract import ROLES
 import business_refinement as business
 import discovery_history as discovery
 
@@ -16,6 +17,7 @@ STAGES = {
     "functional_analysis": ("functional_analysis", "Business Analyst"),
     "ready_for_technical_design": ("technical_design", "Engineering Lead / Architect"),
 }
+STAGES.update(ROLES)
 STATE_FIELDS = {"owner", "assignee", "required_role", "assignment_status", "target_stage", "since"}
 EVENT_FIELDS = {"operation_id", "action", "actor", "identity_source", "timestamp", "expected_revision", "from_owner", "to_owner", "assignee", "required_role", "assignment_status", "target_stage", "lifecycle_id", "decision"}
 
@@ -42,6 +44,10 @@ def responsibility(status):
 
 def state(event):
     return {"owner": event["to_owner"], **{k: event[k] for k in ("assignee", "required_role", "assignment_status", "target_stage")}, "since": event["timestamp"]}
+
+
+def needs_handoff(event):
+    return event["action"] in ("complete", "advance", "analysis_advance", "reopen") or (event["action"] == "engineer" and responsibility(event["from"]) != responsibility(event["to"]))
 
 
 def validate(metadata):
@@ -72,7 +78,7 @@ def validate(metadata):
             require(event["action"] == "initialize" and event["lifecycle_id"] is None, "Ownership must start with initialization.")
         elif event["action"] == "handoff":
             linked = lifecycle.get(event["lifecycle_id"]) if isinstance(event["lifecycle_id"], str) else None
-            require(linked is not None and linked["id"] == event["operation_id"] and linked["action"] in ("complete", "advance", "analysis_advance", "reopen"), "Handoff must reference its lifecycle advancement/reopening.")
+            require(linked is not None and linked["id"] == event["operation_id"] and linked["action"] in ("complete", "advance", "analysis_advance", "reopen", "engineer"), "Handoff must reference its lifecycle advancement/reopening.")
             require((event["target_stage"], event["required_role"]) == responsibility(linked["to"]) and event["to_owner"] == previous["owner"] and event["assignment_status"] == "awaiting_assignment", "Handoff must retain its owner and await the next role.")
             require(event["timestamp"] == linked["timestamp"] and event["actor"] == linked["actor"], "Handoff attribution differs from lifecycle evidence.")
             handoffs.append(linked["id"])
@@ -85,7 +91,7 @@ def validate(metadata):
         require((value["target_stage"], value["required_role"]) == responsibility(metadata["status"]), "Ownership responsibility differs from current lifecycle.")
     # All handoffs after ownership was introduced must remain represented in order.
     if handoffs:
-        lifecycle_handoffs = [e["id"] for e in metadata.get("lifecycle", []) if e["action"] in ("complete", "advance", "analysis_advance", "reopen")]
+        lifecycle_handoffs = [e["id"] for e in metadata.get("lifecycle", []) if needs_handoff(e)]
         require(handoffs == lifecycle_handoffs[lifecycle_handoffs.index(handoffs[0]):], "Ownership is missing a later lifecycle handoff.")
 
 
@@ -119,7 +125,7 @@ def view(metadata):
         return {**metadata["ownership"], "persisted": True, "initialization_required": False}
     owner = legacy_requester(metadata)
     stage, role = STAGES.get(metadata["status"], ("cancelled", None))
-    boundaries = [e for e in metadata.get("lifecycle", []) if e["action"] in ("complete", "advance", "analysis_advance", "reopen")]
+    boundaries = [e for e in metadata.get("lifecycle", []) if needs_handoff(e)]
     return {"owner": owner, "assignee": owner if metadata["status"] == "discovery" else None,
             "required_role": role, "target_stage": stage,
             "assignment_status": "owner_declaration_required" if owner is None else "assigned" if metadata["status"] == "discovery" else "awaiting_assignment",
@@ -162,7 +168,7 @@ def row(epic, now=None):
     elif value["owner"] is None:
         next_action = "Declare the initial accountable owner"
     elif value["target_stage"] == "technical_design":
-        next_action = "Review the approved Analysis handoff; Technical Design execution is outside this PoC"
+        next_action = "Review the approved Analysis handoff; start Technical Design only when explicitly requested"
     else:
         next_action = "Review the current stage and carry out the assigned activity only when explicitly requested"
     return {"id": epic.metadata["id"], "title": epic.metadata["title"], "lifecycle": epic.metadata["status"],

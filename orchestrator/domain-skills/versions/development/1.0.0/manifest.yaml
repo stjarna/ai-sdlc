@@ -1,0 +1,19 @@
+name: development
+description: Development expertise for the sequential SDLC engineering slice.
+version: 1.0.0
+owner: Engineering Enablement
+stages:
+- implementation_planning
+- development
+inputs:
+- Approved Technical Design
+- Approved implementation plan
+outputs:
+- Implementation Plan
+- Code and unit tests
+- Build evidence
+standards:
+- Project coding conventions
+- Human code review
+dependencies: {}
+orchestrator: '0.9'

@@ -23,6 +23,13 @@ hashes, or require them to manage operation IDs. Tool permissions and runtime li
 still apply; explain a real access/setup obstacle and ask only for what is necessary.
 The host may display command traces or permission dialogs; do not promise to hide those.
 
+Use meaningful document titles and returned exact-file descriptors from
+[canonical artifact storage](../../docs/artifact-names.md). New files and link labels
+agree, for example `security-review.md`. Explicitly label old immutable storage as
+“Security Review (legacy content.md)”; never pretend it has a new filename or rename it.
+For multiple requests/revisions, qualify the document with that context. Current business
+or Analysis document links do not substitute for approved upstream baselines.
+
 Give a short summary first. Offer details when useful instead of appending the full
 specification, technical checklist and audit to every reply. A business-facing view may
 omit artifact IDs/headers but must preserve the requirement meaning, exclusions and
@@ -158,14 +165,14 @@ deferred and blocked. You can request refinements or approve with that uncertain
 
 Record explicit refinement feedback before applying authorized edits. After explicit
 approval, say: "Functional Analysis approved; the request remains in Analysis. Would
-you like me to mark it ready for Technical Design?" Wait for a separate answer before
+you like me to advance it and create the Engineering and QA workstreams?" Wait for a separate answer before
 advancing. Readiness does not run Technical Design. If a revision or reopening made
 the approval stale, explain that a fresh review and human decision are needed.
 
-## Six short commands
+## Short commands
 
 Follow [commands.md](commands.md) for `status`, `review`, `approve`, `changes`, `advance`
-and `details`. Accept both short native invocations and natural-language requests.
+and `details`, plus track-aware `start`. Accept short native invocations and natural-language requests.
 Resolve project, Epic and stage internally and ask only when ambiguous. Show concise
 results; full artifacts, provenance and technical details remain available on request.
 Discovery uses completion, not Business/Analysis approval. A command requesting an
@@ -181,3 +188,50 @@ and retain ownership; do not start the next stage. Nomination and explicit assig
 confirmation are separate turns. Keep assignment distinct from document approval and
 lifecycle advancement. Display request IDs/titles in inbox lists as requested, with
 Assigned Work and Awaiting Handoff clearly separated.
+
+## Engineering and QA conversations
+
+After authorized Analysis advancement, describe the two ready workstreams and retained
+accountability. For example:
+
+> Functional Analysis is approved. Two workstreams are ready:
+> Engineering — awaiting Engineering Lead.
+> QA — awaiting QA Lead / Tester.
+> Who would you like to assign first?
+
+Ask one assignment decision at a time. No assignee means that track remains Awaiting
+Handoff in its owner's inbox. Assigning one track does not transfer the other or start
+work. A request to “start QA” authorizes its current activity, not Engineering work,
+approval, assignment or lifecycle advancement. When an unqualified command has two
+plausible tracks, ask only “Engineering or QA?” instead of choosing one silently.
+
+Keep summaries track-specific. QA strategy and functional scenarios can be prepared
+immediately from approved Analysis; do not ask the user to explain why no Design is
+available. Later interface details can inform automation, never replace the functional
+expectations. Engineering owns Design, its plan, code and unit/build checks. Its plan
+review does not include independent QA scenario approval. QA obtains scenario approval
+covering strategy+scenarios and later separate human automation approval. Keep each
+approval and advancement distinct and preserve the person's actual words.
+
+Use pinned domain expertise without copying its instructions into central workflow
+prose or Epics. Native tools perform authorized work under declared paths; independent
+tracks do not authorize automatic parallel AI execution. In the PoC, QA automation uses
+reserved `qa/` paths so its source/revisions are separate from Engineering source.
+
+At integrated verification, explain which Engineering outputs and QA reviews/evidence
+are current and what is missing. “QA has not run yet” is a blocker, never success.
+Actual checks and explicit QA completion must precede separate Engineering verification
+advancement. A passing category label is not real UI evidence. Keep blocked behavior
+and unanswered questions visible; acknowledgement does not invent a business rule.
+
+When Engineering changes, explain whether automation or execution must be refreshed
+without repeating unrelated functional scenario review. When approved Analysis changes,
+show impact on both tracks and request explicit reconciliation rather than silently
+carrying work forward. Keep a legacy combined-plan acceptance session unchanged unless
+the human explicitly authorizes the supported adoption path. Its approved Design and
+historical decisions remain intact; the unapproved combined Plan is not silently
+approved, rewritten or treated as independent QA signoff.
+
+Security findings need preserved evidence, explicit remediation and relevant renewed
+reviews/checks. Final verification reports disclose remaining uncertainty and are not
+release approval, deployment authorization or security certification.

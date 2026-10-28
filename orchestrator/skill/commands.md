@@ -11,10 +11,13 @@ not shell commands or replacements for the deterministic approval gates.
 - Claude Code CLI/IDE: `/sdlc <command>`. Claude supplies trailing arguments to the skill.
   Keep execution in the current interactive conversation, without background/fork mode.
 
-The shared verbs are `status`, `review`, `approve`, `changes`, `advance`, `details`,
-`inbox`, `pending assignments` and `assign`. The two words `pending assignments` form
+The shared verbs are `status`, `start`, `review`, `approve`, `changes`, `advance`,
+`details`, `inbox`, `pending assignments` and `assign`. The two words `pending assignments` form
 one project-level command; the user need not quote them in the conversation.
 An optional request title or ID selects an Epic; `changes` may include actual feedback.
+Engineering/QA commands also accept an optional track in the native conversation: for
+example `$sdlc start engineering`, `$sdlc start qa`, `$sdlc review qa` or their Claude
+`/sdlc` equivalents. Track words are conversational context, not a new host parser.
 A bare host `/approve`, `/review` or `/status` is not an SDLC command. Do not interpret
 an unsubmitted native control or skill selection alone as a decision.
 
@@ -29,7 +32,7 @@ an Epic as a side effect of a short command.
 Use the read-only helper:
 
 ```text
-sdlc.py --project PROJECT command-context COMMAND [--request TITLE_OR_ID]
+sdlc.py --project PROJECT command-context COMMAND [--request TITLE_OR_ID] [--track engineering|qa]
 ```
 
 Pass the known active ID internally. With no selector, request-level commands require exactly one
@@ -37,6 +40,12 @@ Epic. Inbox and pending assignments are project-level and require no selected Ep
 or ambiguous context fails explicitly. Its JSON includes the current review, suggested
 operation and identity/setup diagnostic. It never executes a decision or creates a
 profile. `requires_human_decision` is a reminder, not evidence of authorization.
+
+For a forked request, retain an explicitly selected track from the current interaction
+and pass it internally. If a track-specific command has two plausible targets,
+`E_TRACK_AMBIGUOUS` means ask one question: “Engineering or QA?” Do not guess from file
+modification times or perform either write while waiting. `status`/`details` can aggregate
+both tracks; `inbox`/`pending assignments` are project views with a row per responsibility.
 
 | Verb | Discovery | Business Refinement | Functional Analysis |
 |---|---|---|---|
@@ -49,8 +58,9 @@ profile. `requires_human_decision` is a reminder, not evidence of authorization.
 
 At `ready_for_refinement` and `ready_for_analysis`, report that the next draft can be
 prepared; do not silently generate it. A review with no draft reports its absence.
-At `ready_for_technical_design`, report the approved Analysis handoff; no Technical
-Design execution is available. Cancelled records have no write route. An already
+After new Analysis advancement, report both ready tracks from the same approved
+baseline. Start their work only on an explicit request; the legacy scalar
+`ready_for_technical_design` is not evidence that QA depends on Design. Cancelled records have no write route. An already
 completed advancement is a status result, not permission to start another stage.
 After reopening, route from the persisted lifecycle even when old drafts still exist.
 
@@ -80,8 +90,10 @@ advancement, omit the legacy actor flag so the CLI loads the profile and records
 context internally. If it changed, reload and clarify attribution when needed rather
 than silently switching the actor. Explicit legacy actor flags still work for existing
 callers; never use them to hide a profile error or erase the identity source.
-For document editing, retain the existing editor arguments and use the loaded display
-name when attributing human feedback. Actual human feedback remains separate from the
+Use the same local-profile attribution for Engineering/QA approvals, advancements and
+track assignment/reconciliation. A track owner or historical actor is not the current
+user identity. For document editing, retain the existing editor arguments and use the
+loaded display name when attributing human feedback; identify AI drafting honestly. Actual human feedback remains separate from the
 agent's explanatory reason. Neither profile roles nor host tool permissions replace
 an explicit human decision.
 
@@ -109,12 +121,14 @@ assent. Generate operation IDs and pass all technical parameters internally.
 
 If the current revision already has an effective approval, report it rather than
 creating a duplicate decision unless the user explicitly requests a new signoff.
-Report the verified result briefly. Approval leaves Business Refinement or Functional
-Analysis unchanged. Wait for a separate advancement instruction; never bundle it with
+Report the verified result briefly. Approval leaves its current Business, Analysis,
+Engineering or QA lifecycle stage unchanged. Wait for a separate advancement instruction; never bundle it with
 approval, even if initially requested together. Respect an explicit “do not advance”.
 An `advance` command separately authorizes the named readiness transition after checking
 the latest valid approval/baseline. It does not approve a stale draft, run Analysis,
-create Technical Design or authorize implementation.
+create a Design/QA draft or automatically start implementation. Use `start` for the
+selected track's current activity only after its required preceding decisions. Starting
+work does not itself approve an artifact or authorize a readiness transition.
 
 For `changes`, a bare command asks for the requested refinement. Preserve actual feedback
 through the stage-specific operation before applying only explicitly requested edits.
@@ -165,5 +179,74 @@ Discovery facts or Analysis questions.
 Approval, advancement and assignment are three independent decisions. Confirming an
 assignment does not approve content or authorize advancement. Existing approved content
 and immutable baselines survive ownership transfer; pending review tokens still require
-fresh validation after metadata changes. At Technical Design readiness, assignment may
-identify an Engineering Lead / Architect, but no Technical Design execution is available.
+fresh validation after metadata changes. For forked requests, assignment transfers only the selected track; the other track
+retains its current owner/assignee. Resolve the track first and use the corresponding
+required role in the confirmation, for example “Assign this request's QA track to Jane
+as QA Lead / Tester?” Legacy requests retain their recorded assignment
+semantics, including their Engineering Lead / Architect handoff.
+
+## Forked Engineering and QA commands
+
+Read [work-track contracts](../../docs/work-tracks.md). Explicit advancement of an
+approved Functional Analysis automatically creates both track contexts. It does not
+start either activity, assign a person or record a downstream approval. Initially both
+retain the existing accountable owner and await separate handoffs:
+
+> Functional Analysis is approved. Two workstreams are ready:
+> Engineering — awaiting Engineering Lead.
+> QA — awaiting QA Lead / Tester.
+> Who would you like to assign first?
+
+Ask for one nomination/confirmation at a time. An unknown recipient leaves that track
+pending in the retained owner's inbox; assigning one must not hide the other. Show each
+track's owner, assignee, role, status and next action without requiring technical IDs.
+Roles remain informational, and no external notification or work initiation is implied.
+
+| Intent | Engineering | QA |
+|---|---|---|
+| start | Prepare requested Design/Plan or explicitly start approved development at the available stage | Prepare strategy/scenarios from Analysis, or authorized automation at its stage |
+| review/details | Design, Engineering Plan, code/unit/build evidence and decisions | Strategy, functional scenarios, automation and actual test evidence |
+| approve | Current Design/Engineering Plan/code gate only | Scenario approval covering strategy+scenarios, or separate automation approval |
+| changes | Record requested Engineering feedback before authorized refinement | Record requested QA feedback before authorized refinement |
+| advance | Separate authorized Engineering readiness transition | Separate QA progression/completion after its required decisions/evidence |
+| assign | Transfer Engineering accountability after confirmation | Transfer QA accountability after confirmation |
+
+Use the context helper's actual route and [CLI contract](../scripts/README.md), not
+improvised commands. Tool-facing QA operations are `qa-review`, `qa-write`, `qa-approve`,
+`qa-request-changes`, `qa-advance` and `qa-check-run`. Management uses `track-review`,
+`track-reconcile`, `tracks-adopt` and `assign --track`; keep tokens and arguments internal.
+
+QA functional strategy/scenarios need only the common approved Analysis baseline, not
+Technical Design or an Engineering plan. Later automation can bind Design interfaces
+without deriving expected behavior from them. Engineering Plan approval covers code,
+work decomposition and unit/build checks; it does not approve QA scenarios. Human
+Engineering code approval does not approve independent QA automation. Do not add an
+extra mandatory strategy signoff: one scenario gate reviews strategy and scenarios.
+
+The integrated verification gate requires valid Engineering outputs/code approval,
+current QA strategy/scenario and automation approvals, actual current integration/UI
+checks and explicit QA completion. Report missing/unexecuted/failed QA as a blocker,
+never a passing empty track. QA completion does not automatically advance Engineering;
+Engineering verification advancement is a separate decision. A source change can stale
+execution evidence without invalidating unrelated functional scenarios. A final report
+binds the exact joined inputs and uncertainty; it does not authorize release or deployment.
+
+If approved Analysis changes, show impact on both tracks and obtain explicit per-track
+reconciliation before renewed work. Preserve old history; never copy approvals or
+scenarios into a new cycle silently. A legacy request stays legacy unless an eligible,
+explicitly authorized `tracks-adopt` operation reconciles it before development. Preserve
+approved Design and the unapproved combined Plan's history, but prepare a fresh
+Engineering-only Plan and QA artifacts from Analysis; do not approve the old combined
+Plan as though it were separated. See the compatibility guide before proposing adoption.
+
+Logical track independence does not schedule parallel agents, processes or Git branches.
+Never infer approval, advancement, assignment or execution from track creation.
+
+## Document discovery and names
+
+Use [canonical artifact storage](../../docs/artifact-names.md) descriptors for status,
+review, details and reports. New manifest0.2 files have canonical physical names;
+`document.name`, link label and basename agree. Format0.1 baselines retain content.md
+and explicit legacy labels, without migration. Never rename immutable files, create
+aliases or imply legacy links target a canonical file. Track reviews include `document`;
+aggregate views index both tracks and core payloads expose `epic.documents`.

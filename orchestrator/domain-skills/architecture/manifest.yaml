@@ -1,0 +1,19 @@
+name: architecture
+description: Architecture expertise for independently owned Engineering and QA work
+  tracks.
+version: 1.1.0
+owner: Architecture Team
+stages:
+- technical_design
+inputs:
+- Approved Analysis baseline
+- Existing project conventions
+outputs:
+- Technical Design
+- Architecture trade-offs
+standards:
+- Traceable architecture decisions
+- Security by design
+dependencies:
+  security: 1.1.0
+orchestrator: '0.10'

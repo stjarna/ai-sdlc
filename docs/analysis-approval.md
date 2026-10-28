@@ -200,3 +200,9 @@ Direct coordinated edits can bypass logical append-only guarantees. Full histori
 and repeated baseline validation favor inspectability over storage/read efficiency;
 there is no pruning or general migration framework. Advancing with uncertainty is an
 explicit human risk decision, not implementation readiness.
+
+## Sequential engineering extension
+
+The separately authorized [engineering slice](engineering.md) now consumes the approved Analysis handoff through Technical Design, planning, controlled development, verification, Security review and a final report. Earlier increment scope statements describe their historical boundaries. The extension preserves approval separation, existing audit/baseline formats and declared identity semantics.
+
+For new Analysis advancements, the [Engineering/QA fork](work-tracks.md) now creates two independently owned pending tracks. Existing non-fork records retain their historical contracts; adoption and upstream reconciliation are explicit.
