@@ -3,6 +3,8 @@
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
 The conversational entrypoint is [SKILL.md](../skill/SKILL.md).
+New requests require the local identity profile or an explicit `--requester NAME`,
+so every newly created request has an accountable owner.
 Interactive updates, provenance rules, recovery and the manual evaluation guide are
 documented in [Interactive Discovery](../../docs/interactive-discovery.md).
 Increment 3 lifecycle, business document format, revision history, reconciliation
@@ -16,7 +18,7 @@ From the orchestrator repository root:
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -r orchestrator/requirements.txt
-.venv/bin/python orchestrator/scripts/sdlc.py --project /absolute/project new --title "Customer notifications" --idea "Customers need to know when their request changes."
+.venv/bin/python orchestrator/scripts/sdlc.py --project /absolute/project new --requester "Example Requester" --title "Customer notifications" --idea "Customers need to know when their request changes."
 .venv/bin/python orchestrator/scripts/sdlc.py --project /absolute/project open REQ-0001
 .venv/bin/python orchestrator/scripts/sdlc.py --project /absolute/project validate REQ-0001
 .venv/bin/python orchestrator/scripts/sdlc.py --project /absolute/project validate
@@ -32,7 +34,9 @@ verified frozen input before drafting and persisted Analysis after drafting.
 
 ## Schema 0.1
 
-`new` creates `requirements/REQ-0001-<derived-slug>/metadata.yaml` and `idea.md`:
+Legacy schema `0.1` metadata has this minimal shape. New requests keep this schema
+and add the ownership mapping described in [Ownership](../../docs/ownership.md),
+alongside `idea.md` in `requirements/REQ-0001-<derived-slug>/`:
 
 ```yaml
 schema_version: '0.1'
@@ -57,8 +61,10 @@ PO decision, adding append-only `business_decisions` and support for
 `ready_for_analysis`. Approval itself keeps `business_refinement`; only explicit
 advancement changes that lifecycle state. Schema `0.4` adds `functional_analysis` on
 initial specification generation;
-existing schemas remain readable without migration. There is no cancellation, Analysis
-approval, Technical Design or Story decomposition operation.
+existing schemas remain readable without migration. Schema `0.5` adds append-only
+`analysis_decisions` on the first Analysis decision and `ready_for_technical_design`
+through separate explicit advancement. Newer schemas are preserved by all writers.
+There is no cancellation, Technical Design or Story decomposition operation.
 
 Every immediate subdirectory of `requirements/` is treated as an Epic record.
 Each must have a regular, nonsymlink `metadata.yaml`. Ordinary top-level files such
@@ -192,7 +198,8 @@ For atomic update publication, idempotent retry and inspected stale-lock recover
 see the guide. Creation's hard-termination limits remain unchanged.
 
 The CLI persists and structurally validates AI-drafted Functional Analysis; it never
-invokes AI APIs, semantically interprets requirements, approves Analysis or invokes Git.
+invokes AI APIs, semantically interprets requirements or invokes Git. Explicit procedural
+Analysis decisions are persisted through the Increment 6 approval gate.
 Unsupported schemas and inconsistent existing records block creation/opening rather than being repaired.
 
 Analysis adds `E_ANALYSIS_INPUT`, `E_ANALYSIS_DOCUMENT`, `E_ANALYSIS_REFERENCE`,
@@ -201,5 +208,51 @@ Analysis adds `E_ANALYSIS_INPUT`, `E_ANALYSIS_DOCUMENT`, `E_ANALYSIS_REFERENCE`,
 `E_ANALYSIS_RECOVERY`. Complete review tokens, exact retries, declared attribution,
 fixed artifact allowlists and failure-closed publication retain the earlier conventions.
 The Business review revision and baseline layouts are unchanged; Analysis has its own
-complete token including specification/history. Existing schema `0.4` is retained when
+complete token including specification/history. Existing schemas `0.4` and `0.5` are retained when
 Discovery/business operations are repeated after reopening.
+
+## Analysis Approval — Increment 6
+
+See [Analysis Approval](../../docs/analysis-approval.md) for exact arguments, immutable
+baselines, audit/recovery rules, human semantics and manual acceptance.
+
+- `analysis-request-changes`: record actual feedback without editing the specification.
+- `analysis-approve`: approve an exact revision with explicit uncertainty acknowledgement;
+  remain in `functional_analysis`.
+- `analysis-advance`: a separate explicit decision enters `ready_for_technical_design`.
+
+All three require `--expected-analysis-review-revision`, `--expected-analysis-revision`,
+`--expected-baseline-id`, `--expected-handoff-id`, `--operation-id` and `--reason`.
+The baseline/handoff assertions refer to Business input, preserving Increment 5 meanings.
+Approval additionally takes `--approver`, `--decision` and repeated
+`--acknowledge-open-item`; feedback takes `--reviewer` and `--feedback`; advancement
+takes `--actor` and `--approval-id AD-0001`. `analysis-review` now reports
+`approval_implemented: true`, `analysis_approval`, `analysis_open_items` and structural
+`can_approve`. Existing `approval`/`open_items` remain Business fields.
+
+## Six conversational commands and local identity
+
+See [Command UX and Local Identity](../../docs/command-ux.md) for routing, profile
+setup/editing, attribution compatibility, diagnostics and manual Codex acceptance.
+`command-context COMMAND [--request TITLE_OR_ID]` is read-only; it returns the current
+review and route without approving, advancing or creating a profile. The shared skill
+handles actual conversation and explicit decisions.
+
+The existing actor flags on Discovery lifecycle and Business/Analysis gates remain
+supported. If omitted, the CLI uses the external local profile and records optional
+`identity_source: local_profile`. Agents can bind attribution with the optional
+`--expected-profile-revision`. No credentials, host identity lookup or RBAC are added.
+`identity-show`, `identity-setup` and `identity-edit` manage the profile outside projects.
+Business decision text supports multiline actual human wording; existing audit records,
+metadata schema versions and baseline formats/hashes are preserved.
+
+## Ownership and handoff
+
+See [Ownership, Assignment and Stage Handoff](../../docs/ownership.md) for metadata,
+legacy compatibility and manual acceptance. New requests now require the local identity
+profile or explicit `new --requester NAME`; the requester is always initial owner.
+`inbox` and `pending-assignments` are read-only project views. `assign` and
+`ownership-initialize` require revision/operation IDs and actual confirmation/declaration;
+actors use the local profile or explicit `--actor`. Roles derive from lifecycle.
+Advancement atomically retains the owner and marks the next-role handoff pending.
+Assignment never approves, advances, starts a stage or rewrites an immutable baseline.

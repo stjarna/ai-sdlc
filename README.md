@@ -4,7 +4,8 @@
 Completion/Business Refinement Increment 3 are implemented. Procedural Business
 Approval Gate Increment 4 is implemented, with immutable baselines and
 separate advancement to `ready_for_analysis`. Increment 5 implements AI-assisted Functional
-Analysis for review: drafting, traceability, refinement and recoverable history. Analysis approval,
+Analysis for review: drafting, traceability, refinement and recoverable history. Increment 6 adds
+shared procedural approval and separate advancement to Technical Design readiness.
 Technical Design, Story decomposition and the To-Do application remain planned.
 Shared native conversational guidance and thin Codex / Claude Code discovery adapters
 are provided. Codex is the PoC acceptance target; Claude Code runtime remains an
@@ -64,7 +65,8 @@ Approval keeps the Epic in refinement. Advancement requires a separate operation
 the PoC does not technically guarantee human-only authorization.
 Increment 5 starts `functional_analysis` only from a valid approved business handoff.
 The AI drafts semantics; the CLI preserves revisions and validates structure/references.
-No Analysis approval or onward advancement is implemented.
+Analysis approval and separate advancement are implemented in [Increment 6](docs/analysis-approval.md);
+Technical Design execution remains excluded.
 
 See [the operation contract](orchestrator/scripts/README.md) for environment setup,
 the minimal schema, CLI examples, diagnostics, and limitations; see
@@ -74,3 +76,13 @@ The CLI never stages, commits, or pushes. Later increments and the demonstration
 remain subject to separate review.
 
 Contributions must not include secrets, proprietary company material or unapproved external skills. This public repository is an experimental case-study PoC, not a production deployment system.
+
+The [six-command SDLC interface and local identity profile](docs/command-ux.md) support
+Codex `$sdlc <command>` and Claude `/sdlc <command>`, with natural language as an
+alternative. The profile is an unauthenticated local declaration outside the repository;
+its roles are informational and approval still requires an explicit human decision.
+
+[Ownership and handoff management](docs/ownership.md) adds `inbox`, `pending assignments`
+and explicit `assign`. New requests have a declared requester as owner; pending handoffs
+retain accountability until a confirmed transfer. Assignment does not approve content,
+advance lifecycle or start the next stage.

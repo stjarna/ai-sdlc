@@ -31,17 +31,41 @@ def record(kind, text, **extra):
 
 
 class BusinessApprovalTests(unittest.TestCase):
+    def test_legacy_baseline_and_review_hash_golden(self):
+        """Captured from Increment 5 before extracting shared approval code."""
+        with patch.object(business, "timestamp", return_value="2026-10-28T12:00:00Z"):
+            self.setUp()
+            before = self.view()
+            self.assertEqual(before["review_revision"], "c69b7852b0e6fad5494ba0fca0a09878ac99cb7d2c8dde120229a63649590846")
+            approved = self.approve()
+            self.assertEqual(approved["baseline_id"], "b8fedd4455ab54f64754bbb81b00fb438fc97a7d35377932a4e75c58e205113c")
+            manifest, _ = approval.read_baseline(self.directory, approved["baseline_id"], sdlc.StrictLoader)
+            self.assertEqual(manifest["schema_version"], "0.1")
+            self.assertEqual(set(manifest["files"]), set(approval.BASELINE_FILES))
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.project = Path(temporary.name)
         self.counter = 0
-        self.directory = Path(sdlc.new_epic(self.project, "Task due dates", "People forget commitments.")["epic"]["directory"])
+        self.directory = Path(sdlc.new_epic(self.project, "Task due dates", "People forget commitments.", requester="Fixture Requester")["epic"]["directory"])
+        # Deliberately construct a pre-ownership legacy fixture. The golden hashes
+        # protect the exact historical schema/bytes, not today's creation defaults.
+        metadata_path = self.directory / "metadata.yaml"
+        metadata = yaml.safe_load(metadata_path.read_text())
+        metadata.pop("ownership")
+        metadata_path.write_text(yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
         self.append([record("user_statement", "Record deadlines against tasks."), record("question", "Dates or reminders?")])
         self.append([record("user_statement", "Dates only; reminders are excluded.", answers="D-0002"), record("ai_assumption", "Dates are optional.")])
         self.append([record("human_decision", "Yes, optional.", action="confirm", target="D-0004"), record("question", "Allow past dates?")])
         self.append([record("human_decision", "Defer until support discussion.", action="defer", target="D-0006", revisit="After support discussion")])
-        self.complete()
+        # Historical completion evidence predates ownership tracking.
+        epic = self.view()["epic"]
+        metadata = dict(epic["metadata"])
+        metadata.update(schema_version="0.2", status="ready_for_refinement", lifecycle=[{
+            "id": self.unique("fixture-complete"), "action": "complete", "from": "discovery", "to": "ready_for_refinement",
+            "base_revision": epic["revision"], "actor": "Fixture Requester", "decision": "Test fixture: explicitly complete Discovery.", "timestamp": business.timestamp()}])
+        metadata_path.write_text(yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
         source = self.view()["epic"]["source_revision"]
         self.initial_document = f"# Business Refinement — REQ-0001\n\nSource revision: {source}\n\n## Confirmed information\n### Business value\n- **B-001** [D-0001] Record deadlines against tasks.\n### Scope and exclusions\n- **B-002** [D-0003] Dates only; reminders are excluded.\n- **B-003** [D-0005, D-0004] Dates are optional.\n\n## Unresolved issues\n- **U-001** [D-0006] Past-date rule remains deferred until support discussion (D-0007).\n\n## Unconfirmed proposals\nNone recorded.\n"
         self.revise(self.initial_document, mode="generate")

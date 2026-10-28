@@ -40,7 +40,7 @@ def valid_person(value):
     return discovery.text(value) and not any(ord(char) < 32 for char in value)
 
 
-def validate_lifecycle(events, status, allow_advance=False, allow_analysis=False):
+def validate_lifecycle(events, status, allow_advance=False, allow_analysis=False, allow_analysis_approval=False):
     require(isinstance(events, list) and bool(events), "E_LIFECYCLE", "Lifecycle events must be a nonempty list.", "metadata.yaml")
     current, ids = "discovery", set()
     for index, event in enumerate(events):
@@ -49,11 +49,17 @@ def validate_lifecycle(events, status, allow_advance=False, allow_analysis=False
             fields |= {"review_revision", "business_revision", "approval_id", "baseline_id"}
             if event["action"] == "analyze":
                 fields |= {"handoff_id"}
+        if isinstance(event, dict) and event.get("action") == "analysis_advance" and allow_analysis_approval:
+            fields |= {"review_revision", "analysis_revision", "analysis_operation_id", "approval_id", "baseline_id", "business_baseline_id", "business_approval_id", "business_handoff_id"}
+        if isinstance(event, dict) and "identity_source" in event:
+            from local_identity import validate_source
+            validate_source(event, "E_LIFECYCLE")
+            fields |= {"identity_source"}
         require(isinstance(event, dict) and set(event) == fields, "E_LIFECYCLE", "Invalid lifecycle event fields.", "metadata.yaml")
         action = event["action"]
-        require(action in (("complete", "reopen", "refine", "advance", "analyze") if allow_analysis else ("complete", "reopen", "refine", "advance") if allow_advance else ("complete", "reopen", "refine")), "E_LIFECYCLE", "Unknown lifecycle action.", "metadata.yaml")
-        target = {"complete": "ready_for_refinement", "reopen": "discovery", "refine": "business_refinement", "advance": "ready_for_analysis", "analyze": "functional_analysis"}[action]
-        allowed = {"complete": ("discovery",), "reopen": ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis") if allow_analysis else ("ready_for_refinement", "business_refinement", "ready_for_analysis") if allow_advance else ("ready_for_refinement", "business_refinement"), "refine": ("ready_for_refinement",), "advance": ("business_refinement",), "analyze": ("ready_for_analysis",)}[action]
+        require(action in (("complete", "reopen", "refine", "advance", "analyze", "analysis_advance") if allow_analysis_approval else ("complete", "reopen", "refine", "advance", "analyze") if allow_analysis else ("complete", "reopen", "refine", "advance") if allow_advance else ("complete", "reopen", "refine")), "E_LIFECYCLE", "Unknown lifecycle action.", "metadata.yaml")
+        target = {"complete": "ready_for_refinement", "reopen": "discovery", "refine": "business_refinement", "advance": "ready_for_analysis", "analyze": "functional_analysis", "analysis_advance": "ready_for_technical_design"}[action]
+        allowed = {"complete": ("discovery",), "reopen": ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis", "ready_for_technical_design") if allow_analysis_approval else ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis") if allow_analysis else ("ready_for_refinement", "business_refinement", "ready_for_analysis") if allow_advance else ("ready_for_refinement", "business_refinement"), "refine": ("ready_for_refinement",), "advance": ("business_refinement",), "analyze": ("ready_for_analysis",), "analysis_advance": ("functional_analysis",)}[action]
         require(event["from"] == current and current in allowed and event["to"] == target, "E_LIFECYCLE", "Invalid lifecycle transition chain.", "metadata.yaml")
         require(discovery.valid_operation_id(event["id"]) and event["id"] not in ids, "E_LIFECYCLE", "Invalid or duplicate lifecycle operation ID.", "metadata.yaml")
         require(discovery.valid_revision(event["base_revision"]) and valid_person(event["actor"]) and valid_person(event["decision"]) and valid_person(event["timestamp"]), "E_LIFECYCLE", "Invalid lifecycle evidence.", "metadata.yaml")
@@ -61,6 +67,10 @@ def validate_lifecycle(events, status, allow_advance=False, allow_analysis=False
             require(all(discovery.valid_revision(event[key]) for key in ("review_revision", "business_revision", "baseline_id")) and isinstance(event["approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", event["approval_id"]), "E_LIFECYCLE", "Invalid approval reference in advancement.", "metadata.yaml")
         if action == "analyze":
             require(discovery.valid_operation_id(event["handoff_id"]) and index > 0 and events[index - 1]["id"] == event["handoff_id"] and events[index - 1]["action"] == "advance" and all(events[index - 1][key] == event[key] for key in ("approval_id", "baseline_id", "business_revision")), "E_LIFECYCLE", "Analysis must reference its business handoff.", "metadata.yaml")
+        if action == "analysis_advance":
+            require(all(discovery.valid_revision(event[k]) for k in ("review_revision", "analysis_revision", "baseline_id", "business_baseline_id")) and all(discovery.valid_operation_id(event[k]) for k in ("analysis_operation_id", "business_handoff_id")) and isinstance(event["approval_id"], str) and re.fullmatch(r"AD-[0-9]{4,}", event["approval_id"]) and isinstance(event["business_approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", event["business_approval_id"]), "E_LIFECYCLE", "Invalid Analysis advancement references.", "metadata.yaml")
+            handoff = next((e for e in reversed(events[:index]) if e["action"] == "advance"), None)
+            require(handoff is not None and handoff["id"] == event["business_handoff_id"] and handoff["baseline_id"] == event["business_baseline_id"] and handoff["approval_id"] == event["business_approval_id"], "E_LIFECYCLE", "Analysis advancement must retain its active business handoff.", "metadata.yaml")
         ids.add(event["id"])
         current = target
     require(current == status, "E_LIFECYCLE", "Lifecycle events do not match current status.", "metadata.yaml")
@@ -190,7 +200,7 @@ def read(directory: Path, metadata, source_document, source_state, source_revisi
     validate_history(data, metadata["id"])
     latest = data["revisions"][-1]
     require(content == decode_revision(latest), "E_BUSINESS_MISMATCH", "Current business.md differs from the latest recorded revision.", path.name)
-    current = latest["source_revision"] == source_revision and metadata["status"] in ("business_refinement", "ready_for_analysis", "functional_analysis")
+    current = latest["source_revision"] == source_revision and metadata["status"] in ("business_refinement", "ready_for_analysis", "functional_analysis", "ready_for_technical_design")
     if current:
         validate_markdown(content, metadata["id"], source_revision, source_document, source_state)
     try:

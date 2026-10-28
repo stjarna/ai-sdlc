@@ -3,8 +3,9 @@
 Increment 5 drafts and refines one Epic-wide `specification.md` from the immutable
 business baseline selected by the current business advancement. The AI skill writes
 and assesses meaning; the CLI validates structure, evidence links and publication.
-Human review is required. No Analysis approval, Solution/Technical Design, Story
-decomposition, test execution or onward transition is implemented.
+Human review is required. [Increment 6](analysis-approval.md) adds explicit Analysis
+approval and separate onward advancement. Technical Design, Story decomposition and
+application test execution remain excluded.
 
 ## Workflow and authority
 
@@ -185,7 +186,7 @@ actual human text. Declared identities remain unauthenticated procedural attribu
 
 Outputs are JSON with existing `ok`/diagnostics conventions. `analysis-review` includes
 `input`, `details` (typed items, coverage, inherited items), `current`,
-`analysis_review_revision`, `approval_implemented: false` and
+`analysis_review_revision`, `approval_implemented: true` and
 `semantic_assessment: not_performed_by_cli`. `open` adds `analysis` and its review token.
 Missing/corrupt referenced baselines fail closed; no baseline is reconstructed from
 a mutable draft. Key new codes are `E_ANALYSIS_INPUT`, `E_ANALYSIS_DOCUMENT`,
@@ -254,7 +255,7 @@ Codex conversational acceptance is the PoC target. Claude Code CLI/IDE are unver
 portability targets and do not block PoC acceptance. The shared adapters load the same
 instructions and CLI; runtime behavior must not be claimed verified by static checks.
 
-## Limits and future approval
+## Limits and approval boundary
 
 The CLI verifies structure, provenance links and consistency of declared statuses, not
 semantic entailment, completeness or whether an exclusion was correctly classified.
@@ -265,7 +266,8 @@ baseline revalidation trade storage/read cost for simple inspectability.
 
 The existing architecture also supports Story specifications; Increment 5 intentionally
 uses its Epic-wide option and defers decomposition. Future Story links should reference
-this authority rather than duplicate it. Future Analysis approval must bind the exact
-revision operation, complete review, business handoff and acknowledged open items,
-freeze an immutable Analysis baseline and keep approval separate from onward advancement.
-No future approval operations, Technical Design or workflow engine are added here.
+this authority rather than duplicate it. [Increment 6](analysis-approval.md) binds approval
+to the exact revision operation, complete review, Business handoff and acknowledged
+open items. Analysis editing is blocked after separate advancement; explicit reopening
+starts a new cycle without deleting historical evidence. Technical Design and a workflow
+engine remain excluded.

@@ -13,12 +13,13 @@ Read these before changing code. Flag conflicting requirements instead of silent
 ## Boundaries
 - `orchestrator/`: generic orchestration skill, templates, workflows, deterministic scripts, tests. No To-Do, Node.js or due-date logic here.
 - `examples/todo-app/`: future minimal existing in-memory Node.js app to demonstrate Task Due Date Management and a date-only to date-and-time change.
-- `docs/`: durable architecture and decisions. Discovery, Business Refinement and procedural Business Approval through ready_for_analysis are implemented. Functional Analysis drafting/refinement/review is implemented in Increment 5. Analysis approval, Technical Design, Story decomposition and later lifecycle remain in design. Approval and advancement require separate explicit human instructions; declared identities are unauthenticated.
+- `docs/`: durable architecture and decisions. Discovery, Business Refinement and procedural Business Approval through ready_for_analysis are implemented. Functional Analysis drafting/refinement/review is implemented in Increment 5. Increment 6 shares the Business gate infrastructure with Analysis approval and separate advancement to ready_for_technical_design. Technical Design, Story decomposition and later lifecycle remain in design. Approval and advancement require separate explicit human instructions; declared identities are unauthenticated. The shared six-command UX uses an external local identity profile for routine attribution; setup/editing requires supplied user declarations, and roles are informational rather than RBAC.
 
 ## Working rules
 - Inspect repository and documentation first; propose a small implementation slice with files and acceptance checks before major coding.
 - Git/Markdown/YAML are authoritative, not chat history. **No separate checkpoint.md subsystem.**
 - Interactive Discovery keeps identity/lifecycle in `metadata.yaml`, the original idea in `idea.md`, and authoritative append-only history in `discovery.yaml`. Use deterministic updates with revisions and operation IDs; preserve source evidence and do not reinterpret AI assumptions as user facts.
+- Ownership is separate from approval and advancement. New requests have a declared requester as owner; handoff retains accountability while awaiting separately confirmed assignment. Legacy owner evidence must be unambiguous or explicitly supplied. No automatic assignees, notifications or next-stage execution.
 - Stable Epic/Story/Release IDs; deterministic scripts for paths, state and schema mutation; explicit impact review on changes.
 - Human approval is required for business refinement, design and implementation plan, QA scenarios and automation review, human code review and release approval. Never fabricate approvals or test results.
 - QA test design runs independently and in parallel with engineering work, joining at verification.

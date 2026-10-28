@@ -137,7 +137,7 @@ class FunctionalAnalysisTests(unittest.TestCase):
         self.assertEqual(saved, {p.name: p.read_bytes() for p in frozen.iterdir()})
         review = self.review()
         self.assertTrue(review['current'])
-        self.assertFalse(review['approval_implemented'])
+        self.assertTrue(review['approval_implemented'])
         self.assertEqual(review['input']['business'], (frozen/'business.md').read_text())
         self.assertIn('D-0005', review['details']['items']['BR-001']['fields']['Discovery evidence'])
         self.assertIn('U-001', review['details']['inherited'][0])
@@ -146,11 +146,9 @@ class FunctionalAnalysisTests(unittest.TestCase):
 
     def test_generation_requires_advancement_not_just_approval(self):
         request = self.request()
-        # Remove the test fixture's advancement to test the genuine pre-handoff state.
+        # Restore the real pre-handoff snapshot, including its ownership state.
         path = self.directory/'metadata.yaml'
-        metadata = yaml.safe_load(path.read_text())
-        metadata['lifecycle'].pop()
-        metadata['status'] = 'business_refinement'
+        metadata = self.approved['epic']['metadata']
         path.write_text(yaml.safe_dump(metadata))
         self.reject('E_ANALYSIS_INPUT', lambda: sdlc.analysis_write(**request))
         self.assertIsNone(self.review()['input'])
@@ -486,5 +484,5 @@ class FunctionalAnalysisTests(unittest.TestCase):
         helptext = subprocess.run([sys.executable,str(fixtures.SCRIPT),'--project',str(self.project),'--help'],capture_output=True,text=True).stdout
         for name in ('analysis-review','analysis-generate','analysis-revise','analysis-recover'):
             self.assertIn(name,helptext)
-        for name in ('analysis-approve','analysis-advance','technical-design','story-new'):
+        for name in ('technical-design','story-new'):
             self.assertNotIn(name,helptext)

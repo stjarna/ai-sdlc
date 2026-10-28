@@ -42,7 +42,7 @@ def references(text):
 
 
 def handoff(metadata):
-    if metadata["status"] not in ("ready_for_analysis", "functional_analysis"):
+    if metadata["status"] not in ("ready_for_analysis", "functional_analysis", "ready_for_technical_design"):
         return None
     return next((event for event in reversed(metadata["lifecycle"]) if event["action"] == "advance"), None)
 
@@ -186,30 +186,37 @@ def read_history(directory, epic_id, loader):
     path = directory / FILES[1]
     try:
         data = yaml.load(path.read_text(encoding="utf-8"), Loader=loader)
-        require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] == "0.1" and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "Invalid analysis history.", "E_ANALYSIS_HISTORY", path.name)
+        return validate_history(data, epic_id, directory, loader)
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError, KeyError, binascii.Error, RecursionError) as exc:
+        raise business.BusinessError("E_ANALYSIS_HISTORY", str(exc), path.name) from exc
+
+
+def validate_history(data, epic_id, directory, loader):
+    try:
+        require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] == "0.1" and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "Invalid analysis history.", "E_ANALYSIS_HISTORY", FILES[1])
         previous, operations, retained, retired = None, set(), set(), set()
         for entry in data["revisions"]:
             keys = {"digest", "previous", "content_base64", "baseline_id", "approval_id", "handoff_id", "editor", "reason", "timestamp", "operation_id", "expected_review", "mode", "feedback"}
-            require(isinstance(entry, dict) and set(entry) == keys, "Invalid revision fields.", "E_ANALYSIS_HISTORY", path.name)
-            require(entry["previous"] == previous and discovery.valid_revision(entry["digest"]) and discovery.valid_revision(entry["baseline_id"]) and discovery.valid_revision(entry["expected_review"]), "Broken revision chain.", "E_ANALYSIS_HISTORY", path.name)
-            require(discovery.valid_operation_id(entry["operation_id"]) and entry["operation_id"] not in operations and discovery.valid_operation_id(entry["handoff_id"]) and isinstance(entry["approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", entry["approval_id"]), "Invalid revision identity.", "E_ANALYSIS_HISTORY", path.name)
-            require(all(business.valid_person(entry[k]) for k in ("editor", "reason")) and approval.valid_timestamp(entry["timestamp"]) and entry["mode"] in ("generate", "revise") and (entry["feedback"] is None or isinstance(entry["feedback"], dict)), "Invalid revision attribution.", "E_ANALYSIS_HISTORY", path.name)
+            require(isinstance(entry, dict) and set(entry) == keys, "Invalid revision fields.", "E_ANALYSIS_HISTORY", FILES[1])
+            require(entry["previous"] == previous and discovery.valid_revision(entry["digest"]) and discovery.valid_revision(entry["baseline_id"]) and discovery.valid_revision(entry["expected_review"]), "Broken revision chain.", "E_ANALYSIS_HISTORY", FILES[1])
+            require(discovery.valid_operation_id(entry["operation_id"]) and entry["operation_id"] not in operations and discovery.valid_operation_id(entry["handoff_id"]) and isinstance(entry["approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", entry["approval_id"]), "Invalid revision identity.", "E_ANALYSIS_HISTORY", FILES[1])
+            require(all(business.valid_person(entry[k]) for k in ("editor", "reason")) and approval.valid_timestamp(entry["timestamp"]) and entry["mode"] in ("generate", "revise") and (entry["feedback"] is None or isinstance(entry["feedback"], dict)), "Invalid revision attribution.", "E_ANALYSIS_HISTORY", FILES[1])
             content = base64.b64decode(entry["content_base64"], validate=True)
-            require(business.digest(content) == entry["digest"], "Historical bytes do not match digest.", "E_ANALYSIS_HISTORY", path.name)
+            require(business.digest(content) == entry["digest"], "Historical bytes do not match digest.", "E_ANALYSIS_HISTORY", FILES[1])
             _, files = approval.read_baseline(directory, entry["baseline_id"], loader)
             parsed = validate_document(content, epic_id, {**entry, "business": files["business.md"].decode("utf-8"), "discovery": yaml.load(files["discovery.yaml"].decode("utf-8"), Loader=loader)})
-            require(retained <= set(parsed["items"]), "Previously assigned IDs must be preserved, retiring removed items.", "E_ANALYSIS_HISTORY", path.name)
-            require(all(parsed["items"][rid]["fields"]["Status"] == "retired" for rid in retired), "Retired IDs cannot be reactivated for new content.", "E_ANALYSIS_HISTORY", path.name)
+            require(retained <= set(parsed["items"]), "Previously assigned IDs must be preserved, retiring removed items.", "E_ANALYSIS_HISTORY", FILES[1])
+            require(all(parsed["items"][rid]["fields"]["Status"] == "retired" for rid in retired), "Retired IDs cannot be reactivated for new content.", "E_ANALYSIS_HISTORY", FILES[1])
             retired.update(rid for rid, value in parsed["items"].items() if value["fields"]["Status"] == "retired")
             if entry["feedback"] is not None:
                 validate_feedback(entry["feedback"])
-                require(set(entry["feedback"]["items"]) <= set(parsed["items"]), "Feedback has dangling references.", "E_ANALYSIS_HISTORY", path.name)
+                require(set(entry["feedback"]["items"]) <= set(parsed["items"]), "Feedback has dangling references.", "E_ANALYSIS_HISTORY", FILES[1])
             retained.update(parsed["items"])
             previous = entry["digest"]
             operations.add(entry["operation_id"])
         return data
-    except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError, KeyError, binascii.Error, RecursionError) as exc:
-        raise business.BusinessError("E_ANALYSIS_HISTORY", str(exc), path.name) from exc
+    except (UnicodeError, yaml.YAMLError, ValueError, TypeError, KeyError, binascii.Error, RecursionError) as exc:
+        raise business.BusinessError("E_ANALYSIS_HISTORY", str(exc), FILES[1]) from exc
 
 
 def read(epic, loader):
@@ -218,7 +225,7 @@ def read(epic, loader):
     token = review_revision(epic)
     paths = [epic.directory / name for name in FILES]
     if not any(p.exists() for p in paths):
-        require(epic.metadata["status"] != "functional_analysis", "Analysis state requires specification and history.", "E_ANALYSIS_HISTORY", FILES[1])
+        require(epic.metadata["status"] not in ("functional_analysis", "ready_for_technical_design"), "Analysis state requires specification and history.", "E_ANALYSIS_HISTORY", FILES[1])
         return None, token
     require(all(p.exists() for p in paths), "Specification and history must both exist.", "E_ANALYSIS_HISTORY", FILES[1])
     data = read_history(epic.directory, epic.metadata["id"], loader)

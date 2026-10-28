@@ -29,7 +29,7 @@ class BusinessRefinementTests(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.project = Path(temp.name)
-        self.created = sdlc.new_epic(self.project, "Task due dates", "Users need due dates on tasks.")["epic"]
+        self.created = sdlc.new_epic(self.project, "Task due dates", "Users need due dates on tasks.", requester="Fixture Requester")["epic"]
         self.directory = Path(self.created["directory"])
         self.docfile = self.project / "draft-input.md"
         self.counter = 0

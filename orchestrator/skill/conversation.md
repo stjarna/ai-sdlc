@@ -97,9 +97,11 @@ each, individually or through an unambiguous acknowledgement of all the listed i
 Do not require technical IDs, a hash or a formal approval phrase. Do not ask again when
 the user has already given a complete, clear decision for the unchanged reviewed content.
 
-Use an identity the person declared for the relevant role in this interaction. Ask
-"Who should I record as the Product Owner?" only if necessary. A name in Git settings,
-the host login, an old audit or a previous session is not a current identity declaration.
+Load the shared local identity profile as described in [commands.md](commands.md).
+If missing, ask once for display name and declared roles, then explicitly set it up.
+Reuse it across conversations without repeated identity prompts. A name in Git settings,
+host login or an old audit is not a substitute for that profile. Profile roles are
+informational, never enforced permissions; identity is locally declared, not verified.
 
 Preserve the person's actual approval and acknowledgement words. If collected over
 several turns, keep those actual utterances identifiable; do not manufacture a quotation
@@ -149,4 +151,33 @@ incorporating it. Routine wording refinements preserve existing evidence and his
 
 Keep hashes, input bindings, CLI operations and paths internal unless requested. Resume
 from saved review without repeating answered questions. Positive feedback is not
-Analysis approval. Analysis approval and Technical Design are not available yet.
+Analysis approval. Apply the natural approval rules above to the Analysis document,
+including every inherited issue, Analysis question/proposal and blocked or proposed
+behavior. For example: "The scenarios cover the agreed scope. Past-date behavior remains
+deferred and blocked. You can request refinements or approve with that uncertainty."
+
+Record explicit refinement feedback before applying authorized edits. After explicit
+approval, say: "Functional Analysis approved; the request remains in Analysis. Would
+you like me to mark it ready for Technical Design?" Wait for a separate answer before
+advancing. Readiness does not run Technical Design. If a revision or reopening made
+the approval stale, explain that a fresh review and human decision are needed.
+
+## Six short commands
+
+Follow [commands.md](commands.md) for `status`, `review`, `approve`, `changes`, `advance`
+and `details`. Accept both short native invocations and natural-language requests.
+Resolve project, Epic and stage internally and ask only when ambiguous. Show concise
+results; full artifacts, provenance and technical details remain available on request.
+Discovery uses completion, not Business/Analysis approval. A command requesting an
+approval context does not itself acknowledge unseen unresolved issues.
+
+## Accountability and handoff
+
+Use `inbox`, `pending assignments` and `assign` through [commands.md](commands.md).
+Describe owner as accountable, assignee as responsible for the next activity, and role
+as the expected responsibility rather than a permission. After advancement, offer the
+retained owner one nomination question. If no person is known, report Awaiting Handoff
+and retain ownership; do not start the next stage. Nomination and explicit assignment
+confirmation are separate turns. Keep assignment distinct from document approval and
+lifecycle advancement. Display request IDs/titles in inbox lists as requested, with
+Assigned Work and Awaiting Handoff clearly separated.

@@ -55,7 +55,7 @@ class InteractiveDiscoveryTests(unittest.TestCase):
         self.project = self.area / "project"
         self.project.mkdir()
         self.original_idea = "Customers repeatedly call about request ownership. We do not yet know the access rules or target reduction in calls."
-        self.created = sdlc.new_epic(self.project, "Request ownership visibility", self.original_idea)
+        self.created = sdlc.new_epic(self.project, "Request ownership visibility", self.original_idea, requester="Fixture Requester")
         self.epic = Path(self.created["epic"]["directory"])
         self.metadata_bytes = (self.epic / "metadata.yaml").read_bytes()
         self.idea_bytes = (self.epic / "idea.md").read_bytes()
@@ -63,6 +63,8 @@ class InteractiveDiscoveryTests(unittest.TestCase):
         self.number = 0
 
     def cli(self, *args, env=None):
+        if args and args[0] == "new":
+            args = (*args, "--requester", "Fixture Requester")
         run = subprocess.run([sys.executable, str(SCRIPT), "--project", str(self.project), *args], capture_output=True, text=True, env=env)
         self.assertEqual(run.stderr, "", run.stderr)
         output = json.loads(run.stdout)

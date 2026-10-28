@@ -8,6 +8,11 @@ unrestricted AI agent can invoke these operations while claiming a human identit
 This PoC does **not** technically guarantee human-only authorization. SHA-256 is
 content identity and corruption detection, not a signature or authorization receipt.
 
+The [shared command UX and local profile](command-ux.md) now provide routine actor
+attribution without repeated name prompts. Existing explicit actor flags remain valid;
+profile-backed decisions add optional `identity_source: local_profile`. Historical
+records and baseline formats are unchanged. Roles are informational, not enforced RBAC.
+
 ## Lifecycle
 
 ```text
@@ -31,6 +36,9 @@ Metadata schemas `0.1` and `0.2` remain readable without migration. The first ne
 decision operation upgrades only its target Epic to `0.3`, adding an append-only
 `business_decisions` list. Existing lifecycle/history entries are preserved. Subsequent
 Discovery completion, reopening and refinement retain schema `0.3` and its decisions.
+Later schemas `0.4` and `0.5` are also preserved without downgrade. Increment 6 extracts
+shared technical helpers; legacy baseline formats, canonical bytes/hashes and audit
+semantics remain unchanged.
 
 Each decision has a script-assigned `BD-0001` ID, operation ID, typed action
 (`approve` or `request_changes`), declared actor, reason, explicit text, UTC timestamp,
@@ -81,7 +89,7 @@ that this rule remains deferred pending the support discussion.
 
 All writers require a current, reconciled draft and `business_refinement`. After
 advancement, further business/source changes require explicit Discovery reopening.
-No Analysis operation or artifact is introduced.
+Increment 4 introduces no Analysis artifact; [Increment 6](analysis-approval.md) reuses its technical gate mechanisms without changing these Business contracts.
 
 ## Immutable approved input
 
@@ -154,7 +162,7 @@ Important gate diagnostics are `E_ACKNOWLEDGEMENT`, `E_APPROVAL_REQUIRED`,
 
 The advancement event carries the approval and baseline IDs. In `ready_for_analysis`,
 review derives `analysis_input` from that event, retaining it during
-`functional_analysis`. Increment 5 Analysis operations must
+`functional_analysis` and `ready_for_technical_design`. Increment 5 Analysis operations must
 verify the baseline, consume its frozen business/source artifacts and reference its
 ID in outputs. Unresolved issues remain unresolved. Reopening clears the active
 handoff view while preserving the historical event. Increment 4 does not run Analysis.

@@ -33,6 +33,8 @@ class DiscoveryTests(unittest.TestCase):
         self.project = Path(self.temp.name).resolve()
 
     def cli(self, *args, env=None):
+        if args and args[0] == "new":
+            args = (*args, "--requester", "Fixture Requester")
         completed = subprocess.run(
             [sys.executable, str(SCRIPT), "--project", str(self.project), *args],
             capture_output=True, text=True, env=env, check=False,
@@ -43,7 +45,7 @@ class DiscoveryTests(unittest.TestCase):
         return output
 
     def create(self, title="Example", idea="People cannot see their request status."):
-        return sdlc.new_epic(self.project, title, idea)
+        return sdlc.new_epic(self.project, title, idea, requester="Fixture Requester")
 
     def metadata_path(self, output):
         return Path(output["epic"]["directory"]) / "metadata.yaml"
@@ -65,6 +67,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(directory.name, "REQ-0001-prehled-pozadavku")
         self.assertEqual({path.name for path in directory.iterdir()}, {"metadata.yaml", "idea.md"})
         data = yaml.safe_load((directory / "metadata.yaml").read_text())
+        self.assertEqual(data.pop("ownership")["owner"], "Fixture Requester")
         self.assertEqual(data, {
             "schema_version": "0.1", "id": "REQ-0001", "title": "Přehled požadavků",
             "status": "discovery", "artifacts": {"idea": "idea.md"},

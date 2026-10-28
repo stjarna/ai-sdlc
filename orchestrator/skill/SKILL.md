@@ -5,7 +5,7 @@ description: Guide an informal business idea through Discovery, business specifi
 
 # AI SDLC Assistant
 
-Use the shared [conversation policy](conversation.md) throughout the interaction.
+Use the shared [conversation policy](conversation.md) and [command/identity contract](commands.md) throughout the interaction.
 This file owns workflow and persistence mechanics for every host; discovery adapters
 only load it. Keep the complete `orchestrator/` package together. Resolve resources
 from this skill's actual location, independently of the target project's directory.
@@ -24,8 +24,9 @@ is not automatically the target project. Ask only when the project or request is
 ambiguous. Resolve existing requests using persisted titles/IDs through `validate`
 and `open`; do not guess an ID or create a duplicate when the user intends to resume.
 
-For a new request, derive a title and pass the original description to `new` without
-adding requirements. Before continuing saved work, `open` it and read current lifecycle,
+For a new request, load the local identity profile (explicit setup once if missing),
+derive a title and pass the original description to `new` without adding requirements.
+The declared requester becomes initial owner/assignee; never create an unowned request. Before continuing saved work, `open` it and read current lifecycle,
 Discovery resolutions/corrections, business revision, reconciliation and approval state.
 Use the artifacts rather than chat recollection as the authoritative current state.
 A lost conversational approval context requires a fresh review and decision.
@@ -59,9 +60,12 @@ Structural completeness and the AI's readiness assessment are advisory, not appr
 ## Complete or reopen Discovery
 
 Present a concise review and obtain an explicit Requester completion decision with a
-declared identity. Use an identity already declared for that role in this interaction;
-ask when missing. Invoke `discovery-complete` with the reviewed Epic revision, actual
-decision and operation ID, then verify `ready_for_refinement`. A review request or
+local declared identity loaded from the profile. Follow `commands.md` for one-time
+setup if missing; reuse it without repeated identity questions. Invoke
+`discovery-complete` with the reviewed Epic revision, actual
+decision and operation ID, then verify `ready_for_refinement` and pending Product Owner
+handoff with the current owner retained. Follow the ownership flow in `commands.md`
+to offer nomination and separately confirm assignment; an unknown recipient stays pending. A review request or
 AI readiness recommendation alone cannot authorize completion. The user may continue
 Discovery instead. Completion does not approve the business specification.
 
@@ -96,7 +100,8 @@ regenerate/revise against the new source and previous business revision when aut
 ## Record Product Owner decisions
 
 Use the conversation policy to present a review, interpret the human's response and
-obtain any missing identity or unresolved-item acknowledgements. Retain the reviewed
+load the local identity profile and obtain any missing unresolved-item acknowledgements.
+Retain the reviewed
 business revision, review revision and item mapping internally in the native conversation;
 never ask the user to copy them. No separate checkpoint subsystem is needed.
 
@@ -107,9 +112,10 @@ is not approval or blanket permission to edit requirements; revise only as instr
 For approval, require explicit assent to the identified reviewed document and explicit
 acknowledgement of each outstanding issue/proposal. Preserve the human's actual words;
 do not expand a short response into a fabricated formal quotation. The reason field
-may summarize the context but must not be presented as a human quotation. Reuse only
-an identity declared in the current interaction, never a Git/login identity or an actor
-from an old audit record. If nothing relevant changed and the user already supplied a
+may summarize the context but must not be presented as a human quotation. Reuse the
+local declared identity profile, never a Git/login identity or an actor
+from an old audit record. Follow `commands.md` for explicit setup/editing and identity-source
+audit attribution; the profile is unauthenticated and roles are informational. If nothing relevant changed and the user already supplied a
 complete explicit decision, execute it without an extra ceremonial confirmation.
 
 Re-read `business-review` before approval and compare it with the snapshot actually
@@ -131,7 +137,9 @@ After reporting business approval, stop for a separate explicit advancement inst
 Do not bundle approval and advancement, even when the user initially asks for both.
 After that separate instruction, obtain a fresh review, verify the selected latest
 approval and immutable baseline, and call `business-advance` with fresh tokens, actor,
-reason and operation ID. Verify `ready_for_analysis` and the baseline reference.
+reason and operation ID. Verify `ready_for_analysis`, the baseline reference and
+pending handoff to a Business Analyst with the current owner retained. Offer nomination
+and separately confirm any assignment as described in `commands.md`.
 Describe this as marking the request ready for Functional Analysis; do not claim that
 Analysis has run; use the separate Analysis drafting workflow when requested.
 Reopening requires fresh completion,
@@ -172,9 +180,38 @@ items and history rather than repeating settled questions. If an Analysis transa
 is interrupted, inspect it, establish no writer remains, and use `analysis-recover`;
 retry only the original operation ID and inputs. Never treat a stale draft as current.
 
-Finish with read-only Analysis review and any remaining concerns. No Analysis approval,
-onward advancement, Technical Design, Story decomposition or implementation operation
-is available in this increment. Do not infer any of these from positive feedback.
+## Review and approve Functional Analysis
+
+Read the [Analysis Approval contract](../../docs/analysis-approval.md). Present a concise
+business-oriented review using `analysis-review`: behavior, exclusions, coverage,
+blocked items and each unresolved question or proposal. Assess semantic quality yourself;
+`can_approve` indicates structural eligibility only. Keep the complete reviewed context
+and mapping to `analysis_open_items` internal, including inherited U/P, AQ/AP and blocked
+or proposed functional items. Acknowledgement accepts uncertainty without resolving it,
+confirming an assumption or establishing implementation readiness.
+
+Use the same natural approval rules as Business: clear assent to this exact review,
+explicit acknowledgement of every listed uncertainty, local declared identity
+loaded from the profile, and preserved actual decision wording. Vague positive
+feedback never authorizes approval. Ask only for missing clarification or acknowledgement;
+do not request another ceremonial confirmation of an already complete decision.
+If context changed or was lost, present a fresh review and obtain renewed assent.
+
+For changes, persist actual feedback through `analysis-request-changes` before authorized
+refinement. Feedback does not change the document or business authority. For approval,
+revalidate the presented snapshot, call `analysis-approve` with its exact context and
+acknowledged mapping, then verify the recorded decision and immutable baseline. Report
+that the Analysis is approved and remains in Functional Analysis. Stop and wait for a
+separate explicit advancement instruction, even if approval initially asked for both.
+
+Only after that separate instruction, review again, verify the latest effective approval
+and baseline, and use `analysis-advance`. Verify pending Engineering Lead / Architect
+handoff with the current owner retained; offer nomination and confirm any assignment
+separately. Report readiness for Technical Design;
+do not start it. After advancement, Analysis editing is blocked. Explicit upstream
+reopening preserves historical decisions/baselines and requires renewed reconciliation
+and fresh approval. A same-byte revision or replay cannot restore old authority.
+Technical Design, Story decomposition and implementation remain outside this increment.
 
 ## Execute and recover
 

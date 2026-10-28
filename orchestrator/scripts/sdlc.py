@@ -21,10 +21,15 @@ import discovery_history as history
 import business_refinement as business
 import business_approval as approval
 import functional_analysis as analysis
+import analysis_approval as analysis_gate_policy
+import approval_common as approval_common
+import local_identity
+import command_ux
+import ownership
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.5.0"
+ORCHESTRATOR_VERSION = "0.8.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 SECTIONS = (
@@ -120,6 +125,8 @@ class Epic:
     open_items: list = field(default_factory=list)
     analysis: dict | None = None
     analysis_review_revision: str | None = None
+    analysis_approval: dict | None = None
+    analysis_open_items: list = field(default_factory=list)
 
     def payload(self) -> dict:
         return {
@@ -131,6 +138,8 @@ class Epic:
             "review_revision": self.review_revision, "approval": self.approval,
             "open_items": self.open_items, "analysis": self.analysis,
             "analysis_review_revision": self.analysis_review_revision,
+            "analysis_approval": self.analysis_approval, "analysis_open_items": self.analysis_open_items,
+            "ownership": ownership.view(self.metadata) if self.metadata.get("status") in (*ownership.STAGES, "cancelled") else None,
         }
 
 
@@ -180,18 +189,22 @@ def read_epic(directory: Path) -> Epic:
         return epic
     epic.metadata = data
     version = data.get("schema_version")
-    expected_fields = FIELDS if version == SCHEMA_VERSION else FIELDS | {"lifecycle"}
-    if version in ("0.3", "0.4"):
+    expected_fields = set(FIELDS) if version == SCHEMA_VERSION else FIELDS | {"lifecycle"}
+    if version in ("0.3", "0.4", "0.5"):
         expected_fields |= {"business_decisions"}
+    if version == "0.5":
+        expected_fields |= {"analysis_decisions"}
+    if "ownership" in data:
+        expected_fields |= {"ownership"}
     if set(data) != expected_fields:
         epic.diagnostics.append(error(
             "E_METADATA", metadata_path,
             f"Expected exactly these fields: {', '.join(sorted(expected_fields))}.",
         ))
-    if version not in (SCHEMA_VERSION, "0.2", "0.3", "0.4"):
+    if version not in (SCHEMA_VERSION, "0.2", "0.3", "0.4", "0.5"):
         epic.diagnostics.append(error(
             "E_SCHEMA_VERSION", metadata_path,
-            "Supported schema_version values are the strings '0.1', '0.2', '0.3' and '0.4'.",
+            "Supported schema_version values are the strings '0.1', '0.2', '0.3', '0.4' and '0.5'.",
         ))
     if not valid_id(data.get("id")):
         epic.diagnostics.append(error("E_EPIC_ID", metadata_path, "Expected REQ-0001 through REQ-9999."))
@@ -199,21 +212,30 @@ def read_epic(directory: Path) -> Epic:
         epic.diagnostics.append(error("E_TITLE", metadata_path, "Title must be nonempty, single-line text."))
     # Cancelled records reserve IDs; this CLI provides no cancellation transition.
     statuses = ("discovery", "cancelled") if version == SCHEMA_VERSION else ("discovery", "ready_for_refinement", "business_refinement")
-    if version in ("0.3", "0.4"):
+    if version in ("0.3", "0.4", "0.5"):
         statuses += ("ready_for_analysis",)
-    if version == "0.4":
+    if version in ("0.4", "0.5"):
         statuses += ("functional_analysis",)
+    if version == "0.5":
+        statuses += ("ready_for_technical_design",)
     if data.get("status") not in statuses:
         epic.diagnostics.append(error(
             "E_STATUS", metadata_path, f"Supported record statuses are {', '.join(statuses)}."
         ))
-    if version in ("0.2", "0.3", "0.4"):
+    if version in ("0.2", "0.3", "0.4", "0.5"):
         try:
-            business.validate_lifecycle(data["lifecycle"], data.get("status"), allow_advance=version in ("0.3", "0.4"), allow_analysis=version == "0.4")
-            if version in ("0.3", "0.4"):
+            business.validate_lifecycle(data["lifecycle"], data.get("status"), allow_advance=version in ("0.3", "0.4", "0.5"), allow_analysis=version in ("0.4", "0.5"), allow_analysis_approval=version == "0.5")
+            if version in ("0.3", "0.4", "0.5"):
                 approval.validate_decisions(data)
+            if version == "0.5":
+                analysis_gate_policy.validate_decisions(data)
         except (KeyError, business.BusinessError) as exc:
             epic.diagnostics.append(error(exc.code if isinstance(exc, business.BusinessError) else "E_LIFECYCLE", metadata_path, str(exc)))
+    if not any(item.severity == "error" for item in epic.diagnostics):
+        try:
+            ownership.validate(data)
+        except business.BusinessError as exc:
+            epic.diagnostics.append(error(exc.code, metadata_path, str(exc)))
     artifacts = data.get("artifacts")
     if not isinstance(artifacts, dict) or set(artifacts) != {"idea"}:
         epic.diagnostics.append(error(
@@ -230,7 +252,7 @@ def read_epic(directory: Path) -> Epic:
         idea_path = idea_path.resolve()
         if (
             relative.is_absolute() or ".." in relative.parts
-            or "business-baselines" in relative.parts[:1]
+            or any(name in relative.parts[:1] for name in ("business-baselines", "analysis-baselines"))
             or relative.as_posix() in ("specification.md", "analysis-history.yaml", ".analysis-transaction.json")
             or not idea_path.is_relative_to(directory.resolve())
             or idea_path == metadata_path.resolve()
@@ -293,6 +315,11 @@ def read_epic(directory: Path) -> Epic:
             epic.approval = approval.evaluate(data, epic.business, epic.source_revision, baseline_errors)
             epic.open_items = approval.open_items(epic.business)
             epic.analysis, epic.analysis_review_revision = analysis.read(epic, StrictLoader)
+            analysis_errors = analysis_gate_policy.check_baselines(directory, data, epic.analysis, StrictLoader)
+            epic.diagnostics.extend(error(exc.code, directory / exc.filename, str(exc)) for exc in analysis_errors)
+            epic.analysis_approval = analysis_gate_policy.evaluate(epic, analysis_errors, StrictLoader)
+            if epic.analysis:
+                epic.analysis_open_items = analysis_gate_policy.open_items(analysis_gate_policy.details_for(directory, data["id"], epic.analysis, StrictLoader))
             if (metadata_path.read_bytes() != metadata_bytes or idea_path.read_bytes() != idea_bytes
                     or (discovery_path.read_bytes() if discovery_path.exists() else None) != discovery_bytes
                     or approval.read_snapshot(directory, data) != snapshot
@@ -373,7 +400,7 @@ def write_new(path: Path, content: str) -> None:
         stream.write(content)
 
 
-def new_epic(project: Path, title: str, idea: str = "") -> dict:
+def new_epic(project: Path, title: str, idea: str = "", requester: str | None = None) -> dict:
     root = project_path(project)
     if not valid_title(title):
         raise Rejected([error("E_TITLE", root, "Title must be nonempty, single-line text.")])
@@ -392,6 +419,11 @@ def new_epic(project: Path, title: str, idea: str = "") -> dict:
             "schema_version": SCHEMA_VERSION, "id": epic_id,
             "title": title.strip(), "status": "discovery", "artifacts": {"idea": "idea.md"},
         }
+        requester, source = local_identity.attribution(root, requester)
+        if not business.valid_person(requester):
+            raise Rejected([error("E_UPDATE_INPUT", root, "Declare the requester or set up the local identity profile before creating a request.")])
+        metadata["ownership"] = ownership.initialized("discovery", requester, requester, source,
+            "ownership-created", "Initial accountability belongs to the declared requester.")
         content = TEMPLATE.read_text(encoding="utf-8").replace("{{problem}}", idea.strip())
         made_requirements = False
         made_epic = False
@@ -490,6 +522,7 @@ def discovery_update(project: Path, epic_id: str, expected_revision: str, operat
                 if existing["base_revision"] != expected_revision or history.requested_records(existing) != records:
                     raise Rejected([error("E_IDEMPOTENCY", path, "Operation ID was already used with different content or a different base revision.")])
                 return result("discovery-update", epic.diagnostics, epic=epic.payload(), replayed=True, record_ids=[record["id"] for record in existing["records"]])
+        reject_analysis_decision_reuse(epic, operation_id)
         if expected_revision != epic.revision:
             raise Rejected([error("E_REVISION_CONFLICT", path, "Request artifacts changed; reopen and reconcile before sending a new operation.")])
         try:
@@ -524,8 +557,9 @@ def unresolved_discovery(epic: Epic) -> dict:
     return {"questions": [item for item in state["questions"] if item["status"] != "answered"], "assumptions": [item for item in state["assumptions"] if item["status"] == "proposed"]}
 
 
-def lifecycle_change(project: Path, epic_id: str, expected_revision: str, operation_id: str, actor: str, decision: str, action: str) -> dict:
+def lifecycle_change(project: Path, epic_id: str, expected_revision: str, operation_id: str, actor: str, decision: str, action: str, identity_source=None) -> dict:
     root = project_path(project)
+    source_fields = attribution_fields(identity_source, root)
     if action not in ("complete", "reopen") or not history.valid_revision(expected_revision) or not history.valid_operation_id(operation_id) or not business.valid_person(actor) or not business.valid_person(decision):
         raise Rejected([error("E_UPDATE_INPUT", root, "Expected a SHA-256 revision, unique operation ID, declared identity and explicit decision.")])
     with project_lock(root):
@@ -534,20 +568,25 @@ def lifecycle_change(project: Path, epic_id: str, expected_revision: str, operat
         events = epic.metadata.get("lifecycle", [])
         for event in events:
             if event["id"] == operation_id:
-                if event["base_revision"] != expected_revision or event["actor"] != actor or event["decision"] != decision or event["action"] != action:
+                if event["base_revision"] != expected_revision or event["actor"] != actor or event["decision"] != decision or event["action"] != action or event.get("identity_source") != identity_source:
                     raise Rejected([error("E_IDEMPOTENCY", path, "Lifecycle operation ID was reused with different inputs.")])
                 return result(f"discovery-{action}", epic.diagnostics, epic=epic.payload(), replayed=True, unresolved=unresolved_discovery(epic))
+        reject_analysis_decision_reuse(epic, operation_id)
         if epic.revision != expected_revision:
             raise Rejected([error("E_REVISION_CONFLICT", path, "Discovery revision changed; reopen and reconcile.")])
-        allowed = "discovery" if action == "complete" else ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis")
+        allowed = "discovery" if action == "complete" else ("ready_for_refinement", "business_refinement", "ready_for_analysis", "functional_analysis", "ready_for_technical_design")
         if epic.metadata["status"] not in ((allowed,) if isinstance(allowed, str) else allowed):
             raise Rejected([error("E_STATUS", path, f"Cannot {action} from {epic.metadata['status']}.")])
         if action == "complete" and epic.discovery is None:
             raise Rejected([error("E_DISCOVERY_HISTORY", epic.directory / "discovery.yaml", "Persist Discovery history before completion.")])
         target = "ready_for_refinement" if action == "complete" else "discovery"
-        event = {"id": operation_id, "action": action, "from": epic.metadata["status"], "to": target, "base_revision": expected_revision, "actor": actor, "decision": decision, "timestamp": business.timestamp()}
+        event = {"id": operation_id, "action": action, "from": epic.metadata["status"], "to": target, "base_revision": expected_revision, "actor": actor, "decision": decision, "timestamp": business.timestamp(), **source_fields}
         candidate = dict(epic.metadata)
-        candidate.update(schema_version=epic.metadata["schema_version"] if epic.metadata["schema_version"] in ("0.3", "0.4") else "0.2", status=target, lifecycle=[*events, event])
+        candidate.update(schema_version=epic.metadata["schema_version"] if epic.metadata["schema_version"] in ("0.3", "0.4", "0.5") else "0.2", status=target, lifecycle=[*events, event])
+        try:
+            ownership.handoff(epic.metadata, candidate, actor, identity_source)
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, path, str(exc))]) from exc
         checked = read_epic(epic.directory)
         require_valid(checked.diagnostics)
         if checked.revision != expected_revision:
@@ -581,6 +620,7 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
                     if entry["digest"] != business.digest(content) or entry["source_revision"] != expected_source or entry["base_revision"] != expected_business or entry["editor"] != editor or entry["reason"] != reason or entry["mode"] != mode:
                         raise Rejected([error("E_IDEMPOTENCY", ledger_path, "Business operation ID was reused with different inputs.")])
                     return result(f"business-{mode}", epic.diagnostics, epic=epic.payload(), replayed=True)
+        reject_analysis_decision_reuse(epic, operation_id)
         if epic.metadata["status"] != "ready_for_refinement" and not (mode == "revise" and epic.metadata["status"] == "business_refinement"):
             raise Rejected([error("E_STATUS", epic.directory / "metadata.yaml", "Business writing requires ready_for_refinement or business_refinement.")])
         if mode == "generate" and current is not None and not current["needs_reconciliation"]:
@@ -620,11 +660,117 @@ def business_review(project: Path, epic_id: str) -> dict:
     return result("business-review", epic.diagnostics, epic=epic.payload(), current=bool(epic.business and not epic.business["needs_reconciliation"]), review_revision=epic.review_revision, open_items=epic.open_items, approval=epic.approval, source_records={"confirmed": sorted(confirmed), "unresolved": sorted(unresolved), "proposed": sorted(proposed)})
 
 
-def business_gate(project: Path, epic_id: str, expected_review: str, expected_business: str, operation_id: str, actor: str, reason: str, decision: str, action: str, acknowledged=None, approval_id=None) -> dict:
+def attribution_fields(source, path):
+    if source is None:
+        return {}
+    if source != local_identity.SOURCE:
+        raise Rejected([error("E_UPDATE_INPUT", path, "Only unauthenticated local_profile attribution is supported.")])
+    return {"identity_source": source}
+
+
+def validate_gate_metadata(candidate):
+    version = candidate["schema_version"]
+    business.validate_lifecycle(candidate["lifecycle"], candidate["status"], allow_advance=True,
+        allow_analysis=version in ("0.4", "0.5"), allow_analysis_approval=version == "0.5")
+    approval.validate_decisions(candidate)
+    ownership.validate(candidate)
+    if version == "0.5":
+        analysis_gate_policy.validate_decisions(candidate)
+
+
+def commit_gate(epic, candidate, expected, token):
+    def checked_read(directory):
+        checked = read_epic(directory)
+        require_valid(checked.diagnostics)
+        return checked
+    try:
+        if candidate["status"] != epic.metadata["status"]:
+            ownership.handoff(epic.metadata, candidate, candidate["lifecycle"][-1]["actor"], candidate["lifecycle"][-1].get("identity_source"))
+        approval_common.persist_decision(epic, candidate, expected, checked_read, token, validate_gate_metadata,
+            lambda path, value: atomic_history_write(path, yaml.safe_dump(value, sort_keys=False, allow_unicode=True)))
+    except business.BusinessError as exc:
+        raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
+
+
+def reject_analysis_decision_reuse(epic, operation_id):
+    if any(e["operation_id"] == operation_id for e in epic.metadata.get("ownership", {}).get("history", [])):
+        raise Rejected([error("E_IDEMPOTENCY", epic.directory / "metadata.yaml", "Operation ID already belongs to an ownership event.")])
+    if any(e["operation_id"] == operation_id for e in epic.metadata.get("analysis_decisions", [])):
+        raise Rejected([error("E_IDEMPOTENCY", epic.directory / "metadata.yaml", "Operation ID already belongs to an Analysis decision.")])
+
+
+def reject_gate_operation_reuse(epic, operation_id):
+    ids = {e["operation_id"] for name in ("business_decisions", "analysis_decisions") for e in epic.metadata.get(name, [])}
+    ids.update(e["id"] for e in epic.metadata.get("lifecycle", []))
+    ids.update(e["operation_id"] for e in epic.metadata.get("ownership", {}).get("history", []))
+    for draft in (epic.business, epic.analysis):
+        if draft:
+            ids.update(e["operation_id"] for e in draft["history"])
+    business.require(operation_id not in ids, "E_IDEMPOTENCY", "Operation ID already belongs to another operation.", "metadata.yaml")
+
+
+def analysis_gate(project: Path, epic_id: str, expected_review: str, expected_analysis: str, expected_baseline: str,
+                  expected_handoff: str, operation_id: str, actor: str, reason: str, decision: str,
+                  action: str, acknowledged=None, approval_id=None, identity_source=None) -> dict:
+    root = project_path(project)
+    source_fields = attribution_fields(identity_source, root)
+    acknowledged = [] if acknowledged is None else acknowledged
+    if action not in ("approve", "request_changes", "advance") or not all(history.valid_revision(v) for v in (expected_review, expected_analysis, expected_baseline)) or not all(history.valid_operation_id(v) for v in (expected_handoff, operation_id)) or not all(business.valid_person(v) for v in (actor, reason)) or not analysis_gate_policy.valid_decision_text(decision) or (action == "advance" and decision != reason):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Expected exact Analysis context, operation ID, declared identity, reason and explicit decision.")])
+    if not isinstance(acknowledged, list) or not all(isinstance(v, str) and analysis_gate_policy.ITEM_ID.fullmatch(v) for v in acknowledged) or len(set(acknowledged)) != len(acknowledged) or (action != "approve" and acknowledged) or (action == "advance" and (not isinstance(approval_id, str) or not re.fullmatch(r"AD-[0-9]{4,}", approval_id))) or (action != "advance" and approval_id is not None):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Invalid Analysis acknowledgements or selected approval ID.")])
+    acknowledged = sorted(acknowledged)
+    command = "analysis-" + action.replace("_", "-")
+    with project_lock(root):
+        epic = selected_epic(root, epic_id)
+        path = epic.directory / "metadata.yaml"
+        inputs = {"review_revision": expected_review, "analysis_revision": expected_analysis,
+                  "business_baseline_id": expected_baseline, "business_handoff_id": expected_handoff, "actor": actor}
+        try:
+            replay = approval_common.replay(epic.metadata.get("analysis_decisions", []), epic.metadata.get("lifecycle", []), operation_id,
+                {**inputs, "identity_source": identity_source, "action": action, "reason": reason, "decision": decision, "acknowledged_open_items": acknowledged} if action != "advance" else None,
+                {**inputs, "identity_source": identity_source, "action": "analysis_advance", "decision": reason, "approval_id": approval_id} if action == "advance" else None)
+            if replay:
+                entry, advancement = replay
+                fields = {"approval_id": entry["approval_id"]} if advancement else {"decision_id": entry["id"]}
+                return result(command, epic.diagnostics, epic=epic.payload(), replayed=True, baseline_id=entry["baseline_id"], **fields)
+            reject_gate_operation_reuse(epic, operation_id)
+            analysis_gate_policy.require(epic.metadata["status"] == "functional_analysis", "Analysis decisions and advancement require functional_analysis.", "E_STATUS")
+            analysis_gate_policy.require(epic.analysis is not None and not epic.analysis["needs_reconciliation"] and epic.approval["valid"], "Analysis or upstream Business approval requires reconciliation.", "E_APPROVAL_STALE")
+            analysis_gate_policy.require(epic.analysis["baseline_id"] == expected_baseline and epic.analysis["handoff_id"] == expected_handoff, "Active business handoff changed.", "E_ANALYSIS_INPUT")
+            analysis_gate_policy.require(epic.analysis_review_revision == expected_review and epic.analysis["revision"] == expected_analysis, "Analysis context changed; review again.", "E_REVISION_CONFLICT")
+            candidate = {**epic.metadata, "schema_version": "0.5", "analysis_decisions": list(epic.metadata.get("analysis_decisions", []))}
+            baseline_id, decision_id = None, None
+            if action == "advance":
+                latest = epic.analysis_approval["latest_decision"]
+                analysis_gate_policy.require(latest is not None, "No Analysis approval has been recorded.", "E_APPROVAL_REQUIRED")
+                analysis_gate_policy.require(latest["id"] == approval_id and latest["action"] == "approve", "Selected approval is not the latest Analysis decision.", "E_APPROVAL_SUPERSEDED")
+                analysis_gate_policy.require(epic.analysis_approval["can_advance"], "Analysis approval is stale: " + ", ".join(epic.analysis_approval["reasons"]), "E_APPROVAL_STALE")
+                baseline_id = latest["baseline_id"]
+                candidate["status"] = "ready_for_technical_design"
+                candidate["lifecycle"] = [*candidate["lifecycle"], {"id": operation_id, "action": "analysis_advance", "from": "functional_analysis", "to": "ready_for_technical_design", "base_revision": epic.revision, "actor": actor, "decision": reason, "timestamp": business.timestamp(), **source_fields, "review_revision": expected_review, **analysis_gate_policy.context(epic.analysis), "approval_id": approval_id, "baseline_id": baseline_id}]
+            else:
+                if action == "approve":
+                    approval_common.exact_acknowledgements(acknowledged, epic.analysis_open_items, "Explicitly acknowledge exactly all unresolved items shown by analysis-review; acknowledgement does not resolve them.")
+                    analysis_gate_policy.require(analysis_gate_policy.current_inputs_match(epic, StrictLoader), "Live supporting artifacts differ from the approved Business baseline; explicitly reconcile upstream before approval.", "E_APPROVAL_STALE")
+                    snapshot = analysis_gate_policy.read_snapshot(epic.directory)
+                    analysis_gate_policy.require(analysis.review_revision(epic) == expected_review, "Artifacts changed before baseline preparation.", "E_REVISION_CONFLICT")
+                    baseline_id = analysis_gate_policy.publish_baseline(epic.directory, epic.metadata, epic.analysis, snapshot, acknowledged, StrictLoader)
+                decision_id = f"AD-{len(candidate['analysis_decisions']) + 1:04d}"
+                candidate["analysis_decisions"].append({"id": decision_id, "operation_id": operation_id, "action": action, "actor": actor, "reason": reason, "decision": decision, "timestamp": business.timestamp(), **source_fields, "review_revision": expected_review, **analysis_gate_policy.context(epic.analysis), "acknowledged_open_items": acknowledged, "baseline_id": baseline_id})
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
+        commit_gate(epic, candidate, expected_review, lambda e: e.analysis_review_revision)
+        updated = selected_epic(root, epic_id)
+        return result(command, updated.diagnostics, epic=updated.payload(), replayed=False, decision_id=decision_id, approval_id=approval_id, baseline_id=baseline_id)
+
+
+def business_gate(project: Path, epic_id: str, expected_review: str, expected_business: str, operation_id: str, actor: str, reason: str, decision: str, action: str, acknowledged=None, approval_id=None, identity_source=None) -> dict:
     """Record procedural PO decisions or separately advance the approved Epic."""
     root = project_path(project)
+    source_fields = attribution_fields(identity_source, root)
     acknowledged = [] if acknowledged is None else acknowledged
-    if action not in ("approve", "request_changes", "advance") or not all(history.valid_revision(value) for value in (expected_review, expected_business)) or not history.valid_operation_id(operation_id) or not all(business.valid_person(value) for value in (actor, reason, decision)) or (action == "advance" and decision != reason):
+    if action not in ("approve", "request_changes", "advance") or not all(history.valid_revision(value) for value in (expected_review, expected_business)) or not history.valid_operation_id(operation_id) or not all(business.valid_person(value) for value in (actor, reason)) or not analysis_gate_policy.valid_decision_text(decision) or (action == "advance" and decision != reason):
         raise Rejected([error("E_UPDATE_INPUT", root, "Expected exact review/business revisions, operation ID, declared identity, reason and explicit decision.")])
     if not isinstance(acknowledged, list) or not all(isinstance(value, str) and re.fullmatch(r"[UP]-[0-9]{3,}", value) for value in acknowledged) or len(set(acknowledged)) != len(acknowledged) or (action != "approve" and acknowledged) or (action == "advance" and (not isinstance(approval_id, str) or not re.fullmatch(r"BD-[0-9]{4,}", approval_id))) or (action != "advance" and approval_id is not None):
         raise Rejected([error("E_UPDATE_INPUT", root, "Invalid acknowledgement list or selected approval ID.")])
@@ -633,16 +779,17 @@ def business_gate(project: Path, epic_id: str, expected_review: str, expected_bu
     with project_lock(root):
         epic = selected_epic(root, epic_id)
         path = epic.directory / "metadata.yaml"
-        for entry in epic.metadata.get("business_decisions", []):
-            if entry["operation_id"] == operation_id:
-                if entry["action"] != action or entry["review_revision"] != expected_review or entry["business_revision"] != expected_business or entry["actor"] != actor or entry["reason"] != reason or entry["decision"] != decision or entry["acknowledged_open_items"] != acknowledged:
-                    raise Rejected([error("E_IDEMPOTENCY", path, "Gate operation ID was already used with different inputs.")])
-                return result(command, epic.diagnostics, epic=epic.payload(), replayed=True, decision_id=entry["id"], baseline_id=entry["baseline_id"])
-        for event in epic.metadata.get("lifecycle", []):
-            if event["id"] == operation_id:
-                if event["action"] != "advance" or action != "advance" or event["review_revision"] != expected_review or event["business_revision"] != expected_business or event["actor"] != actor or event["decision"] != reason or decision != reason or event["approval_id"] != approval_id:
-                    raise Rejected([error("E_IDEMPOTENCY", path, "Lifecycle operation ID was already used with different inputs.")])
-                return result(command, epic.diagnostics, epic=epic.payload(), replayed=True, approval_id=event["approval_id"], baseline_id=event["baseline_id"])
+        try:
+            replay = approval_common.replay(epic.metadata.get("business_decisions", []), epic.metadata.get("lifecycle", []), operation_id,
+                {"identity_source": identity_source, "action": action, "review_revision": expected_review, "business_revision": expected_business, "actor": actor, "reason": reason, "decision": decision, "acknowledged_open_items": acknowledged} if action != "advance" else None,
+                {"identity_source": identity_source, "action": "advance", "review_revision": expected_review, "business_revision": expected_business, "actor": actor, "decision": reason, "approval_id": approval_id} if action == "advance" else None)
+            if replay:
+                entry, advancement = replay
+                fields = {"approval_id": entry["approval_id"]} if advancement else {"decision_id": entry["id"]}
+                return result(command, epic.diagnostics, epic=epic.payload(), replayed=True, baseline_id=entry["baseline_id"], **fields)
+            reject_analysis_decision_reuse(epic, operation_id)
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
         if epic.metadata["status"] != "business_refinement":
             raise Rejected([error("E_STATUS", path, "Business decisions and advancement require business_refinement.")])
         if epic.business is None or epic.business["needs_reconciliation"]:
@@ -650,7 +797,7 @@ def business_gate(project: Path, epic_id: str, expected_review: str, expected_bu
         if epic.review_revision != expected_review or epic.business["revision"] != expected_business:
             raise Rejected([error("E_REVISION_CONFLICT", path, "Review context or business revision changed; review again.")])
         candidate = dict(epic.metadata)
-        candidate.update(schema_version="0.4" if epic.metadata["schema_version"] == "0.4" else "0.3", business_decisions=list(epic.metadata.get("business_decisions", [])))
+        candidate.update(schema_version=epic.metadata["schema_version"] if epic.metadata["schema_version"] in ("0.4", "0.5") else "0.3", business_decisions=list(epic.metadata.get("business_decisions", [])))
         baseline_id, decision_id = None, None
         if action == "advance":
             latest = epic.approval["latest_decision"]
@@ -662,10 +809,13 @@ def business_gate(project: Path, epic_id: str, expected_review: str, expected_bu
                 raise Rejected([error("E_APPROVAL_STALE", path, "Approval is stale: " + ", ".join(epic.approval["reasons"]))])
             baseline_id = latest["baseline_id"]
             candidate["status"] = "ready_for_analysis"
-            candidate["lifecycle"] = [*candidate["lifecycle"], {"id": operation_id, "action": "advance", "from": "business_refinement", "to": "ready_for_analysis", "base_revision": epic.revision, "actor": actor, "decision": reason, "timestamp": business.timestamp(), "review_revision": expected_review, "business_revision": expected_business, "approval_id": approval_id, "baseline_id": baseline_id}]
+            candidate["lifecycle"] = [*candidate["lifecycle"], {"id": operation_id, "action": "advance", "from": "business_refinement", "to": "ready_for_analysis", "base_revision": epic.revision, "actor": actor, "decision": reason, "timestamp": business.timestamp(), **source_fields, "review_revision": expected_review, "business_revision": expected_business, "approval_id": approval_id, "baseline_id": baseline_id}]
         else:
-            if action == "approve" and set(acknowledged) != {item["id"] for item in epic.open_items}:
-                raise Rejected([error("E_ACKNOWLEDGEMENT", path, "Explicitly acknowledge exactly the unresolved issues and unconfirmed proposals shown by business-review.")])
+            if action == "approve":
+                try:
+                    approval_common.exact_acknowledgements(acknowledged, epic.open_items, "Explicitly acknowledge exactly the unresolved issues and unconfirmed proposals shown by business-review.")
+                except business.BusinessError as exc:
+                    raise Rejected([error(exc.code, path, str(exc))]) from exc
             if action == "approve":
                 snapshot = approval.read_snapshot(epic.directory, epic.metadata)
                 if approval.review_revision(snapshot) != expected_review:
@@ -675,17 +825,8 @@ def business_gate(project: Path, epic_id: str, expected_review: str, expected_bu
                 except business.BusinessError as exc:
                     raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
             decision_id = f"BD-{len(candidate['business_decisions']) + 1:04d}"
-            candidate["business_decisions"].append({"id": decision_id, "operation_id": operation_id, "action": action, "actor": actor, "reason": reason, "decision": decision, "timestamp": business.timestamp(), "review_revision": expected_review, **approval.context(epic.metadata, epic.business), "acknowledged_open_items": acknowledged, "baseline_id": baseline_id})
-        try:
-            business.validate_lifecycle(candidate["lifecycle"], candidate["status"], allow_advance=True, allow_analysis=candidate["schema_version"] == "0.4")
-            approval.validate_decisions(candidate)
-        except business.BusinessError as exc:
-            raise Rejected([error(exc.code, path, str(exc))]) from exc
-        checked = read_epic(epic.directory)
-        require_valid(checked.diagnostics)
-        if checked.review_revision != expected_review:
-            raise Rejected([error("E_REVISION_CONFLICT", path, "Artifacts changed while preparing the gate operation.")])
-        atomic_history_write(path, yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True))
+            candidate["business_decisions"].append({"id": decision_id, "operation_id": operation_id, "action": action, "actor": actor, "reason": reason, "decision": decision, "timestamp": business.timestamp(), **source_fields, "review_revision": expected_review, **approval.context(epic.metadata, epic.business), "acknowledged_open_items": acknowledged, "baseline_id": baseline_id})
+        commit_gate(epic, candidate, expected_review, lambda e: e.review_revision)
         updated = read_epic(epic.directory)
         require_valid(updated.diagnostics)
         return result(command, updated.diagnostics, epic=updated.payload(), replayed=False, decision_id=decision_id, approval_id=approval_id, baseline_id=baseline_id)
@@ -702,7 +843,16 @@ def analysis_review(project: Path, epic_id: str) -> dict:
             details = analysis.validate_document(epic.analysis["content"].encode("utf-8"), epic_id, {**epic.analysis, "business": frozen["business.md"].decode("utf-8"), "discovery": yaml.load(frozen["discovery.yaml"].decode("utf-8"), Loader=StrictLoader)})
     except business.BusinessError as exc:
         epic.diagnostics.append(error(exc.code, epic.directory / exc.filename, str(exc)))
-    return result("analysis-review", epic.diagnostics, epic=epic.payload(), input=source, current=bool(epic.analysis and not epic.analysis["needs_reconciliation"]), analysis_review_revision=epic.analysis_review_revision, details=details, approval_implemented=False, semantic_assessment="not_performed_by_cli")
+    can_approve = bool(epic.analysis and not epic.analysis["needs_reconciliation"]
+        and epic.metadata["status"] == "functional_analysis"
+        and not any(d.severity == "error" for d in epic.diagnostics)
+        and analysis_gate_policy.current_inputs_match(epic, StrictLoader))
+    return result("analysis-review", epic.diagnostics, epic=epic.payload(), input=source,
+        current=bool(epic.analysis and not epic.analysis["needs_reconciliation"]),
+        analysis_review_revision=epic.analysis_review_revision, details=details,
+        approval_implemented=True, analysis_approval=epic.analysis_approval,
+        analysis_open_items=epic.analysis_open_items, can_approve=can_approve,
+        semantic_assessment="not_performed_by_cli")
 
 
 def analysis_write(project: Path, epic_id: str, expected_review: str, expected_analysis: str | None, expected_baseline: str, expected_handoff: str, operation_id: str, editor: str, reason: str, document_path: Path, mode: str, feedback_path: Path | None = None) -> dict:
@@ -723,9 +873,10 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
                     raise Rejected([error("E_IDEMPOTENCY", epic.directory / analysis.FILES[1], "Analysis operation ID was reused with different inputs.")])
                 return result("analysis-" + mode, epic.diagnostics, epic=epic.payload(), replayed=True)
         # A new write cannot reuse another lifecycle or business decision operation.
-        if any(e["id"] == operation_id for e in epic.metadata.get("lifecycle", [])) or any(e["operation_id"] == operation_id for e in epic.metadata.get("business_decisions", [])):
+        if any(e["id"] == operation_id for e in epic.metadata.get("lifecycle", [])) or any(e["operation_id"] == operation_id for e in epic.metadata.get("business_decisions", []) + epic.metadata.get("analysis_decisions", [])):
             raise Rejected([error("E_IDEMPOTENCY", epic.directory, "Operation ID already belongs to another operation.")])
         try:
+            analysis.require(epic.metadata["status"] != "ready_for_technical_design", "Analysis is frozen after advancement; explicitly reopen upstream Discovery for a new cycle.", "E_STATUS")
             source = analysis.approved_input(epic, StrictLoader)
             analysis.require(source["baseline_id"] == expected_baseline and source["handoff_id"] == expected_handoff, "The active business handoff changed.", "E_ANALYSIS_INPUT")
             analysis.require(epic.analysis_review_revision == expected_review and (epic.analysis["revision"] if epic.analysis else None) == expected_analysis, "Analysis review context changed; review again.", "E_REVISION_CONFLICT")
@@ -743,7 +894,7 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             files = {"specification.md": content, "analysis-history.yaml": yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True).encode("utf-8")}
             if epic.metadata["status"] == "ready_for_analysis":
                 metadata = dict(epic.metadata)
-                metadata.update(schema_version="0.4", status="functional_analysis", lifecycle=[*metadata["lifecycle"], {"id": operation_id, "action": "analyze", "from": "ready_for_analysis", "to": "functional_analysis", "base_revision": epic.revision, "actor": editor, "decision": reason, "timestamp": entry["timestamp"], "review_revision": epic.review_revision, "business_revision": epic.business["revision"], **{k: source[k] for k in ("baseline_id", "approval_id", "handoff_id")}}])
+                metadata.update(schema_version="0.5" if metadata["schema_version"] == "0.5" else "0.4", status="functional_analysis", lifecycle=[*metadata["lifecycle"], {"id": operation_id, "action": "analyze", "from": "ready_for_analysis", "to": "functional_analysis", "base_revision": epic.revision, "actor": editor, "decision": reason, "timestamp": entry["timestamp"], "review_revision": epic.review_revision, "business_revision": epic.business["revision"], **{k: source[k] for k in ("baseline_id", "approval_id", "handoff_id")}}])
                 files["metadata.yaml"] = yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True).encode("utf-8")
             checked = read_epic(epic.directory)
             require_valid(checked.diagnostics)
@@ -780,6 +931,101 @@ def business_recover(project: Path, epic_id: str, *, recover_analysis=False) -> 
         return result("analysis-recover" if recover_analysis else "business-recover", epic.diagnostics, epic=epic.payload())
 
 
+def ownership_change(project: Path, epic_id: str, expected_revision: str, operation_id: str,
+                     actor: str, decision: str, assignee: str, *, initialize=False, identity_source=None) -> dict:
+    root = project_path(project)
+    attribution_fields(identity_source, root)
+    if not history.valid_revision(expected_revision) or not history.valid_operation_id(operation_id) or not all(business.valid_person(v) for v in (actor, assignee)) or not ownership.text(decision):
+        raise Rejected([error("E_UPDATE_INPUT", root, "Expected reviewed revision, operation ID, declared actor, assignee and actual explicit confirmation.")])
+    action = "initialize" if initialize else "assign"
+    command = "ownership-initialize" if initialize else "assign"
+    with project_lock(root):
+        epic = selected_epic(root, epic_id)
+        path = epic.directory / "metadata.yaml"
+        try:
+            for event in epic.metadata.get("ownership", {}).get("history", []):
+                if event["operation_id"] == operation_id:
+                    ownership.require(all(event[k] == v for k, v in {"action": action, "expected_revision": expected_revision, "actor": actor, "decision": decision, "to_owner": assignee, "identity_source": identity_source or "declared"}.items()), "Assignment operation ID was reused with different inputs.", "E_IDEMPOTENCY")
+                    return result(command, epic.diagnostics, epic=epic.payload(), replayed=True)
+            reject_gate_operation_reuse(epic, operation_id)
+            ownership.responsibility(epic.metadata["status"])
+            ownership.require(epic.revision == expected_revision, "Ownership or lifecycle changed; reload before assigning.", "E_REVISION_CONFLICT")
+            candidate = dict(epic.metadata)
+            if initialize:
+                ownership.require("ownership" not in epic.metadata, "Ownership is already initialized; use assign to transfer it.", "E_OWNERSHIP_INITIALIZED")
+                known = ownership.legacy_requester(epic.metadata)
+                ownership.require(known is None or known == assignee, "A recorded Requester already identifies the initial owner; use assignment for a transfer.", "E_OWNER_CONFLICT")
+                candidate["ownership"] = ownership.initialized(epic.metadata["status"], assignee, actor, identity_source, operation_id, decision)
+                candidate["ownership"]["history"][0]["expected_revision"] = expected_revision
+            else:
+                current = ownership.materialize(epic.metadata, actor, identity_source)
+                event = ownership.event_for("assign", current, epic.metadata["status"], actor, identity_source, operation_id, expected_revision, decision, owner=assignee)
+                candidate["ownership"] = ownership.append(current, event)
+            def validate(value):
+                ownership.require({k: v for k, v in value.items() if k != "ownership"} == {k: v for k, v in epic.metadata.items() if k != "ownership"}, "Assignment may change ownership metadata only.", "E_OWNERSHIP_AUDIT")
+                ownership.validate(value)
+            def read(directory):
+                checked = read_epic(directory)
+                require_valid(checked.diagnostics)
+                return checked
+            approval_common.persist_decision(epic, candidate, expected_revision, read, lambda e: e.revision, validate,
+                lambda file, value: atomic_history_write(file, yaml.safe_dump(value, sort_keys=False, allow_unicode=True)))
+        except business.BusinessError as exc:
+            raise Rejected([error(exc.code, path, str(exc))]) from exc
+        updated = selected_epic(root, epic_id)
+        return result(command, updated.diagnostics, epic=updated.payload(), replayed=False)
+
+
+def ownership_overview(project: Path, operation: str) -> dict:
+    root = project_path(project)
+    epics, diagnostics = scan(root)
+    require_valid(diagnostics)
+    rows = [ownership.row(epic) for epic in epics if epic.metadata["status"] != "cancelled"]
+    pending = [row for row in rows if row["assignment_status"] in ("awaiting_assignment", "owner_declaration_required")]
+    pending.sort(key=lambda row: (row["since"] or "", row["id"]))
+    if operation == "pending-assignments":
+        return result(operation, diagnostics, pending_assignments=pending)
+    profile = local_identity.load(root)
+    same = lambda name: isinstance(name, str) and name.strip().casefold() == profile["display_name"].strip().casefold()
+    return result("inbox", diagnostics, identity=profile,
+        assigned_work=[row for row in rows if row["assignment_status"] == "assigned" and same(row["assignee"])],
+        awaiting_handoff=[row for row in pending if same(row["owner"])])
+
+
+def command_context(project: Path, command: str, selector: str | None = None) -> dict:
+    root = project_path(project)
+    if command not in command_ux.COMMANDS:
+        raise Rejected([error("E_COMMAND", root, "Expected a supported SDLC command: " + ", ".join(command_ux.COMMANDS) + ".")])
+    if command in ("inbox", "pending assignments"):
+        return ownership_overview(root, "inbox" if command == "inbox" else "pending-assignments")
+    epics, diagnostics = scan(root)
+    require_valid(diagnostics)
+    if selector is None:
+        matches = epics
+    elif valid_id(selector):
+        matches = [e for e in epics if e.metadata["id"] == selector]
+    else:
+        matches = [e for e in epics if e.metadata["title"].casefold() == selector.casefold()]
+    if len(matches) != 1:
+        code = "E_CONTEXT_AMBIGUOUS" if len(matches) > 1 else "E_CONTEXT_MISSING"
+        raise Rejected([error(code, root, "Select one request by title or ID." if matches else "No matching request; select an existing project/request or start Discovery.")])
+    epic = matches[0]
+    routing = command_ux.route(command, epic.metadata["status"])
+    view = business_review(root, epic.metadata["id"]) if routing["review_operation"] == "business-review" else analysis_review(root, epic.metadata["id"]) if routing["review_operation"] == "analysis-review" else result("open", epic.diagnostics, epic=epic.payload())
+    if command == "assign":
+        routing["required_role"] = ownership.view(epic.metadata)["required_role"]
+        routing["initialization_required"] = ownership.view(epic.metadata)["initialization_required"]
+    active_approval = epic.analysis_approval if epic.metadata["status"] == "functional_analysis" else epic.approval if epic.metadata["status"] == "business_refinement" else None
+    if command == "approve" and active_approval and active_approval["valid"]:
+        routing.update(write_operation=None, requires_human_decision=False,
+                       explanation="The current revision is already approved; report it without recording a duplicate decision.")
+    try:
+        identity, identity_error = local_identity.load(root), None
+    except local_identity.IdentityError as exc:
+        identity, identity_error = None, {"code": exc.code, "file": str(exc.path), "message": str(exc)}
+    return result("command-context", epic.diagnostics, routing=routing, review=view, identity=identity, identity_diagnostic=identity_error)
+
+
 def read_changes(path: Path) -> list:
     def mapping(pairs):
         result = {}
@@ -803,8 +1049,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=ORCHESTRATOR_VERSION)
     parser.add_argument("--project", required=True, type=Path, help="Explicit target project root")
     commands = parser.add_subparsers(dest="operation", required=True)
+    context = commands.add_parser("command-context", help="Read-only resolution/routing for a conversational SDLC command")
+    context.add_argument("command", choices=command_ux.COMMANDS)
+    context.add_argument("--request", dest="selector")
+    commands.add_parser("identity-show", help="Read the local unauthenticated identity profile")
+    for name in ("identity-setup", "identity-edit"):
+        profile = commands.add_parser(name, help="Explicitly create or edit local identity preferences outside repositories")
+        profile.add_argument("--display-name", required=name == "identity-setup")
+        profile.add_argument("--role", action="append", required=name == "identity-setup")
+        if name == "identity-edit":
+            profile.add_argument("--expected-profile-revision", required=True)
+    commands.add_parser("inbox", help="Read work assigned to the local declared user and owned pending handoffs")
+    commands.add_parser("pending-assignments", help="Read all project requests awaiting assignment")
+    for name in ("assign", "ownership-initialize"):
+        assignment = commands.add_parser(name, help="Explicitly confirm responsibility transfer or declare a missing legacy owner")
+        assignment.add_argument("id")
+        assignment.add_argument("--expected-revision", required=True)
+        assignment.add_argument("--operation-id", required=True)
+        assignment.add_argument("--decision", required=True)
+        assignment.add_argument("--actor")
+        assignment.add_argument("--expected-profile-revision")
+        assignment.add_argument("--owner" if name == "ownership-initialize" else "--assignee", dest="assignee", required=True)
     create = commands.add_parser("new", help="Create a local Discovery Epic")
     create.add_argument("--title", required=True)
+    create.add_argument("--requester", help="Explicit initial requester; otherwise use the local declared identity profile")
     create.add_argument("--idea", default="", help="Initial business description; stored as content only")
     commands.add_parser("open", help="Read an Epic by stable ID").add_argument("id")
     commands.add_parser("validate", help="Validate one Epic or all local Epics").add_argument("id", nargs="?")
@@ -818,7 +1086,8 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("id")
         command.add_argument("--expected-revision", required=True)
         command.add_argument("--operation-id", required=True)
-        command.add_argument(f"--{who}", required=True)
+        command.add_argument(f"--{who}")
+        command.add_argument("--expected-profile-revision")
         command.add_argument("--decision", required=True)
     for name in ("business-generate", "business-revise"):
         command = commands.add_parser(name, help="Persist an AI-drafted or human-refined business document")
@@ -836,12 +1105,27 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--expected-review-revision", required=True)
         command.add_argument("--expected-business-revision", required=True)
         command.add_argument("--operation-id", required=True)
-        command.add_argument(f"--{identity}", required=True, dest="gate_actor")
+        command.add_argument(f"--{identity}", dest="gate_actor")
+        command.add_argument("--expected-profile-revision")
         command.add_argument("--reason", required=True)
         if name == "business-approve":
             command.add_argument("--decision", required=True)
             command.add_argument("--acknowledge-open-item", action="append", default=[])
         elif name == "business-request-changes":
+            command.add_argument("--feedback", required=True)
+        else:
+            command.add_argument("--approval-id", required=True)
+    for name, identity in (("analysis-request-changes", "reviewer"), ("analysis-approve", "approver"), ("analysis-advance", "actor")):
+        command = commands.add_parser(name, help="Record an Analysis decision or separately advance to Technical Design readiness")
+        command.add_argument("id")
+        for flag in ("expected-analysis-review-revision", "expected-analysis-revision", "expected-baseline-id", "expected-handoff-id", "operation-id", "reason"):
+            command.add_argument("--" + flag, required=True)
+        command.add_argument("--" + identity, dest="gate_actor")
+        command.add_argument("--expected-profile-revision")
+        if name == "analysis-approve":
+            command.add_argument("--decision", required=True)
+            command.add_argument("--acknowledge-open-item", action="append", default=[])
+        elif name == "analysis-request-changes":
             command.add_argument("--feedback", required=True)
         else:
             command.add_argument("--approval-id", required=True)
@@ -862,12 +1146,24 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("business-recover", help="Roll forward an inspected interrupted business publication").add_argument("id")
     args = parser.parse_args(argv)
     try:
-        if args.operation == "new":
-            output = new_epic(args.project, args.title, args.idea)
+        if args.operation == "command-context":
+            output = command_context(args.project, args.command, args.selector)
+        elif args.operation in ("inbox", "pending-assignments"):
+            output = ownership_overview(args.project, args.operation)
+        elif args.operation in ("assign", "ownership-initialize"):
+            actor, source = local_identity.attribution(args.project, args.actor, args.expected_profile_revision)
+            output = ownership_change(args.project, args.id, args.expected_revision, args.operation_id, actor, args.decision, args.assignee, initialize=args.operation == "ownership-initialize", identity_source=source)
+        elif args.operation == "identity-show":
+            output = result(args.operation, [], identity=local_identity.load(args.project))
+        elif args.operation in ("identity-setup", "identity-edit"):
+            output = result(args.operation, [], identity=local_identity.save(args.project, args.display_name, args.role, edit=args.operation == "identity-edit", expected_revision=getattr(args, "expected_profile_revision", None)))
+        elif args.operation == "new":
+            output = new_epic(args.project, args.title, args.idea, requester=args.requester)
         elif args.operation == "discovery-update":
             output = discovery_update(args.project, args.id, args.expected_revision, args.operation_id, read_changes(args.changes_file))
         elif args.operation in ("discovery-complete", "discovery-reopen"):
-            output = lifecycle_change(args.project, args.id, args.expected_revision, args.operation_id, args.requester, args.decision, args.operation.removeprefix("discovery-"))
+            actor, source = local_identity.attribution(args.project, args.requester, args.expected_profile_revision)
+            output = lifecycle_change(args.project, args.id, args.expected_revision, args.operation_id, actor, args.decision, args.operation.removeprefix("discovery-"), identity_source=source)
         elif args.operation in ("business-generate", "business-revise"):
             output = business_write(args.project, args.id, args.expected_source_revision, args.expected_business_revision, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("business-"))
         elif args.operation == "business-review":
@@ -875,7 +1171,13 @@ def main(argv: list[str] | None = None) -> int:
         elif args.operation in ("business-approve", "business-request-changes", "business-advance"):
             action = args.operation.removeprefix("business-").replace("-", "_")
             text = args.decision if action == "approve" else args.feedback if action == "request_changes" else args.reason
-            output = business_gate(args.project, args.id, args.expected_review_revision, args.expected_business_revision, args.operation_id, args.gate_actor, args.reason, text, action, getattr(args, "acknowledge_open_item", []), getattr(args, "approval_id", None))
+            actor, source = local_identity.attribution(args.project, args.gate_actor, args.expected_profile_revision)
+            output = business_gate(args.project, args.id, args.expected_review_revision, args.expected_business_revision, args.operation_id, actor, args.reason, text, action, getattr(args, "acknowledge_open_item", []), getattr(args, "approval_id", None), identity_source=source)
+        elif args.operation in ("analysis-approve", "analysis-request-changes", "analysis-advance"):
+            action = args.operation.removeprefix("analysis-").replace("-", "_")
+            text = args.decision if action == "approve" else args.feedback if action == "request_changes" else args.reason
+            actor, source = local_identity.attribution(args.project, args.gate_actor, args.expected_profile_revision)
+            output = analysis_gate(args.project, args.id, args.expected_analysis_review_revision, args.expected_analysis_revision, args.expected_baseline_id, args.expected_handoff_id, args.operation_id, actor, args.reason, text, action, getattr(args, "acknowledge_open_item", []), getattr(args, "approval_id", None), identity_source=source)
         elif args.operation == "analysis-review":
             output = analysis_review(args.project, args.id)
         elif args.operation in ("analysis-generate", "analysis-revise"):
@@ -886,6 +1188,8 @@ def main(argv: list[str] | None = None) -> int:
             output = business_recover(args.project, args.id)
         else:
             output = inspect_epics(args.project, args.operation, args.id)
+    except local_identity.IdentityError as exc:
+        output = result(args.operation, [error(exc.code, exc.path, str(exc))])
     except Rejected as exc:
         output = result(args.operation, exc.diagnostics)
     except (OSError, UnicodeError) as exc:
