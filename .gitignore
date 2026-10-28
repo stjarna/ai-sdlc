@@ -10,3 +10,15 @@ build/
 *.log
 __pycache__/
 .pytest_cache/
+# Local environment and generated artifacts
+.venv/
+venv/
+*.pyc
+.nyc_output/
+*.tsbuildinfo
+.tmp/
+tmp/
+.DS_Store?
+.idea/
+.vscode/*
+!.vscode/extensions.json

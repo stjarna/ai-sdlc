@@ -1,38 +1,31 @@
 # AI-SDLC
 
-**Status:** design / pre-implementation PoC. This repository is not yet an operational SDLC skill.
+**Status:** design / pre-implementation proof of concept. The orchestration skill and To-Do demonstration are not yet implemented.
 
-A reusable, Git-native AI SDLC orchestration capability for existing software projects. The orchestrator will manage Epic/Story/Release workflows, artifacts, human approvals, contextual handoffs and versioned references to approved specialist skills. It does **not** replace project management tools or own all specialist engineering standards.
+A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
-## Start here
+## Documentation and Codex handover
 
-- [Consolidated specification](docs/specification.md) — main source of design decisions, with `[D]` confirmed, `[P]` PoC, `[T]` target architecture and `[O]` open.
-- [Initial architecture decision](docs/decisions/0001-repository-and-poc-scope.md) — repository scope and demonstration scenario.
-- `orchestrator/skill/` — future orchestrator skill; **not implemented yet**.
-- `orchestrator/templates/`, `orchestrator/scripts/`, `orchestrator/tests/` — future reusable skill assets.
-- `examples/todo-app/` — future small existing To-Do application used *only* to demonstrate the orchestration flow.
+- [Working specification](docs/specification.md) — detailed design; **[D]** accepted, **[P]** PoC boundary, **[T]** target, **[O]** open.
+- [Architecture decision register](docs/decisions/architecture-decisions.md) — rationale, rejected/deferred approaches and open implementation questions.
+- [PoC scope decision](docs/decisions/0001-repository-and-poc-scope.md).
+- [Codex instructions](AGENTS.md) — required reading and safe implementation workflow.
 
-## PoC scenario
+## Repository layout
 
-Extend an existing small Node.js/JavaScript To-Do app (in-memory data) with **Task Due Date Management**. Demonstrate change impact analysis when a date-only deadline is extended to a date **and time**. Keep the orchestrator generic: no hard-coded Node.js, To-Do, or due-date assumptions in its core.
+- `orchestrator/` — future generic skill, workflows, templates, scripts and tests.
+- `examples/todo-app/` — future small pre-existing Node.js/JavaScript To-Do application with in-memory state, **not** part of the orchestrator's generic logic.
+- `docs/` — versioned architecture and decisions.
 
-## Initial Git setup
+## Demonstration scope
 
-Create a **public empty** GitHub repository named `AI-SDLC` (do not initialize it with README/license/.gitignore), then from this directory:
+Implement **Task Due Date Management** in an existing minimal To-Do application. Then change the requirement from date-only to date-and-time and show impact analysis across requirements, design, implementation tasks and tests. Keep the reusable orchestrator independent of the app's business domain and tech stack.
 
-```bash
-git init -b main
-git add .
-git commit -m "docs: initialize AI SDLC orchestrator specification"
-git remote add origin git@github.com:YOUR-ACCOUNT/AI-SDLC.git
-git push -u origin main
-```
+## Development approach
 
-If you use HTTPS rather than SSH, replace the remote URL accordingly. No remote repository has been created or pushed by this scaffold.
+1. Open this repository in Codex and ask it to read `AGENTS.md`, `docs/specification.md` and the decision register, then summarize its understanding **without editing**.
+2. Agree on minimal command interface, YAML schema, state transitions and approvals.
+3. Implement the first orchestration workflow in small reviewable increments.
+4. Build the To-Do example separately and validate end-to-end SDLC flow and release-readiness evidence.
 
-## Next steps
-
-1. Agree on orchestrator directory structure, commands, YAML schema and approval transitions.
-2. Add the actual `orchestrator/skill/SKILL.md` and deterministic management scripts.
-3. Prepare the To-Do example independently of the generic skill.
-4. Verify an end-to-end SDLC walkthrough and release-readiness evidence.
+Contributions must not include secrets, proprietary company material or unapproved external skills. This public repository is an experimental case-study PoC, not a production deployment system.
