@@ -18,14 +18,15 @@ Companion to [the working specification](../specification.md), not a replacement
 | 012 | Security and governance are cross-cutting; permissions, sandbox, CI and Git protections enforce critical rules beyond prompt instructions. | D |
 | 013 | Federated ownership of specialist skills with central governance; immutable revision references, compatibility review and controlled upgrades. | D/T |
 | 014 | Confirmed PoC scenario (ADR-0001): public repo with generic `orchestrator/` and separate `examples/todo-app/`; existing minimal in-memory Node.js To-Do app, Task Due Date Management and a date-only to date-and-time requirements change. | D/P |
+| 015 | First approved increment: generic `new`, read-only `open` and `validate`; schema 0.1 with metadata separate from idea content. Allocate highest existing local Epic number + 1, retaining cancelled IDs; reject duplicates and inconsistent records. Create only `discovery`; conversational refinement, Requester confirmation and lifecycle transitions follow later. See [operation contract](../../orchestrator/scripts/README.md). | D/P |
 
 ## Rejected / deferred
 - **Rejected:** storing state only in chat; `checkpoint.md`; giant bootstrap Story; automatic release of a ready Epic; Release nested under Epic; treating self-review as independent; copying specialist skills into orchestrator.
 - **Deferred:** greenfield bootstrap; corporate skill catalog and identity infrastructure; Jira/Teams integration; incomplete-Epic release planning; production deployment; unverified cross-host portability.
 
 ## Remaining open design work
-- Exact commands and Codex skill invocation; supported host conventions.
-- YAML schema, statuses, approval records/revision binding, deterministic mutation rules.
+- Host catalog installation, cross-host invocation and commands beyond the first three operations.
+- Schema extensions beyond Epic Discovery 0.1, lifecycle transitions and approval records/revision binding.
 - FR/AC/TC references and test-to-requirement traceability without duplicated authorities.
 - Concurrent ID allocation, migration and compatibility policy.
 - Skill discovery and version manifest implementation for the demo.

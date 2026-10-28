@@ -1,6 +1,8 @@
 # AI-SDLC
 
-**Status:** design / pre-implementation proof of concept. The orchestration skill and To-Do demonstration are not yet implemented.
+**Status:** initial Discovery management increment implemented for review. `new`,
+`open`, and `validate` are available; conversational refinement, the remaining
+SDLC workflow, and the To-Do demonstration are not yet implemented.
 
 A reusable Git-native AI-powered SDLC orchestration capability for existing software projects. It coordinates Epic/Story/Release workflows, human approvals, traceability and approved versioned specialist skills; it does not replace project management tools or own every engineering standard.
 
@@ -13,7 +15,7 @@ A reusable Git-native AI-powered SDLC orchestration capability for existing soft
 
 ## Repository layout
 
-- `orchestrator/` — future generic skill, workflows, templates, scripts and tests.
+- `orchestrator/` — generic Discovery skill, template, deterministic operations and tests; later workflows remain planned.
 - `examples/todo-app/` — future small pre-existing Node.js/JavaScript To-Do application with in-memory state, **not** part of the orchestrator's generic logic.
 - `docs/` — versioned architecture and decisions.
 
@@ -23,9 +25,15 @@ Implement **Task Due Date Management** in an existing minimal To-Do application.
 
 ## Development approach
 
-1. Open this repository in Codex and ask it to read `AGENTS.md`, `docs/specification.md` and the decision register, then summarize its understanding **without editing**.
-2. Agree on minimal command interface, YAML schema, state transitions and approvals.
-3. Implement the first orchestration workflow in small reviewable increments.
-4. Build the To-Do example separately and validate end-to-end SDLC flow and release-readiness evidence.
+Read `AGENTS.md`, the specification, and the decision register before changes.
+The approved first increment covers local Discovery management only; new Epics
+start in `discovery` and no lifecycle transitions are implemented.
+
+See [the operation contract](orchestrator/scripts/README.md) for environment setup,
+the minimal schema, CLI examples, diagnostics, and limitations; see
+[the skill entrypoint](orchestrator/skill/SKILL.md) for conversational routing and
+[the tests](orchestrator/tests/README.md) for the automated verification command.
+The CLI never stages, commits, or pushes. Later increments and the demonstration
+remain subject to separate review.
 
 Contributions must not include secrets, proprietary company material or unapproved external skills. This public repository is an experimental case-study PoC, not a production deployment system.

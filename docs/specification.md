@@ -1,8 +1,8 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
-**Verze dokumentu:** 0.3 (konsolidace návrhových rozhodnutí)  
+**Verze dokumentu:** 0.4 (první Discovery management increment)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; nejde o implementovanou funkčnost  
+**Stav:** návrhový dokument pro PoC a case study; implementovány k revizi pouze operace `new`, `open`, `validate`, zbytek popisuje plánovanou funkčnost
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -78,7 +78,9 @@ project/
 
 **[D]** `metadata.yaml` = aktuální stavy a odkazy; `decisions.md` = důvody a historie rozhodnutí; Git = verze skutečného obsahu. Nezdvojovat autoritativní text FR/AC současně v YAML a Markdownu. Použít strojově čitelné identifikátory/front matter či jinou jednoznačnou strukturu v jednom zdroji pravdy. `tasks.md` v původní specifikaci se v novější dohodě konkretizuje jako `implementation-plan.md`; při implementaci zajistit jeden autoritativní název nebo migraci/alias.
 
-**[O]** Finální status enumy, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a strategie relativních odkazů zůstávají otevřené.
+**[D/P]** Minimální schéma Epic Discovery `0.1`, relativní odkaz na nápad a kontrakt prvních operací popisuje [Discovery operation contract](../orchestrator/scripts/README.md). Verze schématu je nezávislá na verzi orchestrátoru. ID v metadatech je autoritativní i po přejmenování složky.
+
+**[O]** Finální status enumy pro další fáze, schema schvalování, přesná serializace FR/AC/TC, kolize ID mezi nezávislými klony a širší strategie relativních odkazů zůstávají otevřené.
 
 ### Vzor stavů / referencí (ilustrativní, ne finální schéma)
 
@@ -145,6 +147,8 @@ flowchart TD
 **[D]** Nejde o waterfall: různé Stories postupují paralelně; QA a engineering větve mohou postupovat paralelně. Stav Epicu a jednotlivých artefaktů jsou různé dimenze.
 
 ### 6.1 Idea & Discovery — Requester
+
+**[D/P] První implementovaný increment:** pouze deterministické `new`, `open`, `validate` a tenká vstupní instrukce skillu. `new` automaticky přiděluje nejvyšší existující lokální číselné ID + 1 a zakládá stav `discovery`; zachované zrušené Epicy rezervují svá ID. Duplicitní ID a strukturálně nekonzistentní záznamy operaci zablokují. `open` a `validate` jsou read-only. Konverzační zpřesňování, následné ukládání obsahu, potvrzení Requesterem a přechod do `ready_for_refinement` jsou až další increment; následující odstavce popisují plánovaný celý workflow.
 
 **[D]** `$sdlc new` ihned vytvoří *lokální* pracovní Epic (`metadata.yaml`, `idea.md`). Přirozená konverzace pokrývá problém, cílové uživatele, hodnotu, cíle, počáteční scope, success criteria, předpoklady, otevřené otázky a hypotézy dotčených oblastí. Žádný závazný design ani automatická dekompozice na Stories.
 
@@ -320,8 +324,8 @@ sequenceDiagram
 
 ## 11. Otevřená rozhodnutí před implementací
 
-1. Finální formální YAML/Markdown schéma: status enums, approval object, stabilní ID FR/AC/TC/tasks, validace a migrations policy.
-2. Konkrétní repozitářová struktura skillu, bezpečné deterministické management skripty a interoperabilní invocation syntax.
+1. Rozšíření minimálního Epic Discovery schématu: další status enums, approval object, Story/Release schéma, stabilní ID FR/AC/TC/tasks, validace a migrations policy.
+2. Rozšíření management skriptů a skillu o další workflow, instalace do hostitelského katalogu a interoperabilní invocation syntax; první checkout-based vstup a tři operace mají kontrakt výše.
 3. Výběr zdrojové To-Do aplikace a její výchozí revize, počty Stories, minimální testovací rozsah a Definition of Done pro potvrzený scénář Task Due Date Management (datum → datum a čas).
 4. Přesný mechanismus nativního subagenta Codex a jeho izolace/read-only; přenositelnost Claude Code experimentálně ověřit.
 5. Referenční vazby na externí artifact versions a immutable build identita v reálné CI/CD.

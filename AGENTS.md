@@ -13,7 +13,7 @@ Read these before changing code. Flag conflicting requirements instead of silent
 ## Boundaries
 - `orchestrator/`: generic orchestration skill, templates, workflows, deterministic scripts, tests. No To-Do, Node.js or due-date logic here.
 - `examples/todo-app/`: future minimal existing in-memory Node.js app to demonstrate Task Due Date Management and a date-only to date-and-time change.
-- `docs/`: durable architecture and decisions. Current repository status is **pre-implementation**.
+- `docs/`: durable architecture and decisions. The initial Discovery management increment (`new`, `open`, `validate`) is implemented for review; the remaining lifecycle is still in design.
 
 ## Working rules
 - Inspect repository and documentation first; propose a small implementation slice with files and acceptance checks before major coding.
