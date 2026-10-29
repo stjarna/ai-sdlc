@@ -149,6 +149,40 @@ New diagnostics include `E_SKILL`, `E_ENGINEERING_INPUT`, `E_ENGINEERING_DOCUMEN
 and `E_SECURITY_FINDINGS`. Existing revision, approval, lock, integrity and uncertain-write
 codes retain their meanings. Validation is structural, not business or security approval.
 
+### Pre-development Plan recovery
+
+`engineering-request-changes --kind plan` also accepts an explicit human feedback
+decision in `ready_for_development`, only when no Development start exists in the
+current Analysis cycle. It appends the existing request-changes artifact, audit and
+lifecycle event and returns to `implementation_planning`. Previous Plan baselines and
+approvals remain immutable history; the latest feedback supersedes current approval.
+It does not change Business/Analysis/Design or independent QA approvals or start work.
+This is not a post-development remediation or an upstream requirements change.
+
+Regenerate with `engineering-write --kind plan` against the current source; identical
+wording still creates a fresh revision. Obtain fresh human Plan approval, separate
+advancement and explicit Development start. All operations retain existing revision,
+lock, idempotency and interrupted-publication controls. No metadata migration or
+baseline format change is required. Old baselines are read without rewriting them.
+
+Plan approval, Plan advancement and Development start reject source differing from
+the Plan-generation snapshot with `E_APPROVAL_STALE`. Engineering review adds
+`development_start`: `{eligible: true}` or `{eligible: false, code, reason}`.
+This describes current start eligibility, separately from historical approval validity.
+Once Development has legitimately started, planned code changes do not invalidate the
+Plan approval merely because the source differs; existing implementation boundaries
+and source-bound code approval continue to apply.
+
+The agent must await start completion and inspect exit 0, `ok: true` and returned
+`development` lifecycle before editing application files. On failure it stops without
+edits. These conversational instructions do not sandbox an unrestricted host agent.
+
+The source scanner remains conservative, including in-repository presentation files;
+`.gitignore` is not a source exclusion. Freeze such files before generating the new
+Plan, and capture new supplemental presentation material outside the project.
+Governed artifacts and execution evidence retain their existing Epic paths. Do not
+copy evolving captures into source after approval or silently delete evidence.
+
 ### Structured artifact inputs
 
 Inputs are JSON objects (the CLI's strict YAML reader also accepts JSON) with these fields:
@@ -369,3 +403,25 @@ instead of coupling compatibility to the CLI version. Legacy manifest schemas re
 readable without migration. Templates own document structure; skills supply domain
 judgment and existing validators enforce data and governance. Each current skill
 references its pinned template IDs, resolved with `sdlc.py templates <template-id>`.
+
+#### Focused recovery acceptance (disposable project)
+
+1. Use a disposable request with genuinely approved Analysis/Design and a generated
+   Plan. Change a presentation file inside the application; verify Plan approval rejects
+   it with `E_APPROVAL_STALE`, without a new approval.
+2. Regenerate against the current frozen tree, approve and separately advance. Change
+   a source/presentation input again; review must report `development_start.eligible:
+   false` and start must reject without application edits or a start lifecycle event.
+3. Obtain explicit human Plan feedback, then invoke the existing
+   `engineering-request-changes --kind plan` with fresh context. Verify the return to
+   planning and preserved baseline/audit prefixes, Design/Business/Analysis approvals
+   and independent QA state. This instruction is a test procedure, not human consent.
+4. Freeze in-project captures and use an external presentation directory. Regenerate,
+   obtain fresh Plan approval and separate advancement; verify start eligibility.
+   Explicitly start, await exit 0/`ok: true`/`development`, then permit declared edits.
+5. Retry the same feedback operation; it must return the original operation without
+   repeating a transition or superseding the newer approval. A new feedback operation
+   after Development starts must be rejected.
+
+Apply the reviewed correction through a new pinned runtime only after its separate
+approval; do not patch an installed runtime or rewrite historical packages/baselines.

@@ -126,3 +126,19 @@ user scope, loader path and enabled state. A missing Codex binary is reported, n
 claimed discovery pass. This is backend discovery, not a visual IDE interaction test.
 The helper verifies project/Git hashes before and after installation/preflight/discovery,
 then confirms existing `new` adds only requirements files and remains in Discovery.
+
+## Pre-development Plan recovery
+
+`test_plan_recovery.py` exercises source-stale Plan approval/advancement/start,
+read-only start eligibility, explicit pre-development feedback returning to planning,
+fresh approval/advancement/start even for identical Plan wording, immutable history,
+independent QA and upstream approvals, CLI diagnostics, concurrent feedback and source
+changes, interrupted publication and exact retries. It also confirms that presentation
+files remain fingerprinted despite Git ignore patterns, while external capture does not
+change project inputs. All human identities/decisions are fictional fixtures.
+
+A host-agent acceptance check remains distinct from these deterministic tests: inject
+a failed or pending Development start and verify the agent awaits completion, inspects
+exit code/JSON/lifecycle, and makes no application edits unless all success conditions
+hold. Skill instructions require this behavior; Python tests do not sandbox unrestricted
+host editing tools or prove agent compliance.

@@ -8,7 +8,7 @@ TRANSITIONS = {
     'technical_design': ('ready_for_implementation_planning',),
     'ready_for_implementation_planning': ('implementation_planning',),
     'implementation_planning': ('ready_for_development',),
-    'ready_for_development': ('development',),
+    'ready_for_development': ('development', 'implementation_planning'),
     'development': ('verification',),
     'verification': ('security_review', 'development'),
     'security_review': ('final_verification', 'development'),

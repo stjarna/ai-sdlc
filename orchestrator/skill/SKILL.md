@@ -315,6 +315,19 @@ QA work may proceed independently; incomplete QA does not prevent Engineering pl
 approval. After Plan approval, wait for separate advancement and then explicit
 `development-start` authorization. Keep forked Engineering source outside reserved `qa/`.
 
+Before any application edit, await the actual `development-start` process completion
+and inspect its exit code and structured response. Proceed only when exit code is zero,
+`ok: true`, and the returned lifecycle is `development`. Do not queue edits alongside
+a pending start call. On any failure, stop without application edits and report the
+diagnostic; approval or a start request alone is not a successful Development start.
+Use the review's `development_start` eligibility before attempting the gate.
+
+If a Plan's source changed before Development, obtain explicit Plan feedback and use
+`engineering-request-changes --kind plan` to return from `ready_for_development` to
+`implementation_planning`. Preserve history, regenerate against current inputs, then
+obtain fresh Plan approval, separate advancement and a successful explicit start.
+This return is unavailable after Development has started in the current cycle.
+
 Implement authorized tasks with native host tools, keeping unit tests alongside code.
 Use named checks for actual unit/build evidence. Present the actual code diff, completed
 tasks, developer tests and results for human code review; self-review is not independent

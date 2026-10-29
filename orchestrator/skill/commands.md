@@ -132,8 +132,19 @@ work does not itself approve an artifact or authorize a readiness transition.
 
 For `changes`, a bare command asks for the requested refinement. Preserve actual feedback
 through the stage-specific operation before applying only explicitly requested edits.
+At Engineering `ready_for_development`, explicit Plan feedback routes to
+`engineering-request-changes --kind plan` and returns to Implementation Planning only
+before Development has started. Do not infer that feedback or return from a stale-start
+error alone. A revised Plan needs fresh approval, separate advancement and explicit start.
 Business scope changes still require explicit Discovery reopening and reconciliation.
 Read-only commands never record approval, mark an issue resolved or change lifecycle.
+
+Engineering review exposes `development_start: {eligible, code?, reason?}`. Historical
+Plan approval can remain valid while current source is ineligible for starting. Await
+and inspect the actual start result before editing: require exit 0, `ok: true`, and
+returned lifecycle `development`. A pending call, failed call or eligibility alone never
+authorizes application edits. Keep evolving supplemental presentation capture outside
+the application tree; freeze existing in-repository captures before regenerating a Plan.
 
 ## Ownership and assignment
 

@@ -307,3 +307,15 @@ Git or create requests. Existing `new` remains the request-creation operation. S
 [installation contract](../../docs/installation-and-adoption.md) and
 [before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.13.0
 is independent of unchanged lifecycle, artifact and validation-contract versions.
+
+
+### Pre-development Plan recovery
+
+After an explicit human feedback decision, `engineering-request-changes ID --kind plan`
+with the existing revision/operation/identity/decision arguments returns
+`ready_for_development` to `implementation_planning` only before Development has started
+in the current cycle. Regenerate through `engineering-write --kind plan`, obtain fresh
+approval and separate advancement, then explicitly start Development. Old audit and
+baseline formats remain intact. Plan approval/advancement reject source-stale input.
+Engineering review's additive `development_start` object reports `eligible`, plus `code`
+and `reason` when false. See [recovery contract](../../docs/engineering.md#pre-development-plan-recovery).

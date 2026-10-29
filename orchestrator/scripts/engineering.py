@@ -313,6 +313,27 @@ def approval(epic,kind,source):
     return draft,payload
 
 
+def require_plan_source(epic, source):
+    """Before development, the plan must describe the exact current project inputs."""
+    draft, _ = latest(epic, 'plan')
+    planned_source = load_artifact(epic.directory, draft['baseline_id'])[0]['source_revision']
+    require(planned_source == source,
+            'Application changed since the plan was generated; request Plan changes and replan before development.',
+            'E_APPROVAL_STALE')
+
+
+def development_start_eligibility(epic, source):
+    """Eligibility is distinct from the historical fact of Plan approval."""
+    try:
+        require(epic.metadata['status'] == 'ready_for_development',
+                'Development requires separate advancement of an approved Plan.', 'E_STATUS')
+        approval(epic, 'plan', source)
+        require_plan_source(epic, source)
+    except business.BusinessError as exc:
+        return {'eligible': False, 'code': exc.code, 'reason': str(exc)}
+    return {'eligible': True}
+
+
 def review(epic, project):
     if epic.metadata['status'] not in DOWNSTREAM:
         return {'active':False,'stage':epic.metadata['status'],'reason':'No active Analysis handoff.'}
@@ -344,6 +365,7 @@ def review(epic, project):
             approvals[kind]={'valid':False,'reason':str(exc),'code':exc.code}
     return {'active':True,'stage':epic.metadata['status'],'current':current,'governance':'0.1' if governed(epic) else 'legacy: not assessed under strengthened controls','final_report':{'baseline_id':finals[-1]['baseline_id'],'payload':report['payload'],**({'template':report['template']} if 'template' in report else {}),'document':artifact_document(epic.directory,finals[-1]['baseline_id'],'final')} if report else None,'approvals':approvals,'revision':token,'source_revision':source,
             'analysis_baseline':handoff['baseline_id'],'analysis_handoff':handoff['id'],'drafts':drafts,
+            'development_start':development_start_eligibility(epic,source),
             'decisions':[e for e in events(epic) if e['action'] in ('approve','request_changes')],
             'evidence':[load_artifact(epic.directory,e['baseline_id'])[0]['payload'] for e in events(epic,'run','check')]}
 
@@ -610,8 +632,15 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             target=WRITE_STAGE[kind]
             skills=domain_skills.pins(['development'] if epic.metadata.get('work_tracks') and kind in ('plan','implementation') else SKILLS[kind],target,_loader())
         elif action in ('approve','request_changes'):
-            require(kind in ('design','plan','implementation') and status==WRITE_STAGE[kind], 'No active approvable artifact in this stage.','E_STATUS')
+            replan = action == 'request_changes' and kind == 'plan' and status == 'ready_for_development'
+            require(kind in ('design','plan','implementation') and (status==WRITE_STAGE[kind] or replan), 'No active approvable artifact in this stage.','E_STATUS')
+            if replan:
+                require(not events(epic, 'start', 'development'),
+                        'Pre-development replanning is unavailable after Development has started.', 'E_STATUS')
+                target = 'implementation_planning'
             draft,doc=latest(epic,kind)
+            if action == 'approve' and kind == 'plan':
+                require_plan_source(epic, source)
             if action=='approve' and kind=='plan' and epic.metadata.get('work_tracks'):
                 import work_tracks
                 require(draft['operation_id']!=work_tracks.active(epic)['engineering']['legacy_plan'],'The adopted combined plan is historical and unapproved; prepare an Engineering-only replacement.','E_TRACK_RECONCILIATION')
@@ -636,12 +665,11 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                     approval(epic,'plan',source)
                     validate_governance(epic,kind,doc)
                     require_conformance(doc)
-            skills=domain_skills.pins(['development'] if epic.metadata.get('work_tracks') and kind in ('plan','implementation') else SKILLS[kind],status,_loader())
+            skills=domain_skills.pins(['development'] if epic.metadata.get('work_tracks') and kind in ('plan','implementation') else SKILLS[kind],target,_loader())
         elif action=='start':
             require(kind=='development' and status=='ready_for_development' and not payload,'Development start requires separately advanced approved plan.','E_STATUS')
             draft,plan=approval(epic,'plan',source)
-            planned_source=load_artifact(epic.directory,draft['baseline_id'])[0]['source_revision']
-            require(planned_source==source,'Application changed since the approved plan; replan before development.', 'E_APPROVAL_STALE')
+            require_plan_source(epic, source)
             content={'plan':draft['baseline_id'],'tree':source_tree(epic,project),'content':decision}
             target='development'; skills=domain_skills.pins(['development'],target,_loader())
         elif action=='run':
@@ -665,6 +693,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             if kind in ('design','plan','implementation'):
                 require(status==WRITE_STAGE[kind],'No available advancement.','E_STATUS')
                 approval(epic,kind,source)
+                if kind == 'plan': require_plan_source(epic, source)
                 if kind=='implementation': boundary(epic,source_tree(epic,project)); check_results(epic,source,('unit','build'))
                 target={'design':'ready_for_implementation_planning','plan':'ready_for_development','implementation':'verification'}[kind]
             elif kind=='verification':

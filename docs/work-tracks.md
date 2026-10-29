@@ -67,6 +67,13 @@ uncertainty and named checks, but require **unit and build categories only**. Th
 not contain integration/UI checks or own the reserved `qa/` code namespace. Plan approval
 does not depend on QA strategy/scenarios, and code approval is not QA automation approval.
 
+Before Development starts, explicit `engineering-request-changes --kind plan` can
+return `ready_for_development` to `implementation_planning` for replanning. This
+preserves both track owners and independent QA state/approvals, supersedes only Plan
+approval, and requires fresh Plan approval, advancement and start. See
+[Plan recovery](engineering.md#pre-development-plan-recovery). Presentation changes
+remain fingerprinted source inputs; freeze them and capture new presentation externally.
+
 QA has its own state and artifact history:
 
 ```text

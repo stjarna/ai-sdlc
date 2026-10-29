@@ -24,6 +24,11 @@ def route(command, status):
         op="engineering-write" if kind else "development-start" if status=="ready_for_development" else None
         return {"command":command,"stage":stage,"kind":kind,"review_operation":"engineering-review" if status in (*ENGINEERING_STAGES,"ready_for_technical_design") else "open","write_operation":op,"read_only":True,"requires_human_decision":op is not None,"explanation":"Start only the selected authorized activity; do not infer approval or advancement."}
     if status in ENGINEERING_STAGES:
+        if command == 'changes' and status == 'ready_for_development':
+            return {'command':command,'stage':stage,'review_operation':'engineering-review',
+                    'write_operation':'engineering-request-changes','kind':'plan','read_only':True,
+                    'requires_human_decision':True,
+                    'explanation':'Explicit Plan feedback returns to Implementation Planning before Development starts; fresh approval and advancement are required.'}
         kind = {"technical_design":"design", "implementation_planning":"plan", "development":"implementation", "verification":"verification", "security_review":"security"}.get(status)
         operation = "assign" if command == "assign" else "engineering-approve" if command == "approve" and kind in ("design","plan","implementation") else "engineering-request-changes" if command == "changes" and kind in ("design","plan","implementation") else "engineering-advance" if command == "advance" and kind else "development-start" if command == "advance" and status == "ready_for_development" else "engineering-finalize" if command == "advance" and status == "final_verification" else None
         return {"command":command,"stage":stage,"review_operation":"engineering-review","write_operation":operation,"kind":kind,"read_only":True,"requires_human_decision":operation is not None,"explanation":"Sequential engineering only; approval, advancement and starting work are separate."}
