@@ -391,3 +391,14 @@ sequenceDiagram
 ---
 
 **Údržba:** každé nové odsouhlasené rozhodnutí zanést do relevantní sekce i diagramu; rozlišovat závazná rozhodnutí od PoC zjednodušení a otevřených bodů. Nevydávat ilustrativní YAML ani imaginární tool API za implementovaný produkt.
+
+## Governance correction — 2026-10-29
+
+**[D/P]** New Analysis-to-Engineering cycles require governance0.1: explicitly authorized
+observable prototype limitations are distinct from unresolved questions and business
+requirements. Existing Design approval binds separate limitation consent to exact inputs;
+Code Review records source-bound semantic conformance. Final Verification renders all
+verified scope, blocked/excluded behavior, unresolved items and authorized limitations,
+qualified as “Verified for the stated scope” when applicable. Historical approvals,
+manifest formats, pinned skills and all 448 preserved demo files remain unchanged.
+See [the implemented contract](engineering.md#governance-corrections-contract-01).

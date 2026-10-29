@@ -272,3 +272,20 @@ custom UI, automatic parallel AI execution, release automation or automatic Git 
 ## Document discovery
 
 [Artifact storage](artifact-names.md) defines canonical physical QA/Engineering names and exact-file links. New snapshots use manifest0.2; legacy content.md/0.1 baselines remain readable without migration. Both reviews and aggregate status/details expose descriptors matching actual files. Naming does not grant lifecycle authority.
+
+## Governance-aware cycles and supplemental QA checks
+
+New Analysis advancements use work-track schema0.2 with governance0.1 as documented in
+[Engineering governance](engineering.md#governance-corrections-contract-01). Historical
+cycle prefixes remain unchanged, and ordinary managed operations cannot downgrade the
+contract or move that prefix. Assignment/reconciliation and independent stage authority
+are unchanged. Legacy adoption preserves historical Design authority and stays legacy;
+there is no automatic in-progress governance migration.
+
+Governed QA automation requires `limitation_checks: []` even when none exist. Each
+supplemental check has the normal `id`, `category`, `argv`, `cwd`, `timeout`, `requirements`
+and `scenario`, plus `limitations` listing authorized Design limitation IDs, instead of
+product `cases`. Every authorized limitation must have a supplemental check; unknown IDs
+or claims outside the affected requirements are rejected. Results are source-bound and
+required at the joined gate, but never contribute to product case/AC coverage. The
+independent Analysis-derived QA strategy/scenarios remain unchanged by a limitation.

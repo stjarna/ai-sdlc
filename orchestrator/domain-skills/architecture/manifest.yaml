@@ -1,7 +1,7 @@
 name: architecture
 description: Architecture expertise for independently owned Engineering and QA work
   tracks.
-version: 1.1.0
+version: 1.2.0
 owner: Architecture Team
 stages:
 - technical_design
@@ -16,4 +16,4 @@ standards:
 - Security by design
 dependencies:
   security: 1.1.0
-orchestrator: '0.10'
+orchestrator: '0.11'

@@ -36,7 +36,18 @@ class QATrackTests(unittest.TestCase):
         return dict(project=self.project,epic_id='REQ-0001',expected_revision=self.view()['revision'],operation_id=self.unique(),action=action,kind=kind,payload={} if payload is None else payload,actor='Fixture QA Lead',decision='Fictional QA decision: '+action+' '+kind)
     def update(self,action,kind,payload=None):return qa_track.update(**self.request(action,kind,payload))
     def eng(self,action,kind,payload=None):
+        if action=='write' and engineering.governed(self.epic()):
+            # Current-contract fixtures declare no prototype exceptions. These
+            # tiny programs have no product validation/default/rejection policy.
+            payload=deepcopy(payload)
+            if kind=='design':payload.setdefault('governance',{'schema_version':'0.1','prototype_limitations':[]})
+            else:payload.setdefault('limitation_refs',[])
+            if kind=='implementation':payload.setdefault('conformance',self.conformance())
         return engineering.update(self.project,'REQ-0001',engineering.review(self.epic(),self.project)['revision'],self.unique(),action,kind,{} if payload is None else payload,'Fixture Engineering Lead','Fictional Engineering decision: '+action+' '+kind)
+    def conformance(self):
+        return {'reviewer':'Fixture Code Reviewer','independence':'author_review',
+                'summary':'Fictional fixture assessment: value assignment only; no material product restrictions.',
+                'reviewed_categories':['negative_condition','default','validation','unsupported_operation'],'behaviors':[]}
     def reject(self,code,run):
         try:run()
         except business.BusinessError as exc:self.assertEqual(exc.code,code)
@@ -67,7 +78,9 @@ class QATrackTests(unittest.TestCase):
         self.eng('write','plan',plan);self.eng('approve','plan',{'acknowledged':[q['id'] for q in plan['unresolved']]});self.eng('advance','plan');self.eng('start','development')
         (self.project/'app.py').write_text('value = 1\n')
     def automation_doc(self):
-        doc=self.base();doc.update(paths=['qa/'],source_revision=qa_track.qa_source(self.project),checks=[{'id':'QA-'+category,'category':category,'argv':[sys.executable,'-B','qa/check.py',category],'cwd':'.','timeout':10,'requirements':['AC-001'],'cases':['TC-001'],'scenario':'Actual fixture command, not browser acceptance.'} for category in ('integration','ui')]);return doc
+        doc=self.base();doc.update(paths=['qa/'],source_revision=qa_track.qa_source(self.project),checks=[{'id':'QA-'+category,'category':category,'argv':[sys.executable,'-B','qa/check.py',category],'cwd':'.','timeout':10,'requirements':['AC-001'],'cases':['TC-001'],'scenario':'Actual fixture command, not browser acceptance.'} for category in ('integration','ui')]);
+        if engineering.governed(self.epic()):doc['limitation_checks']=[]
+        return doc
     def automation(self):
         self.prepare_qa()
         folder=self.project/'qa';folder.mkdir(exist_ok=True)

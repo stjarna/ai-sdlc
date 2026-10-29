@@ -73,7 +73,7 @@ fresh CLI processes and schema0.6 renewal.
 Pre-fork Engineering and scalar-ownership tests explicitly construct historical stored
 metadata without the new optional mapping. Production advancement always creates tracks;
 these fixtures preserve the original legacy contract rather than bypassing the new fork.
-Current bundled-skill assertions use1.1.0; exact1.0.0 instruction snapshots are retained
+Current Architecture/Development/Testing assertions use 1.2.0; exact 1.0.0 and 1.1.0 instruction snapshots are retained
 under `domain-skills/versions` for historical pins. Synthetic decisions and category-labelled
 commands remain fixtures, not real Product Owner approval or browser acceptance.
 
@@ -82,3 +82,13 @@ commands remain fixtures, not real Product Owner approval or browser acceptance.
 `test_artifact_names.py` covers typed names, escaped exact-file links, core and missing-history discovery, legacy Engineering/final report bytes and hashes, QA status/details and fresh CLI output, directory relocation and corruption detection. No aliases or physical renames are created. Existing golden approval baseline tests remain in the complete suite.
 
 `test_artifact_storage.py` exercises canonical physical files for documents, approval/event snapshots, revisions, final reports, mixed legacy/new histories, old approvals and exact retries, interrupted Engineering/QA publication and schema/name integrity rejection. Storage0.2 is explicit; legacy0.1 baselines remain unchanged.
+
+## Governance correction regression coverage
+
+`test_governance.py` uses disposable fictional fixtures for explicit Design limitation
+consent, uncertainty separation, missing-marker/downgrade rejection, stale revisions,
+source-bound semantic review, QA supplemental checks, CLI attribution, retries/concurrency
+and interrupted publication. It verifies all 448 preserved demo hashes and retained 1.1.0
+instruction pins. `test_verification_report.py` checks complete deterministic Markdown
+projection and truthful scenario qualification. Passing these tests does not prove AI
+semantic interpretation, completeness of a code review, or actual human authorization.

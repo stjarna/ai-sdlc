@@ -1210,6 +1210,7 @@ def main(argv: list[str] | None = None) -> int:
             eng.add_argument("--kind", required=True, choices=engineering.KINDS if name != "engineering-advance" else (*engineering.KINDS, "verification"))
         if name == "engineering-write": eng.add_argument("--input-file", required=True, type=Path)
         if name == "engineering-approve": eng.add_argument("--acknowledge-open-item", action="append", default=[])
+        if name == "engineering-approve": eng.add_argument("--authorize-limitation", action="append", default=[])
         if name == "check-run": eng.add_argument("--check-id", required=True)
         if name == "verification-remediate": eng.add_argument("--check-id", action="append", required=True)
         if name == "security-remediate": eng.add_argument("--finding", action="append", required=True)
@@ -1338,6 +1339,8 @@ def main(argv: list[str] | None = None) -> int:
             elif action == "run": payload = {"check_id":args.check_id}
             elif args.operation == "verification-remediate": payload = {"checks":args.check_id}
             elif action == "remediate": payload = {"findings":args.finding}
+            if args.operation == "engineering-approve" and args.authorize_limitation:
+                payload['authorized_limitations']=args.authorize_limitation
             diagnostic_base = selected_epic(project_path(args.project), args.id).directory
             output = engineering.update(project_path(args.project), args.id, args.expected_engineering_revision, args.operation_id, action, kind, payload, actor, args.decision, source)
         elif args.operation == "command-context":

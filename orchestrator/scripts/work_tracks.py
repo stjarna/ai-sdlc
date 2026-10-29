@@ -40,7 +40,14 @@ def fork(before,candidate,actor,source,origin='advance',operation=None):
     require(business.valid_person(owner),'Declare an unambiguous accountable owner before creating tracks.','E_OWNER_REQUIRED')
     op=operation or {'operation_id':selected['id'],'action':'fork','track':None,'cycle':selected['id'],'actor':actor,'identity_source':source or 'declared','decision':selected['decision'],'expected_revision':selected['review_revision'],'assignee':None,'timestamp':selected['timestamp']}
     value=deepcopy(before.get('work_tracks',{'schema_version':'0.1','cycles':[],'operations':[]}))
+    # Old cycles are retained verbatim. Only a newly advanced Analysis cycle
+    # activates the strengthened contract; adoption preserves legacy authority.
+    if value['schema_version']=='0.1':
+        value.update(schema_version='0.2',legacy_cycle_count=len(value['cycles']))
+    if origin=='adopt':
+        value['legacy_cycle_count']+=1
     cycle={'id':selected['id'],'analysis_baseline':selected['baseline_id'],'origin':origin}
+    if origin=='advance':cycle['governance_version']='0.1'
     for track in NAMES:
         initial='track-init-'+hashlib.sha256((op['operation_id']+track).encode()).hexdigest()
         track_owner=previous[track]['ownership']['owner'] if previous else owner
@@ -58,12 +65,18 @@ def fork(before,candidate,actor,source,origin='advance',operation=None):
 def validate(metadata):
     value=metadata.get('work_tracks')
     if value is None:return
-    require(isinstance(value,dict) and set(value)=={'schema_version','cycles','operations'} and value['schema_version']=='0.1','Invalid work track fields.')
+    require(isinstance(value,dict) and value.get('schema_version') in ('0.1','0.2'),'Invalid work track version.')
+    fields={'schema_version','cycles','operations'}|({'legacy_cycle_count'} if value['schema_version']=='0.2' else set())
+    require(set(value)==fields,'Invalid work track fields.')
     require(isinstance(value['cycles'],list) and bool(value['cycles']) and isinstance(value['operations'],list),'Tracks require retained cycles and operation history.')
+    legacy=value.get('legacy_cycle_count',len(value['cycles']))
+    require(type(legacy) is int and 0<=legacy<=len(value['cycles']),'Invalid legacy cycle boundary.')
     handoffs={e['id']:e for e in metadata.get('lifecycle',[]) if e['action']=='analysis_advance'}
     cycle_ids=set()
-    for c in value['cycles']:
-        require(isinstance(c,dict) and set(c)=={'id','analysis_baseline','origin','engineering','qa'},'Invalid track cycle.')
+    for index,c in enumerate(value['cycles']):
+        fields={'id','analysis_baseline','origin','engineering','qa'}|({'governance_version'} if index>=legacy else set())
+        require(isinstance(c,dict) and set(c)==fields,'Invalid track cycle or missing governance marker.')
+        if index>=legacy:require(c['governance_version']=='0.1' and c['origin']=='advance','Unsupported governance contract.')
         require(isinstance(c['id'],str) and c['id'] in handoffs and c['id'] not in cycle_ids and c['analysis_baseline']==handoffs[c['id']]['baseline_id'] and c['origin'] in ('advance','adopt'),'Invalid Analysis track authority.')
         cycle_ids.add(c['id'])
         for name in NAMES:
@@ -110,12 +123,16 @@ def preserve_prefix(before,after):
     if old is None:return
     new=after.get('work_tracks')
     require(isinstance(new,dict) and new['operations'][:len(old['operations'])]==old['operations'] and len(new['cycles'])>=len(old['cycles']),'Track audit cannot be truncated.','E_APPROVAL_AUDIT')
+    if old['schema_version']=='0.2':
+        require(new.get('schema_version')=='0.2' and new.get('legacy_cycle_count')==old['legacy_cycle_count'],'Governance cannot be downgraded or bypassed.','E_APPROVAL_AUDIT')
+    elif new.get('schema_version')=='0.2':
+        require(new.get('legacy_cycle_count')==len(old['cycles']),'Historical cycle boundary cannot be reinterpreted.','E_APPROVAL_AUDIT')
     if len(new['cycles'])>len(old['cycles']):
         require(new['cycles'][:len(old['cycles'])]==old['cycles'],'Historical work cycles must remain unchanged.','E_APPROVAL_AUDIT')
         return
     require(new['cycles'][:-1]==old['cycles'][:-1],'Historical cycles must remain immutable.','E_APPROVAL_AUDIT')
     a,b=old['cycles'][-1],new['cycles'][-1]
-    require(all(a[k]==b[k] for k in ('id','analysis_baseline','origin')),'Track authority cannot be rewritten.','E_APPROVAL_AUDIT')
+    require(all(a.get(k)==b.get(k) for k in ('id','analysis_baseline','origin','governance_version')),'Track authority cannot be rewritten.','E_APPROVAL_AUDIT')
     for name in NAMES:
         ownership.preserve_prefix({'ownership':a[name]['ownership']},{'ownership':b[name]['ownership']})
         require(b[name]['reconciliation'][:len(a[name]['reconciliation'])]==a[name]['reconciliation'],'Reconciliation audit prefix changed.','E_APPROVAL_AUDIT')
@@ -147,6 +164,7 @@ def revision(epic,track,project):
     c=active(epic)
     require(track in NAMES,'Select Engineering or QA.','E_TRACK_AMBIGUOUS')
     obj={'cycle':c['id'],'analysis_baseline':c['analysis_baseline'],'track':c[track]}
+    if 'governance_version' in c:obj['governance_version']=c['governance_version']
     if track=='engineering':
         obj.update(status=epic.metadata['status'],history=[e for e in epic.metadata.get('engineering_history',[]) if e['cycle']==c['id']],source=engineering.fingerprint(engineering_tree(epic,project)))
     return engineering.fingerprint(obj)
@@ -169,7 +187,7 @@ def review(epic,project):
         status=epic.metadata['status'] if name=='engineering' else block['status']
         recon=not is_active or (len(epic.metadata['work_tracks']['cycles'])>1 and not block['reconciliation'])
         tracks[name]={'status':status,**own,'needs_reconciliation':recon,'next_action':'Assess upstream impact and reconcile' if recon else 'Assign '+ROLES[name] if own['assignee'] is None else 'Start or review this track only when explicitly requested','revision':revision(epic,name,project) if is_active else None}
-    return {'active':is_active,'cycle':c['id'],'analysis_baseline':c['analysis_baseline'],'tracks':tracks}
+    return {'active':is_active,'cycle':c['id'],'analysis_baseline':c['analysis_baseline'],'governance':c.get('governance_version','legacy: not assessed under strengthened controls'),'tracks':tracks}
 
 
 def update(project,epic_id,expected_revision,operation_id,action,track,actor,decision,assignee=None,identity_source=None):

@@ -71,3 +71,23 @@ The current package provides high-level guidance, not separate specialist toolin
 
 Dedicated versions and evaluation scenarios for these supporting skills are future
 catalog work. Do not claim them installed, executed or independently reviewed.
+
+## Explicit prototype limitations (governance 0.1)
+
+Prefer clarifying unresolved observable business behavior before proposing an exception.
+An unanswered or acknowledged question is not authority to reject an input, select a
+default, disable an operation or invent a validation rule. Not implementing a behavior
+and explicitly rejecting it are different business effects. Review negative conditions,
+defaults, validation restrictions and unsupported-operation responses individually.
+
+For a newly governed cycle, include `governance: {schema_version: "0.1",
+prototype_limitations: [...]}` in the Design payload, even when the list is empty.
+Each limitation has `id` (LIM-001), affected `requirements`, unresolved `questions`,
+`observable_behavior`, `business_impact`, `scope`, and `validity: current_analysis_cycle`.
+This is a proposal, not consent. Keep inherited uncertainty and blocked coverage intact.
+Explain the exact observable effect and ask for separate explicit authorization within
+Design approval. Generic Design approval and uncertainty acknowledgement grant no exception.
+A combined decision must explicitly approve the Design and authorize the identified
+limitation effects; otherwise ask one concise question at a time. Preserve actual wording.
+Permanent product behavior belongs upstream in Business/Analysis, not in a PoC exception.
+Refer to the shared governance contract; never edit lifecycle or audit records yourself.

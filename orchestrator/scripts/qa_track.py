@@ -139,7 +139,7 @@ def results(epic,project):
         payload=artifact(epic,entry['baseline_id'])[0]['payload']
         if payload['context']==context:
             found[payload['check_id']]=payload
-    for check in automation['checks']:
+    for check in automation['checks']+automation.get('limitation_checks',[]):
         value=found.get(check['id'])
         require(value is not None and value['status']=='passed',
                 'QA check is missing, failed or stale: '+check['id'],'E_VERIFICATION')
@@ -176,6 +176,7 @@ def validate_document(epic,project,kind,payload):
     require(isinstance(payload,dict),'Expected a QA artifact object.','E_QA_DOCUMENT')
     fields={'content','coverage','unresolved'}
     fields |= {'cases'} if kind=='scenarios' else {'paths','checks','source_revision'} if kind=='automation' else set()
+    if kind=='automation' and engineering.governed(epic):fields.add('limitation_checks')
     require(set(payload)==fields and discovery.text(payload['content']),'Invalid QA artifact fields.','E_QA_DOCUMENT')
     items,inherited=engineering.analysis_items(epic)
     coverage=payload['coverage']
@@ -225,12 +226,26 @@ def validate_document(epic,project,kind,payload):
                 'QA automation source changed before recording its review.','E_REVISION_CONFLICT')
         cases={c['id']:c for c in scenarios['cases']}
         checks=payload['checks'];seen=set();covered=set();covered_cases=set()
+        extra=payload.get('limitation_checks',[])
+        require(isinstance(extra,list),'Limitation checks must be a list.','E_QA_DOCUMENT')
+        limits=engineering.authorized_limitations(epic,app_source(epic,project)) if engineering.governed(epic) else {}
         require(isinstance(checks,list) and bool(checks),'Automation needs named checks.','E_QA_DOCUMENT')
-        for check in checks:
-            require(isinstance(check,dict) and set(check)=={'id','category','argv','cwd','timeout','requirements','scenario','cases'} and business.valid_person(check['id']) and check['id'] not in seen and check['category'] in ('integration','ui'),
+        tested_limits=set()
+        for index,check in enumerate(checks+extra):
+            supplemental=index>=len(checks)
+            fields={'id','category','argv','cwd','timeout','requirements','scenario'}|({'limitations'} if supplemental else {'cases'})
+            require(isinstance(check,dict) and set(check)==fields and business.valid_person(check['id']) and check['id'] not in seen and check['category'] in ('integration','ui'),
                     'Invalid QA named check.','E_QA_DOCUMENT')
             require(isinstance(check['argv'],list) and bool(check['argv']) and all(isinstance(v,str) and '\x00' not in v for v in check['argv']) and bool(check['argv'][0].strip()) and Path(check['argv'][0]).name not in ('git','gh','sh','bash','zsh','fish','cmd','powershell','pwsh') and (check['cwd']=='.' or engineering.path_valid(check['cwd'],True)) and type(check['timeout']) is int and 1<=check['timeout']<=120 and discovery.text(check['scenario']),
                     'Invalid QA check argv, directory, timeout or scenario.','E_QA_DOCUMENT')
+            if supplemental:
+                engineering.references(check['limitations'],limits,'QA check references an unauthorized limitation.')
+                require(bool(check['limitations']),'Supplemental check must identify its authorized limitation.','E_QA_TRACE')
+                allowed={r for lid in check['limitations'] for r in limits[lid]['requirements']}
+                require(isinstance(check['requirements'],list) and bool(check['requirements']) and all(isinstance(r,str) and r in allowed for r in check['requirements']),
+                        'Limitation check must reference affected requirements without claiming product coverage.','E_QA_TRACE')
+                tested_limits.update(check['limitations']);seen.add(check['id'])
+                continue
             require(isinstance(check['cases'],list) and bool(check['cases']) and all(isinstance(c,str) and c in cases and cases[c]['status']=='specified' for c in check['cases']),
                     'Automation must link specified approved cases.','E_QA_TRACE')
             case_requirements={r for cid in check['cases'] for r in cases[cid]['requirements']}
@@ -240,6 +255,7 @@ def validate_document(epic,project,kind,payload):
         require({c['id'] for c in scenarios['cases'] if c['status']=='specified'}<=covered_cases,
                 'Every specified scenario needs an executable named check.','E_QA_TRACE')
         require({c['category'] for c in checks}=={'integration','ui'},'QA needs integration and UI checks.','E_QA_TRACE')
+        require(tested_limits==set(limits),'QA must test each authorized limitation separately from product scenarios.','E_QA_TRACE')
         require({r for r,v in coverage.items() if r.startswith('AC-') and v['disposition']=='implemented'}<=covered,
                 'Every claimed acceptance criterion needs named automation.','E_QA_TRACE')
 
@@ -373,7 +389,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                     'Integration/UI execution waits for both authorized tracks.','E_INTEGRATION_NOT_READY')
             require(payload['source_revision']==source,'Application source changed since execution was requested.','E_REVISION_CONFLICT')
             context=execution_context(epic,project);_,automation=latest(epic,'automation')
-            checks=[c for c in automation['checks'] if c['id']==payload['check_id']]
+            checks=[c for c in automation['checks']+automation.get('limitation_checks',[]) if c['id']==payload['check_id']]
             require(len(checks)==1,'Unknown named QA check.','E_VERIFICATION')
             executed=engineering.execute_check(project,checks[0])
             require(app_source(epic,project)==source and qa_source(project)==own_source,'Check changed fingerprinted source; inspect and rerun.','E_REVISION_CONFLICT')

@@ -86,3 +86,24 @@ Data Management, Accessibility Testing and Performance Testing remain high-level
 specialties, not separately installed tools or runtime integrations. Version pins
 reproduce instructions, not deterministic LLM outputs. Historical 1.0.0 instruction
 snapshots remain in the package archive for legacy audit reproduction.
+
+## Authorized limitations and complete disclosure (governance 0.1)
+
+Derive product cases from approved Analysis, independently of Design. Do not derive a
+negative expected outcome from a positive example or treat acknowledged uncertainty as
+resolved. Unimplemented behavior and explicit runtime rejection require separate review.
+
+QA automation includes `limitation_checks` (empty if none). These supplemental checks
+have the normal named-check fields, plus `limitations` referencing explicitly authorized
+Design limitation IDs instead of `cases`. Link affected requirements while preserving
+their blocked/excluded dispositions. Test every authorized limitation separately;
+supplemental passes never count as product scenario or acceptance-criterion coverage.
+Preserve independent product cases unchanged and use fresh source-bound actual evidence.
+
+Final Verification Markdown is rendered deterministically from structured current
+sources. Inspect verified scenarios and named checks, blocked requirements, every
+unresolved item, scope exclusions and their authority, authorized limitations and
+remaining risks. Distinguish scenario outcomes from the aggregate passing commands.
+Partial or limited verification must visibly say “Verified for the stated scope”.
+An exclusion does not itself authorize an application to reject that behavior.
+Do not rewrite historical reports; old cycles remain legacy governance and retain pins.

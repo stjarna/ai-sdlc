@@ -344,3 +344,17 @@ an acceptance project merely because implementation of compatibility support was
 Keep all identity setup, tokens, revision comparisons, retries and operation IDs internal.
 Use the existing procedural identity and audit controls. Ask one human decision at a
 time; approval, advancement, starting work and assignment remain distinct instructions.
+
+## Governed Engineering cycles
+
+Use [governance0.1](../../docs/engineering.md#governance-corrections-contract-01) for newly
+advanced Analysis cycles. Prefer clarification before prototype exceptions. Separate
+unresolved acknowledgements, explicit observable-limitation consent, whole-artifact
+approval and lifecycle advancement. Route them through existing revision-bound operations;
+never infer one decision from another. Read the governance marker from persisted review.
+Legacy cycles retain all historical authority but are not assessed under the new controls.
+
+Load current version-pinned Architecture/Development/Testing guidance for limitation
+proposals, source-bound semantic conformance and independent QA limitation checks. Final
+Verification must render the complete structured scope and uncertainty. Do not edit old
+packages, reports or preserved demo evidence to make them conform retroactively.

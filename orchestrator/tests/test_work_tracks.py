@@ -80,14 +80,18 @@ class WorkTrackTests(unittest.TestCase):
 
     def design_document(self):
         items, unresolved = engineering.analysis_items(self.epic())
-        return {'content':'Fixture design from approved Analysis; no extra business behavior.',
+        result={'content':'Fixture design from approved Analysis; no extra business behavior.',
                 'coverage':{rid:{'disposition':'blocked' if state in ('blocked','proposed') else 'implemented',
                                  'reason':'Preserve approved Analysis disposition.'}
                             for rid,state in items.items()},
                 'unresolved':[{'id':item['id'],'text':item['text']} for item in unresolved]}
+        if engineering.governed(self.epic()):result['governance']={'schema_version':'0.1','prototype_limitations':[]}
+        return result
 
     def engineering_write(self, action, kind, payload):
         self.counter += 1
+        if action=='write' and kind=='plan' and engineering.governed(self.epic()):
+            payload=deepcopy(payload);payload.pop('governance',None);payload['limitation_refs']=[]
         return engineering.update(self.project,'REQ-0001',engineering.review(self.epic(),self.project)['revision'],
                                   f'legacy-engineering-fixture-{self.counter}',action,kind,payload,
                                   'Fixture Engineering Lead',f'Fixture: {action} {kind}.')

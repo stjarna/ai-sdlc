@@ -285,3 +285,14 @@ retain their prior contract. Full command flags and JSON schemas are in the link
 ## Artifact presentation fields
 
 [Artifact storage](../../docs/artifact-names.md) defines canonical physical filenames for new Engineering/QA manifest0.2 snapshots and backward-compatible reading of content.md/0.1. Existing immutable hashes and approvals are not migrated. Returned `document.name` and links match physical basenames; `canonical_name` and explicit `legacy` distinguish old storage. Core payloads and aggregate status/details retain document indexes. Lifecycle and mutation CLI arguments are unchanged; old reader binaries need updating for format0.2.
+
+## Governed Engineering cycles
+
+See [governance contract0.1](../../docs/engineering.md#governance-corrections-contract-01)
+for exact payload extensions and backward compatibility. Existing operations, manifest
+formats and lifecycle stages remain in use. New Design approval may include repeatable
+`--authorize-limitation ID`; this expresses explicit consent to the identified observable
+prototype effects, independently of repeatable `--acknowledge-open-item ID`. The agent
+must obtain the actual human decision before supplying either. Missing required consent
+returns `E_LIMITATION_CONSENT`; unsupported or stale code conformance uses `E_CONFORMANCE`
+or existing revision/approval diagnostics. No automatic Git operations are added.

@@ -264,3 +264,102 @@ requirements completeness, code-review independence, UI realism or vulnerability
 [Artifact storage](artifact-names.md) defines canonical physical filenames and manifest0.2 for new Engineering documents/events. Existing manifest0.1 content.md snapshots remain immutable and explicitly labelled legacy. Reviews and final reports link exact physical files; no old approval or snapshot is migrated.
 
 The completed real human acceptance and byte-preserved artifacts are available in [the permanent demo](../examples/todo-app/README.md). Rehearsal commands operate on a separate copy; historical evidence is not regenerated.
+
+## Governance corrections: contract 0.1
+
+New Analysis advancements create work-track schema `0.2` cycles with an explicit
+`governance_version: '0.1'`. `legacy_cycle_count` preserves the prefix of historical
+cycles verbatim. The marker is required after that prefix and cannot be removed or
+reclassified by a managed update. Existing schema0.1 cycles and sequential projects
+remain readable without migration. Opt-in adoption of an old Design remains legacy;
+a fresh explicitly advanced Analysis cycle activates the new controls. Reviews disclose
+legacy governance as not assessed under these controls. This does not invalidate an
+old approval or Verified status. Direct coordinated filesystem/audit rewriting remains
+outside the procedural trust boundary.
+
+### Design and explicit limitation consent
+
+A governed Design adds:
+
+```yaml
+governance:
+  schema_version: '0.1'
+  prototype_limitations:
+    - id: LIM-001
+      requirements: [FR-002]
+      questions: [AQ-001]
+      observable_behavior: The prototype refuses the affected operation without changing data.
+      business_impact: The operation cannot be used in this prototype.
+      scope: Local demonstrator only; no production use.
+      validity: current_analysis_cycle
+```
+
+This example is a proposal, not authorization. Prefer clarifying unresolved behavior
+before proposing a limitation. Definitions belong only in the Design; downstream
+`limitation_refs` identify all authorized definitions. Limitations are not permanent
+business rules and never change blocked requirements into implemented coverage.
+
+Existing `engineering-approve --kind design` accepts repeatable
+`--authorize-limitation LIM-001`, separately from `--acknowledge-open-item AQ-001`.
+All proposed limitation effects require explicit human consent before Design approval;
+generic Design approval does not supply that consent. The assistant presents the effect,
+impact, scope and cycle validity in plain language, preserves the actual wording and
+handles IDs internally. A combined instruction must explicitly approve the Design and
+authorize the identified effects. Otherwise request one decision at a time. Approval
+still does not advance. The approved Design baseline binds the definitions, and the
+existing audit binds the actor, wording, operation, revision and decision baseline.
+No additional approval operation or lifecycle stage is introduced.
+
+Plan, implementation and Security payloads require `limitation_refs` (possibly empty).
+Plan tasks/checks can add `limitations` references. Requirements outside implemented
+scope are permitted there only when affected by the referenced authorized limitation.
+Every limitation needs task and check traceability; its underlying FR/AC coverage stays
+blocked/excluded. Plan approval binds the current Design. Changed Design revisions,
+including same-content revisions, and new Analysis cycles require renewed authority.
+Validity is deliberately cycle-bound; date expiry and arbitrary validity expressions
+are not implemented. Scope is declared prose assessed by reviewers, not an execution sandbox.
+
+### Source-bound semantic conformance
+
+The existing implementation artifact (`code-review.md`) additionally records:
+
+```yaml
+conformance:
+  reviewer: Declared reviewer
+  independence: author_review # or independent; not an authenticated claim
+  summary: Assessment of the complete consequential behavior inventory.
+  reviewed_categories: [negative_condition, default, validation, unsupported_operation]
+  behaviors:
+    - category: validation
+      path: src/example.py
+      line: 12
+      observable_behavior: Exact business-visible effect.
+      authority: {kind: none, id: null} # requirement or limitation with its ID
+      assessment: unsupported # or conforms, with valid authority
+      reason: No approved source authorizes this behavior.
+```
+
+The enclosing artifact already binds the exact implementation fingerprint and Plan.
+The CLI checks current source locations, category coverage and authority references.
+A blocked question cannot act as requirement authority. Findings can be persisted but
+unsupported behavior blocks code approval. A fresh implementation requires fresh review
+and human approval. Semantic interpretation, inventory completeness and the truth of
+reviewer-independence claims remain AI/human responsibilities; no Python keyword or
+domain heuristics are used. An empty behavior inventory requires an honest reviewer
+assessment that the fixture/application contains no consequential behaviors.
+
+### Complete Final Verification
+
+Newly generated reports collect actual checks, QA cases, current coverage, exclusions
+from frozen Analysis and Engineering scope, uncertainty from Design/Plan/code/Security
+and QA artifacts, authorized limitations and decision references. `verification_report.py`
+renders that structured object deterministically, including after a save/reload. Canonical
+`verification-report.md` and manifest0.2 remain unchanged as storage contracts.
+
+Blocked/excluded/unresolved or limited scope is visibly qualified as **Verified for the
+stated scope**; the lifecycle remains `verified`. Passing named checks are not inferred
+individual scenario outcomes. Scope exclusion does not authorize runtime rejection.
+Old reports are not regenerated or rewritten, and legacy assessment remains explicit.
+
+The new Architecture/Development/Testing1.2.0 packages declare orchestrator contract0.11;
+all earlier pinned packages remain unchanged. Security1.1.0 remains unchanged.

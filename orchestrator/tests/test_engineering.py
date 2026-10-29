@@ -163,7 +163,7 @@ class EngineeringTests(unittest.TestCase):
         obj, frozen = engineering.load_artifact(self.directory, written['baseline_id'])
         self.assertEqual(obj['analysis_baseline'], prior['analysis_baseline'])
         self.assertEqual(obj['analysis_handoff'], prior['analysis_handoff'])
-        self.assertEqual(obj['skills']['architecture']['version'], '1.1.0')
+        self.assertEqual(obj['skills']['architecture']['version'], '1.2.0')
         self.assertEqual(len(obj['skills']['architecture']['digest']), 64)
         self.assertEqual(frozen['status'], 'ready_for_technical_design')
         self.assertEqual(written['epic']['metadata']['status'], 'technical_design')

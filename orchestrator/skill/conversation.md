@@ -235,3 +235,27 @@ approved, rewritten or treated as independent QA signoff.
 Security findings need preserved evidence, explicit remediation and relevant renewed
 reviews/checks. Final verification reports disclose remaining uncertainty and are not
 release approval, deployment authorization or security certification.
+
+## Prototype limitations and semantic review
+
+First seek clarification when unresolved business behavior affects the next task. Do
+not infer refusal, defaults or validation from missing requirements or positive examples.
+Not implementing a behavior and explicitly rejecting it are separate decisions.
+
+For a proposed PoC exception, concisely explain its observable effect, business impact,
+scope and current-cycle validity. Ask for explicit authorization separately from
+uncertainty acknowledgement. Generic “approve Design” or vague positive feedback does
+not authorize a limitation. A combined decision must explicitly authorize the explained
+effects and approve the Design; a limitation-only decision is not whole-Design approval.
+Preserve actual words and use the existing exact-revision Design gate. Keep the question
+open, show named effects naturally and hide CLI tokens. Advancement remains separate.
+
+Code Review must identify consequential negatives, defaults, validation and unsupported
+responses and trace them to approved requirements or specifically authorized exceptions.
+Record source-bound findings; request correction/upstream clarification when unsupported.
+An empty inventory or structural validation does not prove semantic correctness.
+
+Final review visibly states verified scope, blocked/excluded behavior, all uncertainty
+and authorized exceptions. Explain “Verified for the stated scope” without implying
+product completeness or release approval. Legacy governance remains explicitly unassessed
+under the new controls; do not rewrite its history.

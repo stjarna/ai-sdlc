@@ -200,12 +200,99 @@ def latest(epic,kind):
     return entry,load_artifact(epic.directory,entry['baseline_id'])[0]['payload']
 
 
+def governed(epic):
+    import work_tracks
+    selected=work_tracks.current(epic.metadata)
+    return selected is not None and selected.get('governance_version')=='0.1'
+
+
+def references(value,available,message):
+    require(isinstance(value,list) and all(isinstance(v,str) and v in available for v in value)
+            and len(value)==len(set(value)),message,'E_ENGINEERING_TRACE')
+
+
+def authorized_limitations(epic,source):
+    """Authority is the exact Design approval, never an uncertainty acknowledgement."""
+    if not governed(epic):return {}
+    draft,doc=approval(epic,'design',source)
+    decision=[e for e in events(epic,'approve','design')][-1]
+    return {v['id']:{**v,'design_baseline':draft['baseline_id'],'approval_baseline':decision['baseline_id'],
+                     'actor':decision['actor'],'decision':decision['decision']}
+            for v in doc['governance']['prototype_limitations']}
+
+
+def validate_governance(epic,kind,payload):
+    items,_=analysis_items(epic)
+    if kind=='design':
+        block=payload['governance']
+        require(isinstance(block,dict) and set(block)=={'schema_version','prototype_limitations'} and block['schema_version']=='0.1'
+                and isinstance(block['prototype_limitations'],list),'Invalid Design governance contract.','E_ENGINEERING_DOCUMENT')
+        seen=set();questions={q['id'] for q in payload['unresolved']}
+        for limit in block['prototype_limitations']:
+            fields={'id','requirements','questions','observable_behavior','business_impact','scope','validity'}
+            require(isinstance(limit,dict) and set(limit)==fields and isinstance(limit['id'],str)
+                    and re.fullmatch(r'LIM-[0-9]{3,}',limit['id']) and limit['id'] not in seen,
+                    'Invalid or duplicate prototype limitation.','E_ENGINEERING_DOCUMENT')
+            require(all(discovery.text(limit[k]) for k in ('observable_behavior','business_impact','scope'))
+                    and limit['validity']=='current_analysis_cycle','Define observable effect, business impact, scope and cycle validity.','E_ENGINEERING_DOCUMENT')
+            references(limit['requirements'],items,'Limitation needs valid affected requirements.')
+            references(limit['questions'],questions,'Limitation references unknown uncertainty.')
+            require(bool(limit['requirements']),'Limitation must identify affected requirements.','E_ENGINEERING_TRACE')
+            seen.add(limit['id'])
+        return
+    limits=authorized_limitations(epic,payload.get('source_revision'))
+    references(payload['limitation_refs'],limits,'Unknown or unauthorized prototype limitation.')
+    require(set(payload['limitation_refs'])==set(limits),'Retain all authorized limitations explicitly.','E_ENGINEERING_TRACE')
+    if kind!='implementation':return
+    review=payload['conformance']
+    categories={'negative_condition','default','validation','unsupported_operation'}
+    require(isinstance(review,dict) and set(review)=={'reviewer','independence','summary','reviewed_categories','behaviors'}
+            and business.valid_person(review['reviewer']) and review['independence'] in ('author_review','independent')
+            and discovery.text(review['summary']),'Record source-bound semantic review evidence.','E_CONFORMANCE')
+    references(review['reviewed_categories'],categories,'Review every consequential behavior category.')
+    require(set(review['reviewed_categories'])==categories and isinstance(review['behaviors'],list),
+            'Assess negative conditions, defaults, validation and unsupported operations.','E_CONFORMANCE')
+    for behavior in review['behaviors']:
+        require(isinstance(behavior,dict) and set(behavior)=={'category','path','line','observable_behavior','authority','assessment','reason'}
+                and isinstance(behavior['category'],str) and behavior['category'] in categories and path_valid(behavior['path']) and type(behavior['line']) is int and behavior['line']>0
+                and discovery.text(behavior['observable_behavior']) and discovery.text(behavior['reason'])
+                and behavior['assessment'] in ('conforms','unsupported'),'Invalid conformance evidence.','E_CONFORMANCE')
+        authority=behavior['authority']
+        require(isinstance(authority,dict) and set(authority)=={'kind','id'} and authority['kind'] in ('requirement','limitation','none'),
+                'Identify authority for each consequential behavior.','E_CONFORMANCE')
+        if authority['kind']=='requirement':
+            require(isinstance(authority['id'],str) and authority['id'] in items and items[authority['id']]=='specified'
+                    and payload['coverage'][authority['id']]['disposition']=='implemented','Unresolved behavior is not implementation authority.','E_CONFORMANCE')
+        elif authority['kind']=='limitation':
+            require(isinstance(authority['id'],str) and authority['id'] in limits,'Restriction lacks authorized limitation.','E_CONFORMANCE')
+        else:
+            require(authority['id'] is None and behavior['assessment']=='unsupported','Behavior without authority must be a finding.','E_CONFORMANCE')
+    require(set(limits)<={v['authority']['id'] for v in review['behaviors'] if v['authority']['kind']=='limitation'},
+            'Review the source-bound observable effect of every authorized limitation.','E_CONFORMANCE')
+
+
+def require_conformance(doc):
+    require(not any(v['assessment']=='unsupported' for v in doc['conformance']['behaviors']),
+            'Unsupported observable behavior requires correction or upstream clarification before approval.','E_CONFORMANCE')
+
+
 def approval(epic,kind,source):
     draft,payload=latest(epic,kind)
     decisions=[e for e in events(epic,kind=kind) if e['action'] in ('approve','request_changes')]
     require(bool(decisions) and decisions[-1]['action']=='approve', 'An explicit current '+kind+' approval is required.','E_APPROVAL_REQUIRED')
     selected=load_artifact(epic.directory,decisions[-1]['baseline_id'])[0]['payload']
     require(selected['draft']==draft['baseline_id'], 'The '+kind+' approval is stale.','E_APPROVAL_STALE')
+    if governed(epic) and kind=='design':
+        expected={v['id'] for v in payload['governance']['prototype_limitations']}
+        require(set(selected.get('authorized_limitations',[]))==expected,
+                'Explicit authorization of each observable prototype limitation is required.','E_LIMITATION_CONSENT')
+    if governed(epic) and kind in ('plan','implementation'):
+        authority=authorized_limitations(epic,source)
+        require(set(payload['limitation_refs'])==set(authority),'Limitations differ from current Design authority.','E_APPROVAL_STALE')
+        if kind=='plan':
+            require(selected.get('design')==latest(epic,'design')[0]['baseline_id'],'Plan approval binds an earlier Design.','E_APPROVAL_STALE')
+        else:
+            require_conformance(payload)
     if kind=='implementation':
         recent=events(epic)
         changes=[i for i,e in enumerate(recent) if e['action']=='remediate']
@@ -243,24 +330,82 @@ def review(epic, project):
             approval(epic,kind,source); approvals[kind]={'valid':True}
         except business.BusinessError as exc:
             approvals[kind]={'valid':False,'reason':str(exc),'code':exc.code}
-    return {'active':True,'stage':epic.metadata['status'],'current':current,'final_report':{'baseline_id':finals[-1]['baseline_id'],'payload':report['payload'],'document':artifact_document(epic.directory,finals[-1]['baseline_id'],'final')} if report else None,'approvals':approvals,'revision':token,'source_revision':source,
+    return {'active':True,'stage':epic.metadata['status'],'current':current,'governance':'0.1' if governed(epic) else 'legacy: not assessed under strengthened controls','final_report':{'baseline_id':finals[-1]['baseline_id'],'payload':report['payload'],'document':artifact_document(epic.directory,finals[-1]['baseline_id'],'final')} if report else None,'approvals':approvals,'revision':token,'source_revision':source,
             'analysis_baseline':handoff['baseline_id'],'analysis_handoff':handoff['id'],'drafts':drafts,
             'decisions':[e for e in events(epic) if e['action'] in ('approve','request_changes')],
             'evidence':[load_artifact(epic.directory,e['baseline_id'])[0]['payload'] for e in events(epic,'run','check')]}
 
 
-def analysis_items(epic):
+def analysis_details(epic):
     handoff=cycle(epic)
     _, frozen=analysis_gate.read_baseline(epic.directory,handoff['baseline_id'],_loader())
     import functional_analysis as fa
     _, business_files=__import__('business_approval').read_baseline(epic.directory,epic.analysis['baseline_id'],_loader())
     details=fa.validate_document(frozen['specification.md'],epic.metadata['id'],{**epic.analysis,'business':business_files['business.md'].decode(),'discovery':yaml.load(business_files['discovery.yaml'].decode(),Loader=_loader())})
+    return details
+
+
+def analysis_items(epic):
+    details=analysis_details(epic)
     return {rid:v['fields']['Status'] for rid,v in details['items'].items() if rid.startswith(('FR-','AC-')) and v['fields']['Status']!='retired'}, analysis_gate.open_items(details)
+
+
+def final_report(epic,project,source,checks,security):
+    """Collect current approved sources once; Markdown is only their projection."""
+    import verification_report
+    handoff=cycle(epic)
+    plan_entry,plan=approval(epic,'plan',source)
+    questions={}
+    def collect_questions(values,origin):
+        for q in values:
+            # IDs are stable, but old contracts permit downstream wording changes.
+            # Retain every variant and its provenance rather than last-wins loss.
+            key=(q['id'],q['text'])
+            questions.setdefault(key,{'id':q['id'],'text':q['text'],'sources':[]})['sources'].append(origin)
+    collect_questions(analysis_items(epic)[1],'Approved Analysis')
+    for kind in KINDS:collect_questions(latest(epic,kind)[1]['unresolved'],kind)
+    plan_approval=events(epic,'approve','plan')[-1]
+    exclusions=[{'id':rid,**v,'authority':{'plan':plan_entry['baseline_id'],'approval':plan_approval['baseline_id']},
+                 'qualification':'Engineering scope exclusion; does not authorize runtime rejection.'}
+                for rid,v in plan['coverage'].items() if v['disposition']=='excluded']
+    exclusions += [{'id':rid,**v,'authority':{'analysis':handoff['baseline_id']}}
+                   for rid,v in analysis_details(epic)['coverage'].items() if v['disposition']=='excluded']
+    content={'source_revision':source,'checks':checks,'coverage':plan['coverage'],
+             'security':latest(epic,'security')[0]['baseline_id'],'scenarios':[],
+             'limitations':list(authorized_limitations(epic,source).values()),'exclusions':exclusions,
+             'governance_status':'0.1' if governed(epic) else 'legacy',
+             'residual_risks':['Semantic conformance is AI-assisted and human-reviewed; structural validation cannot prove an exhaustive behavior inventory.',
+                               'Declared reviewer and approver identities are not authenticated.'],
+             'references':{'analysis_baseline':handoff['baseline_id'],'analysis_handoff':handoff['id'],
+                           'plan_approval':plan_approval['baseline_id'],'implementation_approval':events(epic,'approve','implementation')[-1]['baseline_id'],
+                           'security_assessment':{'status':'No open findings','findings':security['findings']}}}
+    for kind in KINDS:
+        entry,_=latest(epic,kind)
+        content['references'][kind]=artifact_document(epic.directory,entry['baseline_id'],kind)
+        content['references'][kind+'_skills']=load_artifact(epic.directory,entry['baseline_id'])[0]['skills']
+    if epic.metadata.get('work_tracks'):
+        import qa_track
+        content['qa_context']=qa_track.integration_readiness(epic,project)['context']
+        for kind in qa_track.KINDS:
+            entry,doc=qa_track.latest(epic,kind)
+            collect_questions(doc['unresolved'],'qa_'+kind)
+            content['references']['qa_'+kind]=artifact_document(epic.directory,entry['baseline_id'],kind,qa_track.ROOT)
+        _,scenarios=qa_track.latest(epic,'scenarios')
+        _,automation=qa_track.latest(epic,'automation')
+        for case in scenarios['cases']:
+            linked=[c['id'] for c in automation['checks'] if case['id'] in c['cases']]
+            content['scenarios'].append({**case,'checks':linked,'check_statuses':{cid:checks['qa:'+cid]['status'] for cid in linked},
+                                        'qualification':'Blocked; no product outcome asserted.' if case['status']=='blocked' else
+                                        'Linked named checks passed; individual scenario outcome is not separately assessed by the CLI.'})
+    content['unresolved']=[questions[k] for k in sorted(questions)]
+    content['content']=verification_report.render(content)
+    return content
 
 
 def validate_document(epic,kind,payload):
     require(isinstance(payload,dict),'Expected JSON object.','E_ENGINEERING_DOCUMENT')
     fields={'content','coverage','unresolved'} | ({'tasks','checks'} if kind=='plan' else {'source_revision','plan','completed_tasks'} if kind=='implementation' else {'source_revision','plan','findings'} if kind=='security' else set())
+    if governed(epic):fields|={'governance'} if kind=='design' else {'limitation_refs','conformance'} if kind=='implementation' else {'limitation_refs'}
     require(set(payload)==fields and discovery.text(payload['content']), 'Unexpected or missing artifact fields.','E_ENGINEERING_DOCUMENT')
     items, inherited=analysis_items(epic)
     coverage=payload['coverage']
@@ -272,6 +417,7 @@ def validate_document(epic,kind,payload):
     require(isinstance(unresolved,list) and all(isinstance(v,dict) and set(v)=={'id','text'} and business.valid_person(v['id']) and discovery.text(v['text']) for v in unresolved),'Invalid unresolved items.','E_ENGINEERING_DOCUMENT')
     ids=[v['id'] for v in unresolved]
     require(len(ids)==len(set(ids)) and {v['id'] for v in inherited}<=set(ids), 'Preserve inherited uncertainties explicitly.','E_ENGINEERING_TRACE')
+    if governed(epic):validate_governance(epic,kind,payload)
     if kind!='design':
         _,upstream=latest(epic,'design' if kind=='plan' else 'plan')
         require({v['id'] for v in upstream['unresolved']}<=set(ids),'Upstream uncertainty cannot disappear.','E_ENGINEERING_TRACE')
@@ -280,11 +426,20 @@ def validate_document(epic,kind,payload):
         require(all(coverage[rid]['disposition']==upstream['coverage'][rid]['disposition'] for rid in items), 'Implementation and Security must retain approved plan dispositions; replan explicitly for scope changes.', 'E_ENGINEERING_TRACE')
     if kind=='plan':
         tasks=payload['tasks']; checks=payload['checks']; seen=set()
+        limits=authorized_limitations(epic,None) if governed(epic) else {}
+        def work_references(value):
+            linked=value.get('limitations',[])
+            references(linked,limits,'Work references an unauthorized limitation.')
+            claimed=value['requirements']
+            require(isinstance(claimed,list) and bool(claimed) and all(isinstance(r,str) and r in items and
+                    (coverage[r]['disposition']=='implemented' or any(r in limits[l]['requirements'] for l in linked)) for r in claimed),
+                    'Work must reference implemented scope or an explicitly authorized limitation.','E_ENGINEERING_TRACE')
         require(isinstance(tasks,list) and bool(tasks) and isinstance(checks,list) and bool(checks),'Plan needs tasks and checks.','E_ENGINEERING_PLAN')
         for t in tasks:
-            require(isinstance(t,dict) and set(t)=={'id','description','requirements','depends_on','paths'} and isinstance(t['id'],str) and re.fullmatch(r'T-[0-9]{3,}',t['id']) and t['id'] not in seen and discovery.text(t['description']),'Invalid plan task.','E_ENGINEERING_PLAN')
+            fields={'id','description','requirements','depends_on','paths'}
+            require(isinstance(t,dict) and set(t) in (fields,fields|({'limitations'} if governed(epic) else set())) and isinstance(t['id'],str) and re.fullmatch(r'T-[0-9]{3,}',t['id']) and t['id'] not in seen and discovery.text(t['description']),'Invalid plan task.','E_ENGINEERING_PLAN')
             require(isinstance(t['depends_on'],list) and all(isinstance(v,str) and v in seen for v in t['depends_on']),'Tasks must be in dependency order.','E_ENGINEERING_PLAN')
-            require(isinstance(t['requirements'],list) and bool(t['requirements']) and all(isinstance(v,str) and v in items and coverage[v]['disposition']=='implemented' for v in t['requirements']),'Task references unavailable behavior.','E_ENGINEERING_TRACE')
+            work_references(t)
             require(isinstance(t['paths'],list) and bool(t['paths']) and all(path_valid(p,True) for p in t['paths']),'Declare safe application paths for every task.','E_IMPLEMENTATION_BOUNDARY')
             if epic.metadata.get('work_tracks'):
                 require(all(p.rstrip('/')!='qa' and not p.startswith('qa/') for p in t['paths']),'QA owns the reserved qa/ source namespace.','E_IMPLEMENTATION_BOUNDARY')
@@ -292,11 +447,14 @@ def validate_document(epic,kind,payload):
         require({rid for rid in items if coverage[rid]['disposition']=='implemented'} <= {rid for t in tasks for rid in t['requirements']}, 'Every implemented requirement/criterion needs a plan task.', 'E_ENGINEERING_TRACE')
         seen_checks=set()
         for c in checks:
-            require(isinstance(c,dict) and set(c)=={'id','category','argv','cwd','timeout','requirements','scenario'} and business.valid_person(c['id']) and c['id'] not in seen_checks and c['category'] in ('unit','build','integration','ui'),'Invalid named check.','E_ENGINEERING_PLAN')
+            fields={'id','category','argv','cwd','timeout','requirements','scenario'}
+            require(isinstance(c,dict) and set(c) in (fields,fields|({'limitations'} if governed(epic) else set())) and business.valid_person(c['id']) and c['id'] not in seen_checks and c['category'] in ('unit','build','integration','ui'),'Invalid named check.','E_ENGINEERING_PLAN')
             require(isinstance(c['argv'],list) and bool(c['argv']) and all(isinstance(v,str) and '\x00' not in v for v in c['argv']) and c['argv'][0].strip() and (c['cwd']=='.' or path_valid(c['cwd'],True)) and type(c['timeout']) is int and 1<=c['timeout']<=120 and discovery.text(c['scenario']),'Invalid argv, directory, scenario or timeout.','E_ENGINEERING_PLAN')
             require(Path(c['argv'][0]).name not in ('git','gh','sh','bash','zsh','fish','cmd','powershell','pwsh'), 'Checks must not invoke Git mutations or shell interpreters; use a reviewed project runner.', 'E_ENGINEERING_PLAN')
-            require(isinstance(c['requirements'],list) and bool(c['requirements']) and all(isinstance(r,str) and r in items and coverage[r]['disposition']=='implemented' for r in c['requirements']),'Invalid check requirement coverage.','E_ENGINEERING_TRACE')
+            work_references(c)
             seen_checks.add(c['id'])
+        require(set(limits)<={l for t in tasks for l in t.get('limitations',[])} and set(limits)<={l for c in checks for l in c.get('limitations',[])},
+                'Every authorized limitation needs explicit implementation and test traceability.','E_ENGINEERING_TRACE')
         categories={'unit','build'} if epic.metadata.get('work_tracks') else {'unit','build','integration','ui'}
         require({c['category'] for c in checks}==categories,'Engineering track owns unit/build; integration/UI belong to QA (legacy plans retain all four categories).','E_ENGINEERING_PLAN')
         target={rid for rid in items if rid.startswith('AC-') and coverage[rid]['disposition']=='implemented'}
@@ -429,6 +587,10 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                 require(payload.get('source_revision')==source,'Review is for another source revision.','E_REVISION_CONFLICT')
             validate_document(epic,kind,payload)
             if kind=='implementation': check_results(epic,source,('unit','build'))
+            if kind=='implementation' and governed(epic):
+                files=source_tree(epic,project)
+                require(all(v['path'] in files and v['line']<=len((project/v['path']).read_bytes().splitlines()) for v in payload['conformance']['behaviors']),
+                        'Conformance evidence must reference a current source file and line.','E_CONFORMANCE')
             if kind=='security': verified_checks(epic,source,project)
             target=WRITE_STAGE[kind]
             skills=domain_skills.pins(['development'] if epic.metadata.get('work_tracks') and kind in ('plan','implementation') else SKILLS[kind],target,_loader())
@@ -441,10 +603,24 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             if kind=='implementation':
                 boundary(epic,source_tree(epic,project)); check_results(epic,source,('unit','build'))
                 require(doc['source_revision']==source,'Code changed after review.','E_APPROVAL_STALE')
-            require(set(payload)=={'acknowledged'} and isinstance(payload['acknowledged'],list) and all(isinstance(v,str) for v in payload['acknowledged']) and len(set(payload['acknowledged']))==len(payload['acknowledged']),'Invalid acknowledgement list.','E_UPDATE_INPUT')
+            fields={'acknowledged'}
+            consent=governed(epic) and kind=='design' and action=='approve'
+            require(set(payload) in (fields,fields|({'authorized_limitations'} if consent else set())) and isinstance(payload['acknowledged'],list) and all(isinstance(v,str) for v in payload['acknowledged']) and len(set(payload['acknowledged']))==len(payload['acknowledged']),'Invalid acknowledgement list.','E_UPDATE_INPUT')
             if action=='approve': common.exact_acknowledgements(payload['acknowledged'],doc['unresolved'],'Acknowledge exactly the unresolved items without resolving them.')
             else: require(not payload['acknowledged'],'Feedback does not acknowledge uncertainty.','E_UPDATE_INPUT')
             content={'draft':draft['baseline_id'],'acknowledged':payload['acknowledged'],'content':decision}
+            if consent:
+                limits={v['id'] for v in doc['governance']['prototype_limitations']}
+                chosen=payload.get('authorized_limitations',[])
+                references(chosen,limits,'Unknown limitation consent.')
+                require(set(chosen)==limits,'Authorize the observable effect of each limitation separately from acknowledging uncertainty.','E_LIMITATION_CONSENT')
+                content['authorized_limitations']=chosen
+            if action=='approve' and governed(epic):
+                if kind=='plan':content['design']=approval(epic,'design',source)[0]['baseline_id']
+                if kind=='implementation':
+                    approval(epic,'plan',source)
+                    validate_governance(epic,kind,doc)
+                    require_conformance(doc)
             skills=domain_skills.pins(['development'] if epic.metadata.get('work_tracks') and kind in ('plan','implementation') else SKILLS[kind],status,_loader())
         elif action=='start':
             require(kind=='development' and status=='ready_for_development' and not payload,'Development start requires separately advanced approved plan.','E_STATUS')
@@ -518,11 +694,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             checks=verified_checks(epic,source,project)
             _,sec=latest(epic,'security')
             require(sec['source_revision']==source and not any(f['status']=='open' for f in sec['findings']),'Security review is stale or unresolved.','E_SECURITY_FINDINGS')
-            _,plan=latest(epic,'plan')
-            content={'content':'# Final Verification Report\n\nAll approved named checks passed for this exact source revision.\nSecurity review has no open findings. This is not a security certification or release approval.\n', 'source_revision':source,'checks':checks,'coverage':plan['coverage'],'unresolved':plan['unresolved'],'security':latest(epic,'security')[0]['baseline_id']}
-            if epic.metadata.get('work_tracks'):
-                import qa_track
-                content['qa_context']=qa_track.integration_readiness(epic,project)['context']
+            content=final_report(epic,project,source,checks,sec)
             skills=domain_skills.pins(['testing'],status,_loader()); target='verified'
         # Keep original intent for exact retries without reconstructing generated execution output.
         content['_request']=payload

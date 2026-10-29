@@ -250,3 +250,14 @@ review, details and reports. New manifest0.2 files have canonical physical names
 and explicit legacy labels, without migration. Never rename immutable files, create
 aliases or imply legacy links target a canonical file. Track reviews include `document`;
 aggregate views index both tracks and core payloads expose `epic.documents`.
+
+### Governed Design approval
+
+Load the current governance context and exact Design revision internally. Present proposed
+observable limitations before approval. `approve` does not implicitly consent to them:
+obtain explicit effect authorization and unresolved-item acknowledgement as distinct
+human decisions (or an unambiguous combined decision). Pass only actually authorized IDs
+via `--authorize-limitation`; never fill this list merely because a Design contains them.
+Revalidate the revision before executing, retain the actual wording and confirm approval
+without advancement. Generic approval with outstanding limitation consent must prompt
+one focused question, not guess consent or silently approve a subset.

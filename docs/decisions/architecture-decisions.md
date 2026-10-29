@@ -44,3 +44,16 @@ Companion to [the working specification](../specification.md), not a replacement
 - Production distribution and specialist-skill compatibility beyond the implemented local pinned catalog.
 
 **Handover:** Codex should first read the complete [specification](../specification.md), identify inconsistencies and propose the smallest working increment, before implementation.
+
+## Governance correction addendum — 2026-10-29
+
+**028 [D/P]** Newly advanced Analysis cycles activate governance0.1 through versioned
+work-track metadata, preserving all historical cycles and baselines. Observable prototype
+limitations require explicit human consent within the existing revision-bound Design
+approval; uncertainty acknowledgement and generic Design approval are insufficient.
+Definitions stay in Design, downstream work/tests reference them, and blocked requirements
+remain blocked. Source-bound code review records semantic authority for consequential
+restrictions/defaults. Deterministic final reports disclose scope, exclusions, uncertainty
+and authorized limitations. Semantic interpretation stays in skills/human review; local
+identities remain procedural. No new lifecycle stage, policy engine, authentication or
+historical migration. See [Engineering governance](../engineering.md#governance-corrections-contract-01).

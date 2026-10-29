@@ -90,3 +90,30 @@ affected task/requirement. Reproduce the failure where possible, make only autho
 corrections, rerun affected checks and regression checks, and preserve earlier evidence.
 New code invalidates earlier source-bound verification. Do not declare a finding fixed
 merely because a patch was written; retest and obtain the required review.
+
+## Semantic conformance (governance 0.1)
+
+Before implementing an unresolved edge, seek clarification. An uncertainty ACK, absence
+of an implementation, or a positive acceptance scenario does not authorize a negative
+runtime restriction. Use only approved requirements or specifically authorized Design
+limitations. Keep `limitation_refs` in Plan, implementation/code review and Security
+artifacts; definitions remain solely in the immutable Design. Plan tasks/checks implementing
+an exception reference its `limitations` IDs and affected requirements without promoting
+blocked coverage. Every authorized limitation needs implementation and check traceability.
+
+During Code Review examine consequential negative conditions, defaults, validation and
+unsupported-operation responses against their authority. Persist `conformance` in the
+existing source-bound implementation artifact: `reviewer`, `independence` (author_review
+or independent), `summary`, `reviewed_categories` (negative_condition, default, validation,
+unsupported_operation), and `behaviors`. Each material behavior records `category`,
+`path`, `line`, `observable_behavior`, `authority: {kind: requirement|limitation|none,
+id: ID|null}`, `assessment: conforms|unsupported`, and `reason`. Source locations must
+refer to current Engineering files. An empty inventory requires an honest assessment
+that no material behavior exists; never omit a discovered restriction to pass a gate.
+
+A review finding with no authority is `unsupported` and blocks code approval. Request
+correction or upstream clarification; do not relabel it as technical validation. Review
+new source revisions afresh, even if old test output was green. Record actual reviewer
+independence; self-review is not independent. Prefer a fresh read-only reviewer when
+available, followed by human code approval. The CLI validates recorded evidence and
+binding, not the semantic truth or completeness of the inventory.

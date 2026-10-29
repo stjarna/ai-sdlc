@@ -1,14 +1,14 @@
 schema_version: '0.1'
 skills:
   architecture:
-    version: 1.1.0
-    digest: 9f48fe04ed806a531c5187cb709318c54e64a27241fddec729c6b3bcecb26aae
+    version: 1.2.0
+    digest: f2410ee8e58d33d7a7d136d42b164d2365f3856106367bf2b9f2075cab32de2a
   development:
-    version: 1.1.0
-    digest: 1faa7a9542959a3c2766481c63aab762b6b51cd3f6f592a2d9df10f00d3e5894
+    version: 1.2.0
+    digest: 7272fb70777b045681e162dc7f83904a00f150878fc4d79c64d72c96ea9e827d
   testing:
-    version: 1.1.0
-    digest: 883067299a993048d3a88b5c87049a90728a8900702a7f2560a2d728d3770bc3
+    version: 1.2.0
+    digest: e0fe3ad4b7b3cf220b7ece106e03af74d4983ba118be0cd778c25c6212b073e4
   security:
     version: 1.1.0
     digest: 630be2960a283f5bd76c54e1ca23cfa4f053e2dad00ac2a89210a6a73af1f412
