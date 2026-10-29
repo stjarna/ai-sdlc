@@ -1,0 +1,16 @@
+schema_version: '0.1'
+id: idea
+version: 1.0.0
+owner: Requester / Business Analysis team
+artifact: discovery.idea
+validation_contract: discovery.idea/1
+content_digest: d4492c9487fcd5d6c4690f342e7f7d6d391493fae13cfc180c6ea5905ace02bb
+required_sections:
+- Problem
+- Users
+- Expected value
+- Initial scope
+- Success criteria
+- Assumptions
+- Open questions
+optional_sections: []

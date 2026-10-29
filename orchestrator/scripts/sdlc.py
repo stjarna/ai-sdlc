@@ -17,6 +17,7 @@ import tempfile
 import unicodedata
 
 import yaml
+import artifact_templates as templates
 import discovery_history as history
 import business_refinement as business
 import business_approval as approval
@@ -34,14 +35,11 @@ from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.10.0"
+ORCHESTRATOR_VERSION = "0.12.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
-SECTIONS = (
-    "Problem", "Users", "Expected value", "Initial scope", "Success criteria",
-    "Assumptions", "Open questions",
-)
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
+SECTIONS = tuple(templates.headings(TEMPLATE.read_text(encoding="utf-8")))
 
 
 @dataclass
@@ -206,6 +204,14 @@ def read_epic(directory: Path) -> Epic:
         expected_fields |= {"work_tracks"}
     if "ownership" in data:
         expected_fields |= {"ownership"}
+    if "template_provenance" in data:
+        expected_fields.add("template_provenance")
+        try:
+            provenance=data["template_provenance"]
+            templates.require(isinstance(provenance,dict) and set(provenance)=={"schema_version","idea"} and provenance["schema_version"]=="0.1", "Invalid idea template provenance.")
+            templates.validate_pin(provenance["idea"],"idea")
+        except business.BusinessError as exc:
+            epic.diagnostics.append(error(exc.code,metadata_path,str(exc)))
     if set(data) != expected_fields:
         epic.diagnostics.append(error(
             "E_METADATA", metadata_path,
@@ -418,7 +424,7 @@ def write_new(path: Path, content: str) -> None:
         stream.write(content)
 
 
-def new_epic(project: Path, title: str, idea: str = "", requester: str | None = None) -> dict:
+def new_epic(project: Path, title: str, idea: str = "", requester: str | None = None, expected_template_digest: str | None = None) -> dict:
     root = project_path(project)
     if not valid_title(title):
         raise Rejected([error("E_TITLE", root, "Title must be nonempty, single-line text.")])
@@ -442,7 +448,9 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
             raise Rejected([error("E_UPDATE_INPUT", root, "Declare the requester or set up the local identity profile before creating a request.")])
         metadata["ownership"] = ownership.initialized("discovery", requester, requester, source,
             "ownership-created", "Initial accountability belongs to the declared requester.")
-        content = TEMPLATE.read_text(encoding="utf-8").replace("{{problem}}", idea.strip())
+        selected_template=templates.resolve("idea", expected_template_digest)
+        content = selected_template["content"].replace("{{problem}}", idea.strip())
+        metadata["template_provenance"]={"schema_version":"0.1","idea":selected_template["pin"]}
         made_requirements = False
         made_epic = False
         try:
@@ -451,6 +459,7 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
                 made_requirements = True
             directory.mkdir()  # Exclusive ownership; never replace an existing directory.
             made_epic = True
+            templates.assert_current(selected_template)
             write_new(directory / "metadata.yaml", yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
             write_new(directory / "idea.md", content)
             created = read_epic(directory)
@@ -615,7 +624,7 @@ def lifecycle_change(project: Path, epic_id: str, expected_revision: str, operat
         return result(f"discovery-{action}", updated.diagnostics, epic=updated.payload(), replayed=False, unresolved=unresolved_discovery(updated))
 
 
-def business_write(project: Path, epic_id: str, expected_source: str, expected_business: str | None, operation_id: str, editor: str, reason: str, document_path: Path, mode: str) -> dict:
+def business_write(project: Path, epic_id: str, expected_source: str, expected_business: str | None, operation_id: str, editor: str, reason: str, document_path: Path, mode: str, expected_template_digest: str | None = None) -> dict:
     root = project_path(project)
     if not history.valid_revision(expected_source) or not history.valid_operation_id(operation_id) or not business.valid_person(editor) or not business.valid_person(reason) or (expected_business is not None and not history.valid_revision(expected_business)):
         raise Rejected([error("E_UPDATE_INPUT", root, "Expected valid source/business revisions, operation ID, editor and reason.")])
@@ -637,6 +646,7 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
                 if entry["operation_id"] == operation_id:
                     if entry["digest"] != business.digest(content) or entry["source_revision"] != expected_source or entry["base_revision"] != expected_business or entry["editor"] != editor or entry["reason"] != reason or entry["mode"] != mode:
                         raise Rejected([error("E_IDEMPOTENCY", ledger_path, "Business operation ID was reused with different inputs.")])
+                    templates.check_retry(entry.get("template"), expected_template_digest)
                     return result(f"business-{mode}", epic.diagnostics, epic=epic.payload(), replayed=True)
         reject_analysis_decision_reuse(epic, operation_id)
         if epic.metadata["status"] != "ready_for_refinement" and not (mode == "revise" and epic.metadata["status"] == "business_refinement"):
@@ -649,7 +659,9 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
             raise Rejected([error("E_REVISION_CONFLICT", ledger_path, "Source or business draft changed; reopen and reconcile.")])
         try:
             coverage = business.validate_markdown(content, epic_id, expected_source, epic.discovery, epic.discovery_state)
-            candidate = business.append(ledger, epic_id, content, expected_source, editor, reason, operation_id, mode)
+            selected_template = templates.resolve("business", expected_template_digest)
+            templates.validate_document(selected_template, content)
+            candidate = business.append(ledger, epic_id, content, expected_source, editor, reason, operation_id, mode, selected_template["pin"])
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
         files = {"business.md": content, "business-history.yaml": yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True).encode("utf-8")}
@@ -663,6 +675,7 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
         if checked.revision != epic.revision or (checked.business["revision"] if checked.business else None) != expected_business:
             raise Rejected([error("E_REVISION_CONFLICT", ledger_path, "Epic changed during business write preparation.")])
         try:
+            templates.assert_current(selected_template)
             business.publish(epic.directory, files)
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
@@ -881,7 +894,7 @@ def analysis_review(project: Path, epic_id: str) -> dict:
         semantic_assessment="not_performed_by_cli")
 
 
-def analysis_write(project: Path, epic_id: str, expected_review: str, expected_analysis: str | None, expected_baseline: str, expected_handoff: str, operation_id: str, editor: str, reason: str, document_path: Path, mode: str, feedback_path: Path | None = None) -> dict:
+def analysis_write(project: Path, epic_id: str, expected_review: str, expected_analysis: str | None, expected_baseline: str, expected_handoff: str, operation_id: str, editor: str, reason: str, document_path: Path, mode: str, feedback_path: Path | None = None, expected_template_digest: str | None = None) -> dict:
     root = project_path(project)
     if mode not in ("generate", "revise") or not all(history.valid_revision(v) for v in (expected_review, expected_baseline)) or not all(history.valid_operation_id(v) for v in (expected_handoff, operation_id)) or not all(business.valid_person(v) for v in (editor, reason)) or (expected_analysis is not None and not history.valid_revision(expected_analysis)):
         raise Rejected([error("E_UPDATE_INPUT", root, "Expected exact Analysis review/input revisions, operation ID, editor and reason.")])
@@ -897,6 +910,7 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             if entry["operation_id"] == operation_id:
                 if any(entry[k] != v for k, v in {"digest": business.digest(content), "previous": expected_analysis, "baseline_id": expected_baseline, "handoff_id": expected_handoff, "expected_review": expected_review, "editor": editor, "reason": reason, "mode": mode, "feedback": feedback}.items()):
                     raise Rejected([error("E_IDEMPOTENCY", epic.directory / analysis.FILES[1], "Analysis operation ID was reused with different inputs.")])
+                templates.check_retry(entry.get("template"), expected_template_digest)
                 return result("analysis-" + mode, epic.diagnostics, epic=epic.payload(), replayed=True)
         # A new write cannot reuse another lifecycle or business decision operation.
         if any(e["id"] == operation_id for e in epic.metadata.get("lifecycle", [])) or any(e["operation_id"] == operation_id for e in epic.metadata.get("business_decisions", []) + epic.metadata.get("analysis_decisions", [])):
@@ -916,6 +930,10 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             if feedback:
                 analysis.require(set(feedback["items"]) <= set(details["items"]), "Feedback references unknown Analysis items.", "E_ANALYSIS_REFERENCE")
             entry = {"digest": business.digest(content), "previous": expected_analysis, "content_base64": base64.b64encode(content).decode("ascii"), **{k: source[k] for k in ("baseline_id", "approval_id", "handoff_id")}, "editor": editor, "reason": reason, "timestamp": business.timestamp(), "operation_id": operation_id, "expected_review": expected_review, "mode": mode, "feedback": feedback}
+            selected_template = templates.resolve("specification", expected_template_digest)
+            templates.validate_document(selected_template, content)
+            ledger["schema_version"] = "0.2"
+            entry.update(schema_version="0.2", template=selected_template["pin"])
             ledger["revisions"].append(entry)
             files = {"specification.md": content, "analysis-history.yaml": yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True).encode("utf-8")}
             if epic.metadata["status"] == "ready_for_analysis":
@@ -925,6 +943,7 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             checked = read_epic(epic.directory)
             require_valid(checked.diagnostics)
             analysis.require(checked.analysis_review_revision == expected_review, "Artifacts changed during Analysis preparation.", "E_REVISION_CONFLICT")
+            templates.assert_current(selected_template)
             business.publish(epic.directory, files, analysis=True)
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
@@ -1147,7 +1166,7 @@ def read_changes(path: Path) -> list:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", action="version", version=ORCHESTRATOR_VERSION)
-    parser.add_argument("--project", required=True, type=Path, help="Explicit target project root")
+    parser.add_argument("--project", type=Path, help="Explicit target project root")
     commands = parser.add_subparsers(dest="operation", required=True)
     context = commands.add_parser("command-context", help="Read-only resolution/routing for a conversational SDLC command")
     context.add_argument("command", choices=command_ux.COMMANDS)
@@ -1192,10 +1211,13 @@ def main(argv: list[str] | None = None) -> int:
         item.add_argument("--actor")
         item.add_argument("--expected-profile-revision")
         item.add_argument("--expected-source-revision")
-        if name=="qa-write":item.add_argument("--input-file",type=Path,required=True)
+        if name=="qa-write":
+            item.add_argument("--input-file",type=Path,required=True)
+            item.add_argument("--expected-template-digest")
         if name!="qa-check-run":item.add_argument("--kind",choices=("strategy","scenarios","automation","verification"),required=True)
         else:item.add_argument("--check-id",required=True)
         if name=="qa-approve":item.add_argument("--acknowledge-open-item",action="append",default=[])
+    commands.add_parser("templates", help="Read pinned document templates").add_argument("template_id", nargs="?", choices=tuple(templates.ARTIFACTS))
     commands.add_parser("skills", help="Read approved local domain skill catalog")
     commands.add_parser("engineering-review", help="Read the sequential engineering state").add_argument("id")
     for name in ("engineering-write", "engineering-approve", "engineering-request-changes", "engineering-advance", "development-start", "check-run", "security-remediate", "verification-remediate", "engineering-finalize"):
@@ -1208,6 +1230,7 @@ def main(argv: list[str] | None = None) -> int:
         eng.add_argument("--decision", required=True)
         if name.startswith("engineering-") and name != "engineering-finalize":
             eng.add_argument("--kind", required=True, choices=engineering.KINDS if name != "engineering-advance" else (*engineering.KINDS, "verification"))
+        if name in ("engineering-write", "engineering-finalize"): eng.add_argument("--expected-template-digest")
         if name == "engineering-write": eng.add_argument("--input-file", required=True, type=Path)
         if name == "engineering-approve": eng.add_argument("--acknowledge-open-item", action="append", default=[])
         if name == "engineering-approve": eng.add_argument("--authorize-limitation", action="append", default=[])
@@ -1215,6 +1238,7 @@ def main(argv: list[str] | None = None) -> int:
         if name == "verification-remediate": eng.add_argument("--check-id", action="append", required=True)
         if name == "security-remediate": eng.add_argument("--finding", action="append", required=True)
     create = commands.add_parser("new", help="Create a local Discovery Epic")
+    create.add_argument("--expected-template-digest")
     create.add_argument("--title", required=True)
     create.add_argument("--requester", help="Explicit initial requester; otherwise use the local declared identity profile")
     create.add_argument("--idea", default="", help="Initial business description; stored as content only")
@@ -1242,6 +1266,7 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--editor", required=True)
         command.add_argument("--reason", required=True)
         command.add_argument("--document-file", required=True, type=Path)
+        command.add_argument("--expected-template-digest")
     commands.add_parser("business-review", help="Read draft, source coverage and reconciliation state").add_argument("id")
     for name, identity in (("business-request-changes", "reviewer"), ("business-approve", "approver"), ("business-advance", "actor")):
         command = commands.add_parser(name, help="Record a procedural PO decision or separately advance")
@@ -1286,9 +1311,14 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--editor", required=True)
         command.add_argument("--reason", required=True)
         command.add_argument("--document-file", required=True, type=Path)
+        command.add_argument("--expected-template-digest")
         command.add_argument("--feedback-file", type=Path)
     commands.add_parser("business-recover", help="Roll forward an inspected interrupted business publication").add_argument("id")
     args = parser.parse_args(argv)
+    if args.project is None and args.operation != "templates":
+        parser.error("--project is required for this operation")
+    if args.operation == "templates":
+        args.project = Path.cwd()
     diagnostic_base = args.project
     try:
         if args.operation in ("track-review","qa-review"):
@@ -1316,9 +1346,12 @@ def main(argv: list[str] | None = None) -> int:
                 payload={"acknowledged":getattr(args,"acknowledge_open_item",[])}
                 if kind=="automation" and action=="approve":payload["source_revision"]=args.expected_source_revision
             elif action=="run":payload={"check_id":args.check_id,"source_revision":args.expected_source_revision}
-            output=qa_track.update(project_path(args.project),args.id,args.expected_qa_revision,args.operation_id,action,kind,payload,actor,args.decision,source)
+            output=qa_track.update(project_path(args.project),args.id,args.expected_qa_revision,args.operation_id,action,kind,payload,actor,args.decision,source,getattr(args,"expected_template_digest",None))
         elif args.operation == "skills":
             output = result("skills", [], skills=domain_skills.catalog(StrictLoader))
+        elif args.operation == "templates":
+            selected = templates.resolve(args.template_id) if args.template_id else templates.catalog()
+            output = result("templates", [], templates=selected)
         elif args.operation == "engineering-review":
             epic = selected_epic(project_path(args.project), args.id)
             output = result("engineering-review", epic.diagnostics, epic=epic.payload(), engineering=engineering.review(epic, project_path(args.project)))
@@ -1342,7 +1375,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.operation == "engineering-approve" and args.authorize_limitation:
                 payload['authorized_limitations']=args.authorize_limitation
             diagnostic_base = selected_epic(project_path(args.project), args.id).directory
-            output = engineering.update(project_path(args.project), args.id, args.expected_engineering_revision, args.operation_id, action, kind, payload, actor, args.decision, source)
+            output = engineering.update(project_path(args.project), args.id, args.expected_engineering_revision, args.operation_id, action, kind, payload, actor, args.decision, source, getattr(args,"expected_template_digest",None))
         elif args.operation == "command-context":
             output = command_context(args.project, args.command, args.selector, args.track)
         elif args.operation in ("inbox", "pending-assignments"):
@@ -1355,14 +1388,14 @@ def main(argv: list[str] | None = None) -> int:
         elif args.operation in ("identity-setup", "identity-edit"):
             output = result(args.operation, [], identity=local_identity.save(args.project, args.display_name, args.role, edit=args.operation == "identity-edit", expected_revision=getattr(args, "expected_profile_revision", None)))
         elif args.operation == "new":
-            output = new_epic(args.project, args.title, args.idea, requester=args.requester)
+            output = new_epic(args.project, args.title, args.idea, requester=args.requester, expected_template_digest=args.expected_template_digest)
         elif args.operation == "discovery-update":
             output = discovery_update(args.project, args.id, args.expected_revision, args.operation_id, read_changes(args.changes_file))
         elif args.operation in ("discovery-complete", "discovery-reopen"):
             actor, source = local_identity.attribution(args.project, args.requester, args.expected_profile_revision)
             output = lifecycle_change(args.project, args.id, args.expected_revision, args.operation_id, actor, args.decision, args.operation.removeprefix("discovery-"), identity_source=source)
         elif args.operation in ("business-generate", "business-revise"):
-            output = business_write(args.project, args.id, args.expected_source_revision, args.expected_business_revision, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("business-"))
+            output = business_write(args.project, args.id, args.expected_source_revision, args.expected_business_revision, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("business-"), args.expected_template_digest)
         elif args.operation == "business-review":
             output = business_review(args.project, args.id)
         elif args.operation in ("business-approve", "business-request-changes", "business-advance"):
@@ -1378,7 +1411,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.operation == "analysis-review":
             output = analysis_review(args.project, args.id)
         elif args.operation in ("analysis-generate", "analysis-revise"):
-            output = analysis_write(args.project, args.id, args.expected_analysis_review_revision, args.expected_analysis_revision, args.expected_baseline_id, args.expected_handoff_id, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("analysis-"), args.feedback_file)
+            output = analysis_write(args.project, args.id, args.expected_analysis_review_revision, args.expected_analysis_revision, args.expected_baseline_id, args.expected_handoff_id, args.operation_id, args.editor, args.reason, args.document_file, args.operation.removeprefix("analysis-"), args.feedback_file, args.expected_template_digest)
         elif args.operation == "analysis-recover":
             output = business_recover(args.project, args.id, recover_analysis=True)
         elif args.operation == "business-recover":

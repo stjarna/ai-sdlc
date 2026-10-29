@@ -1,0 +1,14 @@
+schema_version: '0.1'
+id: security-review
+version: 1.0.0
+owner: Application Security
+artifact: engineering.security
+validation_contract: engineering.security/1
+content_digest: a7b6a6291f15c51222c63fa310b39050734f2876d9d3e0514a553fe94d685d32
+required_sections:
+- Scope and method
+- Findings
+- Evidence
+- Limitations and unresolved items
+optional_sections:
+- Remediation

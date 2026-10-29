@@ -1,0 +1,20 @@
+name: development
+description: Development expertise for independently owned Engineering and QA work
+  tracks.
+version: 1.2.0
+owner: Engineering Enablement
+stages:
+- implementation_planning
+- development
+inputs:
+- Approved Technical Design
+- Approved implementation plan
+outputs:
+- Engineering Implementation Plan
+- Code and unit tests
+- Build and code-review evidence
+standards:
+- Project coding conventions
+- Human code review
+dependencies: {}
+orchestrator: '0.11'

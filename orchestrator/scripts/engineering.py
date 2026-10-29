@@ -4,6 +4,7 @@ The agent writes application code; this module records reviewed artifacts, runs 
 approved checks and enforces source-bound gates. It is not a shell sandbox or AI runtime.
 """
 from __future__ import annotations
+import artifact_templates as templates
 import json
 import hashlib
 from copy import deepcopy
@@ -127,7 +128,18 @@ def _read_artifact(directory, baseline_id, root_name='engineering-baselines'):
         names = artifact_files(manifest, root_name)
         common.validate_files(manifest, files, names)
         obj = decode_artifact(files['artifact.json'])
-        require(isinstance(obj, dict) and set(obj) == {'action','kind','payload','skills','analysis_baseline','analysis_handoff','source_revision'}, 'Malformed engineering artifact.', 'E_BASELINE_CONTEXT')
+        fields={'action','kind','payload','skills','analysis_baseline','analysis_handoff','source_revision'}
+        modern=isinstance(obj,dict) and 'schema_version' in obj
+        if modern:
+            fields|={'schema_version','template'}
+            require(obj['schema_version']=='0.2' and (obj.get('action')=='write' or (obj.get('action')=='finalize' and obj.get('kind')=='final')), 'Invalid document envelope version.', 'E_BASELINE_CONTEXT')
+            stage='qa' if root_name=='qa-baselines' else 'engineering'
+            try:
+                template_id=templates.template_for(stage,obj.get('kind'))
+            except StopIteration:
+                require(False,'Unsupported templated artifact kind.','E_BASELINE_CONTEXT')
+            templates.validate_pin(obj['template'],template_id)
+        require(isinstance(obj, dict) and set(obj)==fields, 'Malformed engineering artifact.', 'E_BASELINE_CONTEXT')
         require(isinstance(obj['payload'], dict) and isinstance(obj['skills'], dict), 'Invalid engineering payload.', 'E_BASELINE_CONTEXT')
         require('content' not in obj['payload'], 'Prose belongs only in the document file.', 'E_BASELINE_CONTEXT')
         if manifest['schema_version'] == '0.2':
@@ -317,7 +329,7 @@ def review(epic, project):
         if found:
             e=found[-1]; p=load_artifact(epic.directory,e['baseline_id'])[0]
             drafts[kind]={'baseline_id':e['baseline_id'],'operation_id':e['operation_id'],'payload':p['payload'],'skills':p['skills'],
-                          'document':artifact_document(epic.directory,e['baseline_id'],kind)}
+                          'document':artifact_document(epic.directory,e['baseline_id'],kind),**({'template':p['template']} if 'template' in p else {})}
     finals=events(epic,'finalize','final')
     report=load_artifact(epic.directory,finals[-1]['baseline_id'])[0] if finals else None
     current=report is None or report['source_revision']==source
@@ -330,7 +342,7 @@ def review(epic, project):
             approval(epic,kind,source); approvals[kind]={'valid':True}
         except business.BusinessError as exc:
             approvals[kind]={'valid':False,'reason':str(exc),'code':exc.code}
-    return {'active':True,'stage':epic.metadata['status'],'current':current,'governance':'0.1' if governed(epic) else 'legacy: not assessed under strengthened controls','final_report':{'baseline_id':finals[-1]['baseline_id'],'payload':report['payload'],'document':artifact_document(epic.directory,finals[-1]['baseline_id'],'final')} if report else None,'approvals':approvals,'revision':token,'source_revision':source,
+    return {'active':True,'stage':epic.metadata['status'],'current':current,'governance':'0.1' if governed(epic) else 'legacy: not assessed under strengthened controls','final_report':{'baseline_id':finals[-1]['baseline_id'],'payload':report['payload'],**({'template':report['template']} if 'template' in report else {}),'document':artifact_document(epic.directory,finals[-1]['baseline_id'],'final')} if report else None,'approvals':approvals,'revision':token,'source_revision':source,
             'analysis_baseline':handoff['baseline_id'],'analysis_handoff':handoff['id'],'drafts':drafts,
             'decisions':[e for e in events(epic) if e['action'] in ('approve','request_changes')],
             'evidence':[load_artifact(epic.directory,e['baseline_id'])[0]['payload'] for e in events(epic,'run','check')]}
@@ -350,7 +362,7 @@ def analysis_items(epic):
     return {rid:v['fields']['Status'] for rid,v in details['items'].items() if rid.startswith(('FR-','AC-')) and v['fields']['Status']!='retired'}, analysis_gate.open_items(details)
 
 
-def final_report(epic,project,source,checks,security):
+def final_report(epic,project,source,checks,security,template_item=None):
     """Collect current approved sources once; Markdown is only their projection."""
     import verification_report
     handoff=cycle(epic)
@@ -398,7 +410,7 @@ def final_report(epic,project,source,checks,security):
                                         'qualification':'Blocked; no product outcome asserted.' if case['status']=='blocked' else
                                         'Linked named checks passed; individual scenario outcome is not separately assessed by the CLI.'})
     content['unresolved']=[questions[k] for k in sorted(questions)]
-    content['content']=verification_report.render(content)
+    content['content']=verification_report.render(content,template_item)
     return content
 
 
@@ -553,7 +565,7 @@ def execute_check(project,check):
     return {'status':status,'exit_code':exit_code,'output':prefix.decode('utf-8',errors='replace'),'output_sha256':digest.hexdigest(),'output_truncated':size>1000000}
 
 
-def update(project,epic_id,expected_revision,operation_id,action,kind,payload,actor,decision,identity_source=None):
+def update(project,epic_id,expected_revision,operation_id,action,kind,payload,actor,decision,identity_source=None,expected_template_digest=None):
     import sdlc
     require(discovery.valid_revision(expected_revision) and discovery.valid_operation_id(operation_id) and business.valid_person(actor) and analysis_gate.valid_decision_text(decision),'Expected revision, operation ID, actor and explicit wording.','E_UPDATE_INPUT')
     require(action in ('write','approve','request_changes','advance','start','run','remediate','finalize') and kind in (*KINDS,'development','check','verification','final') and isinstance(payload,dict),'Unsupported engineering operation.','E_UPDATE_INPUT')
@@ -567,6 +579,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                 request=dict(obj['payload'].get('_request',{}))
                 if action=='write': request['content']=obj['payload']['content']
                 require(all(e[k]==v for k,v in {'action':action,'kind':kind,'actor':actor,'decision':decision,'expected_revision':expected_revision,'identity_source':identity_source or 'declared'}.items()) and request==payload,'Operation ID reused with different intent.','E_IDEMPOTENCY')
+                templates.check_retry(obj.get('template'),expected_template_digest)
                 return sdlc.result('engineering-'+action,epic.diagnostics,epic=epic.payload(),engineering=review(epic,project),replayed=True)
         sdlc.reject_gate_operation_reuse(epic,operation_id)
         handoff=cycle(epic)
@@ -586,6 +599,8 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                 approval(epic,'plan',source); boundary(epic,source_tree(epic,project))
                 require(payload.get('source_revision')==source,'Review is for another source revision.','E_REVISION_CONFLICT')
             validate_document(epic,kind,payload)
+            selected_template=templates.resolve(templates.template_for('engineering',kind),expected_template_digest)
+            templates.validate_document(selected_template,payload['content'])
             if kind=='implementation': check_results(epic,source,('unit','build'))
             if kind=='implementation' and governed(epic):
                 files=source_tree(epic,project)
@@ -694,11 +709,16 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             checks=verified_checks(epic,source,project)
             _,sec=latest(epic,'security')
             require(sec['source_revision']==source and not any(f['status']=='open' for f in sec['findings']),'Security review is stale or unresolved.','E_SECURITY_FINDINGS')
-            content=final_report(epic,project,source,checks,sec)
+            selected_template=templates.resolve('verification-report',expected_template_digest)
+            content=final_report(epic,project,source,checks,sec,selected_template)
+            templates.validate_document(selected_template,content['content'])
             skills=domain_skills.pins(['testing'],status,_loader()); target='verified'
         # Keep original intent for exact retries without reconstructing generated execution output.
         content['_request']=payload
         obj={'action':action,'kind':kind,'payload':content,'skills':skills,'analysis_baseline':handoff['baseline_id'],'analysis_handoff':handoff['id'],'source_revision':source}
+        if action in ('write','finalize'):
+            obj.update(schema_version='0.2',template=selected_template['pin'])
+            templates.assert_current(selected_template)
         stored={**obj,'payload':{k:v for k,v in content.items() if k!='content'}}
         stored['payload']['_request']={k:v for k,v in payload.items() if k!='content'}
         manifest,snapshot=baseline_snapshot('engineering',kind,action,epic_id,
@@ -717,7 +737,9 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
         def validate(value):
             sdlc.validate_gate_metadata(value)
         def read(directory):
-            checked=sdlc.read_epic(directory); sdlc.require_valid(checked.diagnostics); return checked
+            checked=sdlc.read_epic(directory); sdlc.require_valid(checked.diagnostics)
+            if action in ('write','finalize'):templates.assert_current(selected_template)
+            return checked
         common.persist_decision(epic,candidate,expected_revision,read,lambda e:review(e,project)['revision'],validate,
             lambda path,value:sdlc.atomic_history_write(path,yaml.safe_dump(value,sort_keys=False,allow_unicode=True)))
         updated=sdlc.selected_epic(project,epic_id)

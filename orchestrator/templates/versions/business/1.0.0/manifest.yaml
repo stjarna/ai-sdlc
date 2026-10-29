@@ -1,0 +1,12 @@
+schema_version: '0.1'
+id: business
+version: 1.0.0
+owner: Business Analysis team
+artifact: business.specification
+validation_contract: business.specification/1
+content_digest: 4f62a07aa6e955c8e142b8655beb9381a737c0877d4f045a4c1b2d822c1b9c20
+required_sections:
+- Confirmed information
+- Unresolved issues
+- Unconfirmed proposals
+optional_sections: []

@@ -15,6 +15,7 @@ from unittest.mock import patch
 import test_analysis_approval as fixtures
 import business_refinement as business
 import engineering
+from template_fixtures import document_payload
 import sdlc
 
 
@@ -50,6 +51,8 @@ class EngineeringTests(unittest.TestCase):
 
     def request(self, action, kind, payload=None, **extra):
         self.counter += 1
+        if action == 'write':
+            payload = document_payload('engineering', kind, payload)
         return dict(project=self.project, epic_id='REQ-0001', expected_revision=self.review()['revision'],
                     operation_id=f'engineering-fixture-{self.counter}', action=action, kind=kind,
                     payload={} if payload is None else payload, actor='Fixture Engineering Lead',
@@ -89,7 +92,7 @@ class EngineeringTests(unittest.TestCase):
             current = self.review()
             doc.update(source_revision=current['source_revision'], plan=current['drafts']['plan']['baseline_id'])
             doc.update(completed_tasks=['T-001']) if kind == 'implementation' else doc.update(findings=[])
-        return doc
+        return document_payload('engineering', kind, doc)
 
     def approve(self, kind):
         doc = self.review()['drafts'][kind]['payload']
@@ -163,7 +166,7 @@ class EngineeringTests(unittest.TestCase):
         obj, frozen = engineering.load_artifact(self.directory, written['baseline_id'])
         self.assertEqual(obj['analysis_baseline'], prior['analysis_baseline'])
         self.assertEqual(obj['analysis_handoff'], prior['analysis_handoff'])
-        self.assertEqual(obj['skills']['architecture']['version'], '1.2.0')
+        self.assertEqual(obj['skills']['architecture']['version'], '1.3.0')
         self.assertEqual(len(obj['skills']['architecture']['digest']), 64)
         self.assertEqual(frozen['status'], 'ready_for_technical_design')
         self.assertEqual(written['epic']['metadata']['status'], 'technical_design')

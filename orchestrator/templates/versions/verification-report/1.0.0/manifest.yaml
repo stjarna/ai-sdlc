@@ -1,0 +1,20 @@
+schema_version: '0.1'
+id: verification-report
+version: 1.0.0
+owner: QA / Quality Engineering
+artifact: engineering.final
+validation_contract: engineering.final/1
+content_digest: 078d42e003eb173fd0da5f9980b9461d555a2d6a606449940ae4f57a5c3e3d4f
+required_sections:
+- Governance assessment
+- Verified scenarios and recorded scenario outcomes
+- Actual named check results
+- Requirement coverage
+- Blocked requirements
+- Unresolved questions and assumptions
+- Excluded behavior
+- Exclusion authority
+- Authorized prototype limitations
+- Residual risks
+- Evidence and baseline references
+optional_sections: []

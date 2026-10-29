@@ -68,6 +68,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual({path.name for path in directory.iterdir()}, {"metadata.yaml", "idea.md"})
         data = yaml.safe_load((directory / "metadata.yaml").read_text())
         self.assertEqual(data.pop("ownership")["owner"], "Fixture Requester")
+        self.assertEqual(data.pop("template_provenance")["idea"]["id"], "idea")
         self.assertEqual(data, {
             "schema_version": "0.1", "id": "REQ-0001", "title": "Přehled požadavků",
             "status": "discovery", "artifacts": {"idea": "idea.md"},

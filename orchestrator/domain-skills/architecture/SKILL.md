@@ -15,6 +15,17 @@ Follow the [orchestrator workflow](../../skill/SKILL.md) for identity, persisten
 approvals and handoff. This skill supplies architecture expertise; it does not own
 lifecycle metadata, create approvals, assign people or implement an audit mechanism.
 
+## Document templates and validation
+
+Technical Design uses the `technical-design` template.
+Resolve each template using `sdlc.py templates <template-id>` before drafting. The
+pinned catalog owns document headings, their order and optional sections; use the returned
+scaffold rather than creating a second layout here. Domain guidance below supplies
+content expertise, not a competing structure. Deterministic writers record the exact
+template ID, version and digest. Existing validators remain authoritative for structured
+fields and governance; template, skill and CLI versions are independent. Preserve legacy
+artifacts and their historical pins instead of adding provenance retrospectively.
+
 ## Establish the approved design input
 
 Read the exact immutable Analysis baseline selected by its explicit advancement,
@@ -42,7 +53,7 @@ exposure, abuse cases and proposed controls. Record the security package pin as 
 contribution to the artifact; consulting it is not security signoff.
 
 Persist through the orchestrator's documented deterministic operation. Its immutable
-revision contains human-readable `content.md` and the structured `artifact.json`
+revision contains human-readable `technical-design.md` and the structured `artifact.json`
 coverage and unresolved-item data. Keep requirement prose authoritative in the frozen
 specification; reference its IDs rather than copying a second requirements source.
 

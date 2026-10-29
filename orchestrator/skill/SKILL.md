@@ -31,6 +31,26 @@ Keep revision/request context and verify authority independently of naming. Pinn
 domain instructions describing content.md concern legacy format, not new publication.
 Never create aliases/copies or manually rename a baseline to improve presentation.
 
+
+## Use pinned document templates
+
+For a new human-readable document, resolve its canonical template using
+`sdlc.py templates <template-id>`; `sdlc.py templates` lists the pinned catalog.
+Read the returned scaffold and manifest before drafting. Pass its package digest as
+`--expected-template-digest` when publishing so a changed catalog requires a fresh
+review of the selection. Keep this parameter inside the agent workflow. Templates own required and
+optional sections and their order; domain skills own content judgment, and existing
+validators own machine-verifiable fields and governance. Use the artifact-specific
+canonical filename returned by the CLI. Deterministic publication records the exact
+template ID, version and digests; never fill in provenance manually for historical
+artifacts. A template update does not rewrite an approved document or replace its pin.
+Keep CLI, validation-contract, domain-skill and template versions distinct. Templates
+are drafting inputs, not evidence of semantic correctness or human approval.
+Repeat Business/Analysis item blocks only for supported source items. Replace unused
+optional BR/AQ/AP blocks with `None recorded.`; do not manufacture items to fill a
+scaffold. Preserve inherited unresolved lines exactly and obtain IDs from actual
+records rather than retaining placeholder text.
+
 ## Resolve and resume
 
 Identify the target project from explicit user/workspace context. The package checkout

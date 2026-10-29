@@ -1,0 +1,13 @@
+schema_version: '0.1'
+id: test-scenarios
+version: 1.0.0
+owner: QA / Quality Engineering
+artifact: qa.scenarios
+validation_contract: qa.scenarios/1
+content_digest: 8af2fb84e133456a87266179716172a67a67426a69f569f9bfbb82de970dab01
+required_sections:
+- Authority
+- Scenarios
+- Coverage and unresolved items
+optional_sections:
+- Test data

@@ -1,0 +1,15 @@
+schema_version: '0.1'
+id: test-automation
+version: 1.0.0
+owner: QA / Quality Engineering
+artifact: qa.automation
+validation_contract: qa.automation/1
+content_digest: a7c664a097901b29e9f063d33c96b292220809488b8d3714d4e425202415a80d
+required_sections:
+- Authority and source
+- Product checks
+- Prototype limitation checks
+- Execution and evidence
+- Unresolved items
+optional_sections:
+- Dependency setup

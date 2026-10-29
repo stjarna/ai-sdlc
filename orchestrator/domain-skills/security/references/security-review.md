@@ -1,5 +1,8 @@
 # Security review guidance
 
+Use the pinned `security-review` template for document layout. These topics guide
+security judgment; they are not additional required sections or a second validation schema.
+
 Select checks from actual architecture, approved Engineering scope and the independent
 QA strategy/automation where relevant. Their common approved Analysis baseline remains
 functional authority; no domain review may invent missing business rules. Do not turn every small

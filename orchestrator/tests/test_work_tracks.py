@@ -19,6 +19,7 @@ import yaml
 import test_analysis_approval as fixtures
 import business_refinement as business
 import engineering
+from template_fixtures import document_payload
 import local_identity
 import sdlc
 import work_tracks
@@ -89,6 +90,7 @@ class WorkTrackTests(unittest.TestCase):
         return result
 
     def engineering_write(self, action, kind, payload):
+        if action=='write':payload=document_payload('engineering',kind,payload)
         self.counter += 1
         if action=='write' and kind=='plan' and engineering.governed(self.epic()):
             payload=deepcopy(payload);payload.pop('governance',None);payload['limitation_refs']=[]

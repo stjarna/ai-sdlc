@@ -1,0 +1,14 @@
+schema_version: '0.1'
+id: code-review
+version: 1.0.0
+owner: Engineering Enablement
+artifact: engineering.implementation
+validation_contract: engineering.implementation/1
+content_digest: 3c47914f27d2bcf0140e744f492aee030bd49242b4431e6ec6a042fd7b69deb5
+required_sections:
+- Scope and source
+- Verification evidence
+- Semantic conformance
+- Findings and limitations
+optional_sections:
+- Change summary

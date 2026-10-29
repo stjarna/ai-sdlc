@@ -15,6 +15,17 @@ Legacy requests retain their recorded workflow and instruction pins. Do not rein
 an old combined plan as independent QA approval or rewrite an approved artifact; use
 the orchestrator's explicit compatibility/reconciliation path when authorized.
 
+## Document templates and validation
+
+Use `test-strategy`, `test-scenarios` and `test-automation` for QA documents. Final Verification uses `verification-report`; the deterministic renderer supplies its content.
+Resolve each template using `sdlc.py templates <template-id>` before drafting. The
+pinned catalog owns document headings, their order and optional sections; use the returned
+scaffold rather than creating a second layout here. Domain guidance below supplies
+content expertise, not a competing structure. Deterministic writers record the exact
+template ID, version and digest. Existing validators remain authoritative for structured
+fields and governance; template, skill and CLI versions are independent. Preserve legacy
+artifacts and their historical pins instead of adding provenance retrospectively.
+
 ## Start QA from approved Analysis
 
 Read the exact approved Functional Analysis baseline selected by explicit advancement,

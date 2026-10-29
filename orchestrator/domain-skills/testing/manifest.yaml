@@ -1,6 +1,6 @@
 name: testing
 description: Testing expertise for independently owned Engineering and QA work tracks.
-version: 1.2.0
+version: 1.3.0
 owner: QA / Quality Engineering
 stages:
 - test_design
@@ -25,4 +25,5 @@ standards:
 - Requirement-to-test traceability
 - Actual execution evidence
 dependencies: {}
-orchestrator: '0.11'
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

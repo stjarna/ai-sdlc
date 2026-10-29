@@ -1,7 +1,8 @@
 # Plan, checks and review guidance
 
-The JSON field names and accepted lifecycle operations are defined by the orchestrator
-contract. This reference describes the engineering meaning, not a second schema.
+Use the pinned `implementation-plan` and `code-review` templates for layout. The
+following topics explain engineering judgment, not additional required sections. Existing
+validators own structured fields and lifecycle operations.
 
 ## Useful plan contents
 

@@ -1,0 +1,14 @@
+schema_version: '0.1'
+id: implementation-plan
+version: 1.0.0
+owner: Engineering Enablement
+artifact: engineering.plan
+validation_contract: engineering.plan/1
+content_digest: e5a3af3058215208b141ef31487426f5b99d442bde88006ff20f9717f20cfff4
+required_sections:
+- Authority and scope
+- Tasks
+- Checks
+- Unresolved items and limitations
+optional_sections:
+- Execution environment

@@ -1,6 +1,6 @@
 name: security
 description: Security expertise for independently owned Engineering and QA work tracks.
-version: 1.1.0
+version: 1.2.0
 owner: Application Security
 stages:
 - technical_design
@@ -15,4 +15,5 @@ standards:
 - Threat and risk assessment
 - OWASP secure design principles
 dependencies: {}
-orchestrator: '0.10'
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

@@ -1,7 +1,7 @@
 name: development
 description: Development expertise for independently owned Engineering and QA work
   tracks.
-version: 1.2.0
+version: 1.3.0
 owner: Engineering Enablement
 stages:
 - implementation_planning
@@ -17,4 +17,5 @@ standards:
 - Project coding conventions
 - Human code review
 dependencies: {}
-orchestrator: '0.11'
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

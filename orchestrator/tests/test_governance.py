@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import business_refinement as business
 import domain_skills
 import engineering
+from template_fixtures import document_payload
 import qa_track
 import sdlc
 import work_tracks
@@ -29,6 +30,7 @@ class GovernanceTests(unittest.TestCase):
         self.addCleanup(self.f.doCleanups); self.f.setUp()
 
     def call(self, action, kind, payload=None, **changes):
+        if action=='write':payload=document_payload('engineering',kind,payload)
         request=dict(project=self.f.project,epic_id='REQ-0001',expected_revision=engineering.review(self.f.epic(),self.f.project)['revision'],
                      operation_id=self.f.unique(),action=action,kind=kind,payload=payload or {},actor='Fixture Approver',
                      decision='Fictional explicit human decision: '+action+' '+kind)

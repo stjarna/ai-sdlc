@@ -57,3 +57,15 @@ restrictions/defaults. Deterministic final reports disclose scope, exclusions, u
 and authorized limitations. Semantic interpretation stays in skills/human review; local
 identities remain procedural. No new lifecycle stage, policy engine, authentication or
 historical migration. See [Engineering governance](../engineering.md#governance-corrections-contract-01).
+
+## Artifact-template separation — 2026-10-29
+
+**029 [D/P]** Introduce a pinned local catalog of domain-owned, semantically versioned
+Markdown template packages. Structure and optional/required sections belong to templates;
+domain guidance remains in independently pinned skills, and existing validators retain
+structural/governance authority. New revision envelopes record exact template ID, version,
+package/content digests and validation contract. Legacy reads, approved baseline identities,
+canonical filenames and audit remain compatible without retrospective provenance. Final
+Verification uses fixed projection slots rather than a general template engine. Catalog
+upgrades require explicit compatibility/content review; CLI, skill, template and validation
+contract versions are independent. See [template contract](../../orchestrator/templates/README.md).

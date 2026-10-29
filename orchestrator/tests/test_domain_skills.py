@@ -141,6 +141,22 @@ class DomainSkillTests(unittest.TestCase):
     def test_unknown_skill_rejected(self):
         self.reject(lambda: self.pins(['unapproved-skill'], 'verification'))
 
+    def test_explicit_validation_contract_is_independent_of_cli_version(self):
+        for manifest in self.manifests.values():
+            manifest.pop('orchestrator')
+            manifest.update(schema_version='0.2', validation_contract='sdlc-domain/1')
+        self.publish()
+        available = self.catalog()
+        self.assertEqual(available['architecture']['validation_contract'], 'sdlc-domain/1')
+        self.assertNotIn('orchestrator', available['architecture'])
+
+    def test_unsupported_explicit_validation_contract_is_rejected(self):
+        manifest = self.manifests['development']
+        manifest.pop('orchestrator')
+        manifest.update(schema_version='0.2', validation_contract='sdlc-domain/999')
+        self.publish()
+        self.reject(self.catalog)
+
     def test_unsupported_orchestrator_contract_rejected(self):
         self.manifests['development']['orchestrator'] = '1.0'
         self.publish()

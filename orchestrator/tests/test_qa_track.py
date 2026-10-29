@@ -13,6 +13,7 @@ from unittest.mock import patch
 import test_analysis_approval as fixtures
 import business_refinement as business
 import engineering
+from template_fixtures import document_payload
 import qa_track
 import sdlc
 import work_tracks
@@ -33,9 +34,12 @@ class QATrackTests(unittest.TestCase):
     def unique(self):
         self.counter+=1;return 'qa-fixture-'+str(self.counter)
     def request(self,action,kind,payload=None):
+        if action=='write':payload=document_payload('qa',kind,payload)
         return dict(project=self.project,epic_id='REQ-0001',expected_revision=self.view()['revision'],operation_id=self.unique(),action=action,kind=kind,payload={} if payload is None else payload,actor='Fixture QA Lead',decision='Fictional QA decision: '+action+' '+kind)
-    def update(self,action,kind,payload=None):return qa_track.update(**self.request(action,kind,payload))
+    def update(self,action,kind,payload=None):
+        return qa_track.update(**self.request(action,kind,payload))
     def eng(self,action,kind,payload=None):
+        if action=='write':payload=document_payload('engineering',kind,payload)
         if action=='write' and engineering.governed(self.epic()):
             # Current-contract fixtures declare no prototype exceptions. These
             # tiny programs have no product validation/default/rejection policy.

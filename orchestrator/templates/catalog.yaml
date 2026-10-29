@@ -1,0 +1,35 @@
+schema_version: '0.1'
+templates:
+  idea:
+    version: 1.0.0
+    digest: e1fafb2038d43d623c5ce8dd638e3e106b3f8e3ab62aaa5a0200bffdb2898d4f
+  business:
+    version: 1.0.0
+    digest: e751d87744e2cd5e3881d3f5bd1b624d9fcd7a4b06336f41efdbb96a59645702
+  specification:
+    version: 1.0.0
+    digest: 522f016b3a6f001617b6b7fc0fb3b7dd45131ff43150138dc4ae168ce39f6f9b
+  technical-design:
+    version: 1.0.0
+    digest: b502bf8fd1644f5d1359db4428ab02dbe546926681797b001d7ef9f17b879d02
+  implementation-plan:
+    version: 1.0.0
+    digest: 4413a6b2b15677cee4b71336454fe622b845757cb1694810f1b65f4bf911f4cb
+  test-strategy:
+    version: 1.0.0
+    digest: 3f40cf3336f0638dddb3dea2ac2f99d289622c3ccbbe55f9ddd8a61a1ecd7b39
+  test-scenarios:
+    version: 1.0.0
+    digest: 5a6f7243624a0a7f2e253a4b3e4ea355252ccb73b5dfed4572e888a876b32611
+  test-automation:
+    version: 1.0.0
+    digest: c26cde8989be72483b4761fc084be2740b0028f6034ff13f99e91a1875b030e3
+  code-review:
+    version: 1.0.0
+    digest: dbd97b345c865f4a4ace3c25ae0c46f7bffc66f6e2746a2c3fd129c81803fc49
+  security-review:
+    version: 1.0.0
+    digest: 96283c5fc503b09b9caa3954548cacfa5a581741c3eccb4580dd2779615da2e4
+  verification-report:
+    version: 1.0.0
+    digest: d922e6ad56bcc39456dfbef89c5cfda295e5c59c25a561c89ea872be14be0c2c

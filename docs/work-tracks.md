@@ -150,10 +150,12 @@ work_tracks:
 
 Engineering artifact history remains `engineering_history`; its scalar lifecycle is
 not duplicated in a second state machine. QA artifact/action history belongs to its
-cycle. Full past cycles are preserved. Artifact prose remains the sole `content.md`
-in immutable bundles; current views provide logical Technical Design, Implementation
-Plan, Test Strategy, Test Scenarios and automation documents without mutable duplicates.
-Active domain packages are version1.1.0 with orchestrator contract0.10. Exact1.0.0 instruction packages remain in `domain-skills/versions/<name>/1.0.0/`; historical pins match their original bytes. Archived relative links retain the original package layout: restore the snapshot into that layout when replaying its instructions rather than editing the archive.
+cycle. Full past cycles are preserved. Artifact prose has a single canonical physical
+filename in each immutable bundle; legacy `content.md` storage remains readable without
+renaming or duplication. New documents also record their exact versioned template pin.
+Current Architecture/Development/Testing packages are 1.3.0 and Security is 1.2.0, with
+explicit `sdlc-domain/1` validation compatibility independent of the CLI version.
+Prior instruction packages remain in `domain-skills/versions/<name>/<version>/`; historical pins match their original bytes. Archived relative links retain the original package layout: restore the snapshot into that layout when replaying its instructions rather than editing the archive.
 
 QA bundles use `qa-baselines/` and the existing canonical manifest/publication functions.
 Every artifact records exact Analysis authority and versioned domain instruction pins.

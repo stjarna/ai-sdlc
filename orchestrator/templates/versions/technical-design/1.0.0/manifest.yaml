@@ -1,0 +1,16 @@
+schema_version: '0.1'
+id: technical-design
+version: 1.0.0
+owner: Architecture Team
+artifact: engineering.design
+validation_contract: engineering.design/1
+content_digest: 29778705882c48595b45c5aaf44901640d7585284421d1097ef22988b35d8694
+required_sections:
+- Context and authority
+- Proposed solution
+- Security considerations
+- Coverage and uncertainty
+- Prototype limitations
+optional_sections:
+- Alternatives
+- Interfaces and data

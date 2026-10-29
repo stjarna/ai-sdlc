@@ -7,6 +7,8 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import verification_report
+import artifact_templates
+from business_refinement import BusinessError
 
 
 class VerificationReportTests(unittest.TestCase):
@@ -121,6 +123,38 @@ class VerificationReportTests(unittest.TestCase):
         self.assertIn('[content.md](</tmp/legacy/content.md>)', rendered)
         self.assertNotIn('untrusted alias', rendered)
         self.assertNotIn('[technical-design.md](</tmp/legacy/content.md>)', rendered)
+
+    def report_template(self):
+        return artifact_templates.package('verification-report', '1.0.0')
+
+    def test_pinned_layout_preserves_complete_legacy_projection(self):
+        item = self.report_template()
+        for report in (self.report(), {'coverage': {}, 'checks': {}, 'unresolved': []}):
+            with self.subTest(report=report):
+                self.assertEqual(verification_report.render(report), verification_report.render(report, item))
+        self.assertEqual(11, len(item['manifest']['required_sections']))
+        artifact_templates.validate_document(item, verification_report.render(self.report(), item))
+
+    def test_layout_is_authoritative_and_evidence_is_not_reinterpreted(self):
+        item = self.report_template()
+        item['content'] = item['content'].replace('# Final Verification Report', '# Recorded Verification')
+        report = self.report()
+        report['unresolved'][0]['text'] = '{{result}} <script>bad()</script>'
+        rendered = verification_report.render(report, item)
+        self.assertTrue(rendered.startswith('# Recorded Verification'))
+        self.assertIn('{{result}} &lt;script&gt;', rendered)
+        self.assertNotIn('<script>', rendered)
+
+    def test_missing_duplicate_or_unknown_projection_slots_are_rejected(self):
+        for transform in (lambda s: s.replace('{{unresolved}}', ''),
+                          lambda s: s + '\n{{unresolved}}',
+                          lambda s: s.replace('{{unresolved}}', '{{invented}}')):
+            with self.subTest(transform=transform):
+                item = self.report_template()
+                item['content'] = transform(item['content'])
+                with self.assertRaises(BusinessError) as caught:
+                    verification_report.render(self.report(), item)
+                self.assertEqual('E_TEMPLATE_CONTRACT', caught.exception.code)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,9 @@
 # Verification guidance
 
+Use the pinned QA templates for document layout and `verification-report` for the
+deterministically rendered final report. These topics guide evidence quality; they do
+not define a second document structure or replace deterministic validators.
+
 ## Scenario and evidence contract
 
 Keep business meaning in the approved Analysis; reference FR/AC IDs instead of copying

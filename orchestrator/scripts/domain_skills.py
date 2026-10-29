@@ -36,9 +36,14 @@ def catalog(loader, root=ROOT):
             path = root/name
             require(package(path)==pin['digest'], 'Skill content differs from approved catalog pin: '+name)
             m = yaml.load((path/'manifest.yaml').read_text(encoding='utf-8'),Loader=loader)
-            require(isinstance(m,dict) and set(m)==FIELDS and m['name']==name and isinstance(m['version'],str) and VERSION.fullmatch(m['version']) and m['version']==pin['version'], 'Invalid skill metadata/version: '+name)
+            modern = isinstance(m,dict) and m.get('schema_version')=='0.2'
+            fields = (FIELDS-{'orchestrator'})|{'schema_version','validation_contract'} if modern else FIELDS
+            require(isinstance(m,dict) and set(m)==fields and m['name']==name and isinstance(m['version'],str) and VERSION.fullmatch(m['version']) and m['version']==pin['version'], 'Invalid skill metadata/version: '+name)
             require(all(isinstance(m[k],str) and m[k].strip() for k in ('description','owner')), 'Missing description/owner.')
-            require(m['orchestrator'] in ('0.9','0.10','0.11'), 'Unsupported orchestrator minor contract.')
+            if modern:
+                require(m['validation_contract']=='sdlc-domain/1', 'Unsupported validation contract.')
+            else:
+                require(m['orchestrator'] in ('0.9','0.10','0.11'), 'Unsupported legacy validation contract.')
             for field in ('stages','inputs','outputs','standards'):
                 require(isinstance(m[field],list) and bool(m[field]) and all(isinstance(v,str) and v.strip() for v in m[field]) and len(set(m[field]))==len(m[field]), 'Invalid skill '+field)
             require(isinstance(m['dependencies'],dict), 'Skill dependencies must pin exact versions.')

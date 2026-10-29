@@ -34,7 +34,7 @@ class BusinessApprovalTests(unittest.TestCase):
     def test_legacy_baseline_and_review_hash_golden(self):
         """Captured from Increment 5 before extracting shared approval code."""
         with patch.object(business, "timestamp", return_value="2026-10-28T12:00:00Z"):
-            self.setUp()
+            self.setUp(legacy_templates=True)
             before = self.view()
             self.assertEqual(before["review_revision"], "c69b7852b0e6fad5494ba0fca0a09878ac99cb7d2c8dde120229a63649590846")
             approved = self.approve()
@@ -43,7 +43,7 @@ class BusinessApprovalTests(unittest.TestCase):
             self.assertEqual(manifest["schema_version"], "0.1")
             self.assertEqual(set(manifest["files"]), set(approval.BASELINE_FILES))
 
-    def setUp(self):
+    def setUp(self, legacy_templates=False):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.project = Path(temporary.name)
@@ -54,6 +54,8 @@ class BusinessApprovalTests(unittest.TestCase):
         metadata_path = self.directory / "metadata.yaml"
         metadata = yaml.safe_load(metadata_path.read_text())
         metadata.pop("ownership")
+        if legacy_templates:
+            metadata.pop("template_provenance")
         metadata_path.write_text(yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
         self.append([record("user_statement", "Record deadlines against tasks."), record("question", "Dates or reminders?")])
         self.append([record("user_statement", "Dates only; reminders are excluded.", answers="D-0002"), record("ai_assumption", "Dates are optional.")])
@@ -69,6 +71,15 @@ class BusinessApprovalTests(unittest.TestCase):
         source = self.view()["epic"]["source_revision"]
         self.initial_document = f"# Business Refinement — REQ-0001\n\nSource revision: {source}\n\n## Confirmed information\n### Business value\n- **B-001** [D-0001] Record deadlines against tasks.\n### Scope and exclusions\n- **B-002** [D-0003] Dates only; reminders are excluded.\n- **B-003** [D-0005, D-0004] Dates are optional.\n\n## Unresolved issues\n- **U-001** [D-0006] Past-date rule remains deferred until support discussion (D-0007).\n\n## Unconfirmed proposals\nNone recorded.\n"
         self.revise(self.initial_document, mode="generate")
+        if legacy_templates:
+            # Reconstruct the captured pre-template fixture, never migrate real history.
+            path = self.directory / "business-history.yaml"
+            ledger = yaml.safe_load(path.read_text())
+            ledger["schema_version"] = "0.1"
+            for entry in ledger["revisions"]:
+                entry.pop("schema_version", None)
+                entry.pop("template", None)
+            path.write_text(yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True))
 
     def unique(self, prefix):
         self.counter += 1

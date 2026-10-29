@@ -402,3 +402,16 @@ verified scope, blocked/excluded behavior, unresolved items and authorized limit
 qualified as “Verified for the stated scope” when applicable. Historical approvals,
 manifest formats, pinned skills and all 448 preserved demo files remain unchanged.
 See [the implemented contract](engineering.md#governance-corrections-contract-01).
+
+## Versioned artifact templates — 2026-10-29
+
+**[D/P]** Human-readable SDLC documents use domain-owned, semantically versioned local
+scaffolds with a reviewed catalog pin, content/package digests and explicit compatible
+validation contracts. Templates own structure; domain skills own content judgment;
+existing validators own deterministic enforcement; the orchestrator retains lifecycle
+and audit. New artifacts record exact template provenance in versioned envelopes while
+canonical filenames and existing storage manifests remain compatible. Legacy documents
+without provenance remain readable; historical approvals, bytes, hashes and instruction
+pins are never migrated or retrospectively assigned templates. No general template
+engine, remote registry or new approval stage is introduced. See
+[template packaging and acceptance](../orchestrator/templates/README.md).

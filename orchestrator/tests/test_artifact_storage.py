@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import artifact_names
+import artifact_templates as templates
 import approval_common as common
 import business_refinement as business
 import engineering
@@ -46,6 +47,14 @@ class ArtifactStorageTests(unittest.TestCase):
         self.assertEqual(business.digest((path/'manifest.json').read_bytes()), event['baseline_id'])
         obj, _ = engineering.load_artifact(directory, event['baseline_id'], root)
         self.assertEqual((path/name).read_text(), obj['payload']['content'])
+        if event['action']=='write' or event['action']=='finalize':
+            template_id=templates.template_for(stage,event['kind'])
+            self.assertEqual(obj['schema_version'],'0.2')
+            self.assertEqual(obj['template'],templates.resolve(template_id)['pin'])
+            self.assertEqual(name,templates.ARTIFACTS[template_id][1])
+        else:
+            self.assertNotIn('template',obj)
+            self.assertNotIn('schema_version',obj)
         return path
 
     def test_new_engineering_documents_approvals_events_and_final_use_physical_names(self):

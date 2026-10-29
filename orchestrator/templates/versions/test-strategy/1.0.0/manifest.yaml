@@ -1,0 +1,13 @@
+schema_version: '0.1'
+id: test-strategy
+version: 1.0.0
+owner: QA / Quality Engineering
+artifact: qa.strategy
+validation_contract: qa.strategy/1
+content_digest: bdc300739366a0235c3216106ee70a5b1b2a1f7433992faeac86b5beb95a82bc
+required_sections:
+- Authority and scope
+- Test approach
+- Coverage and unresolved items
+optional_sections:
+- Risks

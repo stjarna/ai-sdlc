@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+import artifact_templates as templates
 import re
 
 import yaml
@@ -298,7 +299,7 @@ def review(epic,project):
         entries=history(epic,'write',kind)
         if entries:
             entry=entries[-1];obj,_=artifact(epic,entry['baseline_id'])
-            drafts[kind]={'baseline_id':entry['baseline_id'],'operation_id':entry['operation_id'],'payload':obj['payload'],'skills':obj['skills'],
+            drafts[kind]={'baseline_id':entry['baseline_id'],'operation_id':entry['operation_id'],'payload':obj['payload'],'skills':obj['skills'],**({'template':obj['template']} if 'template' in obj else {}),
                           'document':engineering.artifact_document(epic.directory,entry['baseline_id'],kind,ROOT)}
     approvals={}
     for kind,check in (('scenarios',lambda:scenario_approval(epic)),('automation',lambda:automation_approval(epic,project))):
@@ -311,7 +312,7 @@ def review(epic,project):
             'integration':integration_readiness(epic,project)}
 
 
-def update(project,epic_id,expected_revision,operation_id,action,kind,payload,actor,decision,identity_source=None):
+def update(project,epic_id,expected_revision,operation_id,action,kind,payload,actor,decision,identity_source=None,expected_template_digest=None):
     import sdlc
     require(discovery.valid_revision(expected_revision) and discovery.valid_operation_id(operation_id) and business.valid_person(actor) and analysis_approval.valid_decision_text(decision),
             'Expected QA revision, operation ID, declared actor and actual decision wording.','E_UPDATE_INPUT')
@@ -327,6 +328,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                     if action=='write':request['content']=obj['payload']['content']
                     require(all(entry[k]==v for k,v in {'expected_revision':expected_revision,'action':action,'kind':kind,'actor':actor,'decision':decision,'identity_source':identity_source or 'declared'}.items()) and request==payload,
                             'QA operation ID was reused with changed intent.','E_IDEMPOTENCY')
+                    templates.check_retry(obj.get('template'),expected_template_digest)
                     return sdlc.result('qa-'+action,epic.diagnostics,epic=epic.payload(),qa=review(epic,project),replayed=True)
         sdlc.reject_gate_operation_reuse(epic,operation_id)
         active=work_tracks.active(epic);track=current(epic)
@@ -340,6 +342,8 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                 require(stage in ('test_automation','ready_for_verification','verified'),'Review and advance QA scenarios before automation.','E_STATUS')
                 scenario_approval(epic)
             validate_document(epic,project,kind,payload)
+            selected_template=templates.resolve(templates.template_for('qa',kind),expected_template_digest)
+            templates.validate_document(selected_template,payload['content'])
             if kind=='automation':
                 content['engineering_design']=design_context(epic,project)
                 content['scenarios_approval']=scenario_approval(epic)['baseline_id']
@@ -400,6 +404,9 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
         stored_payload={k:v for k,v in content.items() if k!='content'}
         stored_payload['_request']={k:v for k,v in payload.items() if k!='content'}
         obj={'action':action,'kind':kind,'payload':stored_payload,'skills':pins,'analysis_baseline':active['analysis_baseline'],'analysis_handoff':active['id'],'source_revision':source}
+        if action=='write':
+            obj.update(schema_version='0.2',template=selected_template['pin'])
+            templates.assert_current(selected_template)
         manifest,files=engineering.baseline_snapshot('qa',kind,action,epic_id,
             (epic.directory/'metadata.yaml').read_bytes(),obj,content.get('content','').encode('utf-8'))
         baseline=common.publish_baseline(epic.directory,ROOT,manifest,files,
@@ -408,6 +415,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
         destination['history'].append({'operation_id':operation_id,'action':action,'kind':kind,'actor':actor,'identity_source':identity_source or 'declared','decision':decision,'expected_revision':expected_revision,'timestamp':business.timestamp(),'baseline_id':baseline,'cycle':active['id']})
         def read(directory):
             checked=sdlc.read_epic(directory);sdlc.require_valid(checked.diagnostics)
+            if action=='write':templates.assert_current(selected_template)
             if action=='run' or kind=='automation':
                 require(qa_source(project)==own_source,'QA files changed while preparing the operation.','E_REVISION_CONFLICT')
             if action=='run':require(app_source(checked,project)==source,'Application changed during execution.','E_REVISION_CONFLICT')

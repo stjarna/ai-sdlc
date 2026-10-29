@@ -16,6 +16,7 @@ import yaml
 
 from engineering_contract import STAGES as ENGINEERING_STAGES, TRANSITIONS
 import discovery_history as discovery
+import artifact_templates as templates
 
 
 class BusinessError(Exception):
@@ -178,10 +179,14 @@ def decode_revision(entry):
 
 def validate_history(data, epic_id):
     filename = "business-history.yaml"
-    require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] == "0.1" and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "E_BUSINESS_HISTORY", "Invalid business history root.", filename)
+    require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] in ("0.1","0.2") and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "E_BUSINESS_HISTORY", "Invalid business history root.", filename)
     previous, ids = None, set()
     for entry in data["revisions"]:
         fields = {"digest", "previous", "source_revision", "editor", "reason", "timestamp", "operation_id", "base_revision", "content_base64", "mode"}
+        if isinstance(entry,dict) and "schema_version" in entry:
+            require(data["schema_version"]=="0.2" and entry["schema_version"]=="0.2", "E_BUSINESS_HISTORY", "Invalid revision envelope version.",filename)
+            fields |= {"schema_version","template"}
+            templates.validate_pin(entry.get("template"),"business")
         require(isinstance(entry, dict) and set(entry) == fields, "E_BUSINESS_HISTORY", "Invalid revision entry fields.", filename)
         require(entry["previous"] == previous and entry["base_revision"] == previous, "E_BUSINESS_HISTORY", "Broken previous revision chain.", filename)
         require(discovery.valid_revision(entry["digest"]) and discovery.valid_revision(entry["source_revision"]), "E_BUSINESS_HISTORY", "Invalid revision digest.", filename)
@@ -298,9 +303,12 @@ def recover(directory: Path, *, analysis=False):
         raise BusinessError(recovery_code, str(exc), journal.name) from exc
 
 
-def append(data, epic_id, content: bytes, source_revision, editor, reason, operation_id, mode):
-    candidate = {"schema_version": "0.1", "request_id": epic_id, "revisions": list(data["revisions"])} if data else empty(epic_id)
+def append(data, epic_id, content: bytes, source_revision, editor, reason, operation_id, mode, template=None):
+    candidate = {"schema_version": data["schema_version"], "request_id": epic_id, "revisions": list(data["revisions"])} if data else empty(epic_id)
     previous = candidate["revisions"][-1]["digest"] if candidate["revisions"] else None
     candidate["revisions"].append({"digest": digest(content), "previous": previous, "source_revision": source_revision, "editor": editor, "reason": reason, "timestamp": timestamp(), "operation_id": operation_id, "base_revision": previous, "content_base64": base64.b64encode(content).decode("ascii"), "mode": mode})
+    if template is not None:
+        candidate["schema_version"]="0.2"
+        candidate["revisions"][-1].update(schema_version="0.2",template=template)
     validate_history(candidate, epic_id)
     return candidate

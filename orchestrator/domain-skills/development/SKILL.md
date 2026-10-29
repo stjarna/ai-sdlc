@@ -9,13 +9,24 @@ This package provides development expertise. The orchestrator owns lifecycle,
 revision enforcement, approvals, persistence, identity and ownership. Use its documented
 CLI operations; never edit lifecycle metadata, approve on a person's behalf or invent
 an independent audit. The package manifest identifies its version, owner, compatible
-orchestrator and supported stages. Record the resolved version and immutable instruction
+validation contract and supported stages. Record the resolved version and immutable instruction
 fingerprint in every generated or reviewed artifact. Pinning reproduces instructions,
 not LLM output.
 
 Legacy requests retain their recorded workflow and instruction pins. Do not reinterpret
 an old combined plan as independent QA approval or rewrite an approved artifact; use
 the orchestrator's explicit compatibility/reconciliation path when authorized.
+
+## Document templates and validation
+
+Use `implementation-plan` for Engineering plans and `code-review` for source-bound reviews.
+Resolve each template using `sdlc.py templates <template-id>` before drafting. The
+pinned catalog owns document headings, their order and optional sections; use the returned
+scaffold rather than creating a second layout here. Domain guidance below supplies
+content expertise, not a competing structure. Deterministic writers record the exact
+template ID, version and digest. Existing validators remain authoritative for structured
+fields and governance; template, skill and CLI versions are independent. Preserve legacy
+artifacts and their historical pins instead of adding provenance retrospectively.
 
 ## Engineering track authority
 
@@ -42,7 +53,7 @@ unresolved decisions explicitly. An acknowledged uncertainty is not authorizatio
 choose a business rule. Stop a task when its behavior depends on that missing decision.
 
 Persist the plan through the orchestrator as an immutable revision in
-`engineering-baselines/<hash>/`, containing human-readable `content.md` and its
+`engineering-baselines/<hash>/`, containing human-readable `implementation-plan.md` and its
 `artifact.json` traceability contract. Do not copy skill implementations into requests.
 Present scope, boundaries, risks, dependencies and checks in business-oriented language.
 Obtain human approval of the exact Engineering plan, then wait for separate explicit

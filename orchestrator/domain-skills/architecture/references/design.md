@@ -1,8 +1,8 @@
 # Technical Design guidance
 
-Use the following topics where relevant to the actual change. This is a writing guide,
-not a second artifact schema; the deterministic CLI contract defines accepted fields.
-Do not invent system complexity or non-functional requirements to fill sections.
+Use the pinned `technical-design` template for layout. The following topics guide
+architecture judgment; they are not additional required document sections. Existing
+validators own structured fields. Do not invent complexity or requirements to fill headings.
 
 ## Context and authority
 

@@ -1,0 +1,17 @@
+schema_version: '0.1'
+id: specification
+version: 1.0.0
+owner: Functional Analysis team
+artifact: analysis.specification
+validation_contract: analysis.specification/1
+content_digest: 3fa18be92bf255044c0268efc2622098197772cee5c5a3b808f5165cb1897d33
+required_sections:
+- Functional requirements
+- Use cases
+- Business rules
+- Acceptance criteria
+- Business coverage
+- Inherited unresolved items
+- Analysis questions
+- Analysis proposals
+optional_sections: []

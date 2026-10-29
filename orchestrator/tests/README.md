@@ -73,7 +73,7 @@ fresh CLI processes and schema0.6 renewal.
 Pre-fork Engineering and scalar-ownership tests explicitly construct historical stored
 metadata without the new optional mapping. Production advancement always creates tracks;
 these fixtures preserve the original legacy contract rather than bypassing the new fork.
-Current Architecture/Development/Testing assertions use 1.2.0; exact 1.0.0 and 1.1.0 instruction snapshots are retained
+Current Architecture/Development/Testing assertions use 1.3.0 and Security uses 1.2.0; prior instruction snapshots are retained
 under `domain-skills/versions` for historical pins. Synthetic decisions and category-labelled
 commands remain fixtures, not real Product Owner approval or browser acceptance.
 
@@ -92,3 +92,15 @@ and interrupted publication. It verifies all 448 preserved demo hashes and retai
 instruction pins. `test_verification_report.py` checks complete deterministic Markdown
 projection and truthful scenario qualification. Passing these tests does not prove AI
 semantic interpretation, completeness of a code review, or actual human authorization.
+
+## Versioned template regression coverage
+
+`test_templates.py` covers all 11 catalog entries, exact package/content digests,
+validator compatibility, foundation field scaffolds, required headings, read-only CLI
+resolution, provenance, legacy reads, concurrent writers, stale selection and retries
+after catalog rollforward. Full-cycle storage tests check every canonical document and
+its explicit template envelope while excluding machine evidence and approval records.
+The historical Business golden hashes are preserved by explicitly constructing its
+pre-template fixture. Domain-skill tests cover both legacy and explicit validation
+contracts. Report tests compare the initial template projection with the legacy renderer
+and retain all governance disclosures. See [manual acceptance](../templates/README.md#focused-manual-acceptance).

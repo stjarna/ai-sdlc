@@ -100,3 +100,8 @@ Plan with separate current Engineering and QA artifacts.
 New Engineering/QA artifacts use canonical physical filenames with explicit manifest0.2; legacy content.md baselines and approvals remain unchanged. See [Artifact storage and names](docs/artifact-names.md).
 
 [Final preparation and proposed commits](docs/demo-finalization.md) records executed checks, preservation evidence, limitations and the approval boundary. No commits or pushes are automatic.
+
+Human-readable documents use [versioned, domain-owned artifact templates](orchestrator/templates/README.md).
+Inspect the pinned catalog with `.venv/bin/python -B orchestrator/scripts/sdlc.py templates`.
+Templates define layout; skills provide domain judgment and existing validators enforce
+structural/governance contracts. Historical artifacts are never retrospectively templated.

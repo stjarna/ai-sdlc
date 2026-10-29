@@ -361,5 +361,11 @@ stated scope**; the lifecycle remains `verified`. Passing named checks are not i
 individual scenario outcomes. Scope exclusion does not authorize runtime rejection.
 Old reports are not regenerated or rewritten, and legacy assessment remains explicit.
 
-The new Architecture/Development/Testing1.2.0 packages declare orchestrator contract0.11;
-all earlier pinned packages remain unchanged. Security1.1.0 remains unchanged.
+The governance release used Architecture/Development/Testing 1.2.0 with legacy
+orchestrator contract 0.11 and Security 1.1.0. Those packages remain unchanged in the
+version archive. The template-aware release uses Architecture/Development/Testing 1.3.0
+and Security 1.2.0; manifest schema 0.2 declares `validation_contract: sdlc-domain/1`
+instead of coupling compatibility to the CLI version. Legacy manifest schemas remain
+readable without migration. Templates own document structure; skills supply domain
+judgment and existing validators enforce data and governance. Each current skill
+references its pinned template IDs, resolved with `sdlc.py templates <template-id>`.

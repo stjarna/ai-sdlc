@@ -12,6 +12,7 @@ from engineering_contract import STAGES as ENGINEERING_STAGES
 import business_refinement as business
 import business_approval as approval
 import discovery_history as discovery
+import artifact_templates as templates
 
 FILES = ("specification.md", "analysis-history.yaml")
 JOURNAL = ".analysis-transaction.json"
@@ -194,10 +195,14 @@ def read_history(directory, epic_id, loader):
 
 def validate_history(data, epic_id, directory, loader):
     try:
-        require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] == "0.1" and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "Invalid analysis history.", "E_ANALYSIS_HISTORY", FILES[1])
+        require(isinstance(data, dict) and set(data) == {"schema_version", "request_id", "revisions"} and data["schema_version"] in ("0.1","0.2") and data["request_id"] == epic_id and isinstance(data["revisions"], list) and bool(data["revisions"]), "Invalid analysis history.", "E_ANALYSIS_HISTORY", FILES[1])
         previous, operations, retained, retired = None, set(), set(), set()
         for entry in data["revisions"]:
             keys = {"digest", "previous", "content_base64", "baseline_id", "approval_id", "handoff_id", "editor", "reason", "timestamp", "operation_id", "expected_review", "mode", "feedback"}
+            if isinstance(entry,dict) and "schema_version" in entry:
+                require(data["schema_version"]=="0.2" and entry["schema_version"]=="0.2", "Invalid Analysis revision envelope.","E_ANALYSIS_HISTORY",FILES[1])
+                keys|={"schema_version","template"}
+                templates.validate_pin(entry.get("template"),"specification")
             require(isinstance(entry, dict) and set(entry) == keys, "Invalid revision fields.", "E_ANALYSIS_HISTORY", FILES[1])
             require(entry["previous"] == previous and discovery.valid_revision(entry["digest"]) and discovery.valid_revision(entry["baseline_id"]) and discovery.valid_revision(entry["expected_review"]), "Broken revision chain.", "E_ANALYSIS_HISTORY", FILES[1])
             require(discovery.valid_operation_id(entry["operation_id"]) and entry["operation_id"] not in operations and discovery.valid_operation_id(entry["handoff_id"]) and isinstance(entry["approval_id"], str) and re.fullmatch(r"BD-[0-9]{4,}", entry["approval_id"]), "Invalid revision identity.", "E_ANALYSIS_HISTORY", FILES[1])
