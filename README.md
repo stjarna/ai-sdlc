@@ -105,3 +105,9 @@ Human-readable documents use [versioned, domain-owned artifact templates](orches
 Inspect the pinned catalog with `.venv/bin/python -B orchestrator/scripts/sdlc.py templates`.
 Templates define layout; skills provide domain judgment and existing validators enforce
 structural/governance contracts. Historical artifacts are never retrospectively templated.
+
+[External installation and adoption](docs/installation-and-adoption.md) keeps a pinned
+runtime outside an existing application, registers a user-scoped Codex loader and
+provides read-only adoption preflight. The [before/after demo runbook](docs/existing-project-demo.md)
+covers real product baselines, UI capture and governed evidence without changing the
+preserved historical demonstrator.

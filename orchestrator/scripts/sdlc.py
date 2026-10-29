@@ -35,7 +35,7 @@ from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.12.0"
+ORCHESTRATOR_VERSION = "0.13.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
@@ -1218,6 +1218,7 @@ def main(argv: list[str] | None = None) -> int:
         else:item.add_argument("--check-id",required=True)
         if name=="qa-approve":item.add_argument("--acknowledge-open-item",action="append",default=[])
     commands.add_parser("templates", help="Read pinned document templates").add_argument("template_id", nargs="?", choices=tuple(templates.ARTIFACTS))
+    commands.add_parser("adoption-preflight", help="Read-only existing-project adoption checks")
     commands.add_parser("skills", help="Read approved local domain skill catalog")
     commands.add_parser("engineering-review", help="Read the sequential engineering state").add_argument("id")
     for name in ("engineering-write", "engineering-approve", "engineering-request-changes", "engineering-advance", "development-start", "check-run", "security-remediate", "verification-remediate", "engineering-finalize"):
@@ -1347,6 +1348,9 @@ def main(argv: list[str] | None = None) -> int:
                 if kind=="automation" and action=="approve":payload["source_revision"]=args.expected_source_revision
             elif action=="run":payload={"check_id":args.check_id,"source_revision":args.expected_source_revision}
             output=qa_track.update(project_path(args.project),args.id,args.expected_qa_revision,args.operation_id,action,kind,payload,actor,args.decision,source,getattr(args,"expected_template_digest",None))
+        elif args.operation == "adoption-preflight":
+            import adoption
+            output = adoption.preflight(args.project)
         elif args.operation == "skills":
             output = result("skills", [], skills=domain_skills.catalog(StrictLoader))
         elif args.operation == "templates":

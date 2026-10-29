@@ -104,3 +104,25 @@ The historical Business golden hashes are preserved by explicitly constructing i
 pre-template fixture. Domain-skill tests cover both legacy and explicit validation
 contracts. Report tests compare the initial template projection with the legacy renderer
 and retain all governance disclosures. See [manual acceptance](../templates/README.md#focused-manual-acceptance).
+
+## External installation and adoption
+
+`test_installation.py` checks committed/explicit preview installation, interpreter/content
+pins, current resource resolution, non-overwrite/idempotency/concurrency, interrupted
+registration recovery, diagnostics, namespace/source/output hazards, unchanged project
+instructions/Git data, normal `new` initialization and legacy baseline reads. Its Git
+commits are fictional isolated fixture construction, never production tool behavior.
+
+Run the independent smoke separately (all fixture/evidence files stay outside this repo):
+
+```sh
+.venv/bin/python -B orchestrator/tests/run_installation_smoke.py --codex-probe
+# Before this increment is committed, add the explicit --preview-working-tree flag.
+```
+
+The optional native probe uses only local app-server initialize/skills/list, with isolated
+HOME/CODEX_HOME and no model turn/API request by the probe. It records actual Codex version,
+user scope, loader path and enabled state. A missing Codex binary is reported, never a
+claimed discovery pass. This is backend discovery, not a visual IDE interaction test.
+The helper verifies project/Git hashes before and after installation/preflight/discovery,
+then confirms existing `new` adds only requirements files and remains in Discovery.

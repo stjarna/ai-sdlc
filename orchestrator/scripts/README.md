@@ -296,3 +296,14 @@ prototype effects, independently of repeatable `--acknowledge-open-item ID`. The
 must obtain the actual human decision before supplying either. Missing required consent
 returns `E_LIMITATION_CONSENT`; unsupported or stale code conformance uses `E_CONFORMANCE`
 or existing revision/approval diagnostics. No automatic Git operations are added.
+
+## External installation and adoption
+
+The standard-library `install.py` bootstrap installs/verifies a revision- and content-pinned
+external runtime and a thin user-scoped Codex loader. `adoption.py --project PROJECT`
+(or `sdlc.py --project PROJECT adoption-preflight`) performs read-only Git, namespace,
+source/output, instruction, registration and environment checks. It does not initialize
+Git or create requests. Existing `new` remains the request-creation operation. See the
+[installation contract](../../docs/installation-and-adoption.md) and
+[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.13.0
+is independent of unchanged lifecycle, artifact and validation-contract versions.

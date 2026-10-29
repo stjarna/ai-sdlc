@@ -30,11 +30,11 @@ The orchestrator package and the **target project** are separate. Tell the assis
 which project to operate on; an external disposable target may need explicit host
 file access. Do not silently create business artifacts in the orchestration checkout.
 Keep `orchestrator/`, supporting documentation and the adapters together at the selected
-package revision. Copying only a wrapper into a personal or unrelated project skill
-directory breaks its relative resource links. Portable installation/plugin packaging
-is not implemented here; use the full checkout or explicitly load the canonical skill
-from its known package location when native discovery is unavailable. Do not modify
-global host settings automatically.
+package revision. Copying only the checkout wrapper into a personal or unrelated project skill
+directory breaks its relative resource links. The [external installer](../../docs/installation-and-adoption.md)
+now publishes a pinned runtime and a separate user-scoped loader with verified resource
+resolution. Native plugin distribution remains outside scope. Do not modify global
+host settings or overwrite registrations automatically.
 
 ## Contracts and evaluation
 
@@ -50,6 +50,6 @@ in every host. Run the manual guide separately for both CLI and IDE surfaces and
 record versions and permission modes. Native command traces may remain visible.
 Approval identities are declared and unauthenticated, and execution permission is not
 PO approval. Approval and advancement remain separate explicit human decisions.
-Functional Analysis drafting/review is implemented; Analysis approval, Technical Design
-and Story decomposition remain deferred. Claude Code runtime validation is an unverified
+Functional Analysis approval, Technical Design and Engineering/QA through Verified are
+implemented; Story decomposition remains deferred. Claude Code runtime validation is an unverified
 portability target, not a PoC acceptance requirement.

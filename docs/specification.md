@@ -415,3 +415,14 @@ without provenance remain readable; historical approvals, bytes, hashes and inst
 pins are never migrated or retrospectively assigned templates. No general template
 engine, remote registry or new approval stage is introduced. See
 [template packaging and acceptance](../orchestrator/templates/README.md).
+
+## External installation and existing-project adoption — 2026-10-29
+
+**[D/P]** A local pinned runtime and thin Codex user loader now support independent
+existing application repositories. Read-only adoption preflight reports Git/baseline,
+namespace, source/output, instruction, registration and environment concerns without
+editing the application. Existing `new` and all lifecycle, approval, ownership and
+artifact contracts remain unchanged. Explicit preview snapshots identify their Git
+base and exact content rather than claiming a clean release. Installation never
+commits, pushes, overwrites registrations or changes historical evidence. See the
+[installation contract](installation-and-adoption.md) and [demo runbook](existing-project-demo.md).

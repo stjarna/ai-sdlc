@@ -51,6 +51,18 @@ optional BR/AQ/AP blocks with `None recorded.`; do not manufacture items to fill
 scaffold. Preserve inherited unresolved lines exactly and obtain IDs from actual
 records rather than retaining placeholder text.
 
+## Adopt an existing application
+
+For a first adoption in an independent existing repository, use the installed external
+runtime and read [installation/preflight](../../docs/installation-and-adoption.md).
+Run read-only `adoption-preflight` against the explicit application root before `new`.
+Present blockers and material output/namespace warnings concisely; never restructure,
+claim an existing QA directory, add source exclusions, overwrite project instructions,
+or initialize/clean/stage Git automatically. Preserve existing work and the initial
+product revision. Preflight is not business approval or permission to advance.
+Use the existing `new` operation after adoption review; do not introduce an init stage.
+Capture presentation evidence outside fingerprinted source as described in the runbook.
+
 ## Resolve and resume
 
 Identify the target project from explicit user/workspace context. The package checkout

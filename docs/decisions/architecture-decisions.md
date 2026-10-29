@@ -37,7 +37,7 @@ Companion to [the working specification](../specification.md), not a replacement
 - **Deferred:** greenfield bootstrap; corporate skill catalog and identity infrastructure; Jira/Teams integration; incomplete-Epic release planning; production deployment; unverified cross-host portability.
 
 ## Remaining open design work
-- Host catalog installation and cross-host invocation beyond the checkout-based CLI.
+- Native plugin distribution and runtime verification beyond local Codex user-scoped installation.
 - Story/Release schemas and production rollout beyond the sequential engineering slice.
 - FR/AC/TC references and test-to-requirement traceability without duplicated authorities.
 - Concurrent ID allocation, migration and compatibility policy.
@@ -69,3 +69,13 @@ canonical filenames and audit remain compatible without retrospective provenance
 Verification uses fixed projection slots rather than a general template engine. Catalog
 upgrades require explicit compatibility/content review; CLI, skill, template and validation
 contract versions are independent. See [template contract](../../orchestrator/templates/README.md).
+
+## Existing-project adoption — 2026-10-29
+
+**030 [D/P]** Install a complete content-pinned runtime outside the application and
+register a non-overwriting user-scoped Codex loader. Bind the Git base revision, exact
+payload and interpreter; mark uncommitted previews explicitly. A read-only preflight
+checks Git/baseline state, fixed namespaces, source symlinks/output hazards, instructions,
+registrations and runtime compatibility without weakening source boundaries. Existing
+`new` initializes Discovery; no init stage, project restructuring, automatic Git action,
+new approval framework or historical migration. See [installation and adoption](../installation-and-adoption.md).
