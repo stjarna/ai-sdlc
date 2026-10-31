@@ -1,6 +1,9 @@
 # Shared SDLC Commands and Local Declared Identity
 
-The assistant accepts `status`, `review`, `approve`, `changes`, `advance` and `details`
+For a user-oriented walkthrough, start with [Getting started](getting-started.md#command-reference).
+
+The assistant accepts `status`, `start`, `review`, `approve`, `changes`, `advance`, `details`,
+`inbox`, `pending assignments` and `assign`
 through `$sdlc <command>` in Codex CLI/IDE and `/sdlc <command>` in Claude Code CLI/IDE.
 Natural-language requests remain supported. These are conversational commands, not shell
 commands. Codex supplies a skill mention plus prompt text; Claude supplies skill arguments.
@@ -15,10 +18,11 @@ state. It never assumes that the implementation checkout is the target applicati
 A deterministic read-only helper exposes the existing stage operation without executing it:
 
 ```text
-sdlc.py --project PROJECT command-context COMMAND [--request TITLE_OR_ID]
+sdlc.py --project PROJECT command-context COMMAND [--request TITLE_OR_ID] [--track engineering|qa]
 ```
 
-With no selector, exactly one Epic must exist. IDs take precedence over titles; titles
+For request-level actions with no selector, exactly one Epic must exist. Inbox and
+pending assignments are project-level views and need no selected Epic. IDs take precedence over titles; titles
 match exactly, case-insensitively. Missing/ambiguous context returns `E_CONTEXT_MISSING`
 or `E_CONTEXT_AMBIGUOUS` without writes. The result includes routing, current stage review
 and local identity or a setup diagnostic. `requires_human_decision` is informational,
@@ -30,8 +34,13 @@ uncertainty; `details` exposes the full document/evidence when requested. All ar
 Business and Analysis `approve`/`changes`/`advance` map to existing stage gates. Discovery
 `changes` captures sourced records, and `advance` explicitly completes Discovery through
 `discovery-complete`. Discovery `approve` explains this distinction without changing state.
-Readiness states never silently generate the next draft. Technical Design is not run.
+Readiness states never silently generate the next draft. Engineering/QA work is implemented
+through Verified, with explicit starts and the separate gates in [work tracks](work-tracks.md).
 The helper is a small fixed routing table, not a workflow engine.
+
+Creation with `new` is skill-guided intent backed by the existing CLI operation,
+not another `command-context` enum value. A request to open/resume or validate work is
+also handled by the skill using existing read-only operations.
 
 ## Local profile
 

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+<title id="title">AI SDLC Orchestrator — implemented workflow</title>
+<desc id="desc">Discovery, Business Refinement and Functional Analysis feed independent Engineering and QA tracks. Human decisions are separate from AI preparation. QA completion supplies evidence to Engineering verification; Security and Final Verification follow. Both tracks end at Verified, not Released.</desc>
+<metadata>Documentation adaptation of approved complete-workflow-v2-r1 master-scene.svg, SHA-256 d207b0f0fbd568660d801130f2be59959fb6760a90cfde52136ec32f95dd9c00. Simplified for reading; current runtime role names. No presentation source changed.</metadata>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#087e85"/></marker><marker id="evidence" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#557da9"/></marker><g id="robot" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="-10" y="-6" width="20" height="16" rx="4"/><path d="M0 -6V-11M-4 6H4"/><circle cy="-13" r="1.8"/><circle cx="-4" cy="0" r="1"/><circle cx="4" cy="0" r="1"/></g><g id="human" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cy="-6" r="4"/><path d="M-8 10V6C-8 -1 8 -1 8 6V10"/></g><g id="gate" stroke="#087e85" stroke-width="1.7" fill="#fff"><path d="M0 -13L11 -9V0C11 7 4 12 0 14C-4 12 -11 7 -11 0V-9Z"/><path d="M-4 6V-3H4V6M-6 6H6" fill="none"/></g></defs>
+<rect width="1280" height="800" fill="#f5f7f9"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#193449">
+<text x="24" y="40" font-size="30" font-weight="700" fill="#193449" text-anchor="start">One shared request. Two governed work tracks.</text>
+<text x="24" y="67" font-size="18" font-weight="700" fill="#087e85" text-anchor="start">Shared path</text>
+<use href="#human" transform="translate(34 92) scale(0.7)" color="#087e85"/>
+<text x="53" y="98" font-size="18" font-weight="400" fill="#193449" text-anchor="start">Requester</text>
+<rect x="24" y="114" width="260" height="88" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(48 150) scale(0.8)" color="#087e85"/>
+<text x="74" y="153" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Discovery</text>
+<text x="74" y="192" font-size="15" font-weight="400" fill="#586f7f" text-anchor="start">idea.md + discovery history</text>
+<use href="#human" transform="translate(340 92) scale(0.7)" color="#087e85"/>
+<text x="359" y="98" font-size="18" font-weight="400" fill="#193449" text-anchor="start">Product Owner</text>
+<rect x="330" y="114" width="260" height="88" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(354 150) scale(0.8)" color="#087e85"/>
+<text x="380" y="145" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Business</text>
+<text x="380" y="170" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Refinement</text>
+<text x="380" y="192" font-size="15" font-weight="400" fill="#586f7f" text-anchor="start">business.md</text>
+<use href="#human" transform="translate(646 92) scale(0.7)" color="#087e85"/>
+<text x="665" y="98" font-size="18" font-weight="400" fill="#193449" text-anchor="start">Business Analyst</text>
+<rect x="636" y="114" width="260" height="88" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(660 150) scale(0.8)" color="#087e85"/>
+<text x="686" y="145" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Functional</text>
+<text x="686" y="170" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Analysis</text>
+<text x="686" y="192" font-size="15" font-weight="400" fill="#586f7f" text-anchor="start">specification.md</text>
+<path d="M285 158H328" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(307 158) scale(0.75)" color="#087e85"/>
+<text x="307" y="227" font-size="16" font-weight="400" fill="#516c7b" text-anchor="middle">Complete</text>
+<path d="M591 158H634" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(613 158) scale(0.75)" color="#087e85"/>
+<text x="613" y="227" font-size="16" font-weight="400" fill="#516c7b" text-anchor="middle">Approve / advance</text>
+<path d="M896 158H925V282H420V332" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<path d="M925 282H1060V332" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(925 248) scale(0.8)" color="#087e85"/>
+<text x="900" y="251" font-size="17" font-weight="400" fill="#516c7b" text-anchor="end">Analysis approval + separate advancement</text>
+<rect x="24" y="340" width="790" height="335" rx="14" fill="#edf3f5" stroke="#cbd8e1" stroke-width="1.6"/>
+<rect x="860" y="340" width="396" height="335" rx="14" fill="#edf3f5" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#human" transform="translate(46 371) scale(0.8)" color="#087e85"/>
+<text x="67" y="378" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Engineering · Engineering Lead</text>
+<use href="#human" transform="translate(882 371) scale(0.8)" color="#087e85"/>
+<text x="903" y="378" font-size="21" font-weight="700" fill="#193449" text-anchor="start">QA · QA Lead / Tester</text>
+<rect x="44" y="402" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(68 438) scale(0.8)" color="#087e85"/>
+<text x="94" y="441" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Technical Design</text>
+<rect x="296" y="402" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(320 438) scale(0.8)" color="#087e85"/>
+<text x="346" y="433" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Implementation</text>
+<text x="346" y="458" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Planning</text>
+<rect x="548" y="402" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(572 438) scale(0.8)" color="#087e85"/>
+<text x="598" y="433" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Development /</text>
+<text x="598" y="458" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Code Review</text>
+<path d="M272 440H296" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(284 440) scale(0.65)" color="#087e85"/>
+<path d="M524 440H548" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(536 440) scale(0.65)" color="#087e85"/>
+<path d="M662 478V518H158V542" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(662 498) scale(0.65)" color="#087e85"/>
+<text x="408" y="510" font-size="16" font-weight="400" fill="#516c7b" text-anchor="middle">Review • approve • advance</text>
+<rect x="44" y="542" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(68 578) scale(0.8)" color="#087e85"/>
+<text x="94" y="573" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Engineering</text>
+<text x="94" y="598" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Verification</text>
+<rect x="296" y="542" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(320 578) scale(0.8)" color="#087e85"/>
+<text x="346" y="581" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Security Review</text>
+<rect x="548" y="542" width="228" height="76" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(572 578) scale(0.8)" color="#087e85"/>
+<text x="598" y="581" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Final Verification</text>
+<path d="M272 580H296" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(284 580) scale(0.65)" color="#087e85"/>
+<path d="M524 580H548" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(536 580) scale(0.65)" color="#087e85"/>
+<path d="M662 618V638" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<rect x="548" y="640" width="228" height="32" rx="10" fill="#e6f4ef" stroke="#85b7ad" stroke-width="1.6"/>
+<text x="662.0" y="663" font-size="18" font-weight="700" fill="#116c65" text-anchor="middle">Engineering Verified</text>
+<rect x="880" y="402" width="356" height="60" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(904 438) scale(0.8)" color="#087e85"/>
+<text x="930" y="441" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Test strategy / scenarios</text>
+<path d="M1058 462V486" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(1058 474) scale(0.65)" color="#087e85"/>
+<rect x="880" y="486" width="356" height="60" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(904 522) scale(0.8)" color="#087e85"/>
+<text x="930" y="525" font-size="21" font-weight="700" fill="#193449" text-anchor="start">Test automation</text>
+<path d="M1058 546V570" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<use href="#gate" transform="translate(1058 558) scale(0.65)" color="#087e85"/>
+<rect x="880" y="570" width="356" height="60" rx="14" fill="#fff" stroke="#cbd8e1" stroke-width="1.6"/>
+<use href="#robot" transform="translate(904 606) scale(0.8)" color="#087e85"/>
+<text x="930" y="596" font-size="21" font-weight="700" fill="#193449" text-anchor="start">QA verification</text>
+<text x="930" y="620" font-size="15" font-weight="400" fill="#586f7f" text-anchor="start">Run checks; explicit completion</text>
+<path d="M1058 630V640" fill="none" stroke="#087e85" stroke-width="2.2" stroke-linejoin="round"  marker-end="url(#arrow)"/>
+<rect x="947" y="640" width="220" height="32" rx="10" fill="#e6f4ef" stroke="#85b7ad" stroke-width="1.6"/>
+<text x="1057.0" y="663" font-size="18" font-weight="700" fill="#116c65" text-anchor="middle">QA Verified</text>
+<path d="M947 656H835V707H158V618" fill="none" stroke="#557da9" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#evidence)"/>
+<text x="440" y="700" font-size="18" font-weight="700" fill="#4b6588" text-anchor="middle">Current approved QA evidence is required here</text>
+<use href="#robot" transform="translate(40 751) scale(0.85)" color="#087e85"/>
+<text x="61" y="758" font-size="18" font-weight="400" fill="#193449" text-anchor="start">AI-assisted work</text>
+<use href="#human" transform="translate(272 751) scale(0.85)" color="#087e85"/>
+<text x="293" y="758" font-size="18" font-weight="400" fill="#193449" text-anchor="start">Human responsibility</text>
+<use href="#gate" transform="translate(562 751) scale(0.75)" color="#087e85"/>
+<text x="583" y="758" font-size="18" font-weight="400" fill="#193449" text-anchor="start">Human decision gate</text>
+<text x="1256" y="758" font-size="17" font-weight="400" fill="#4b6588" text-anchor="end">Dashed = evidence prerequisite</text>
+<text x="24" y="788" font-size="19" font-weight="700" fill="#193449" text-anchor="start">Approval, advancement and starting work are separate instructions. Verified is not Released.</text>
+</g></svg>

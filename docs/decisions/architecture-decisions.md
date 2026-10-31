@@ -1,5 +1,9 @@
 # Architecture decision register
 
+For current user behavior, see [the workflow guide](../workflow.md). Entries preserve
+the scope of their original decisions: statements such as “no Analysis in this increment”
+are historical boundaries, not claims that later implemented phases are unavailable.
+
 Companion to [the working specification](../specification.md), not a replacement. Based on design discussion, 2026-10-28. `[D]` accepted; `[P]` PoC boundary; `[T]` target; `[O]` open.
 
 | ID | Decision | Status |

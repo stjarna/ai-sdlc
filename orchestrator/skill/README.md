@@ -1,4 +1,8 @@
-# AI SDLC Assistant in Codex and Claude Code
+# AI SDLC Orchestrator skill in Codex and Claude Code
+
+New users: start with the [project README](../../README.md) and
+[external setup guide](../../docs/getting-started.md). This page describes the shared
+package and host adapters, not an instruction to copy a wrapper into another project.
 
 [SKILL.md](SKILL.md) is the common workflow for both agents.
 [conversation.md](conversation.md) defines concise business-facing interaction,

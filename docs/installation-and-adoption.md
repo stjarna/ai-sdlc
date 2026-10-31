@@ -1,5 +1,8 @@
 # External installation and existing-project adoption
 
+For the beginner path, see [Getting started](getting-started.md). This page is the
+precise installation, compatibility and recovery contract.
+
 The local POSIX PoC installs a pinned runtime outside the application and registers a
 thin user-scoped Codex loader. It does not install application dependencies, edit project
 instructions, initialize Git, restructure source/tests, or stage/commit/push anything.

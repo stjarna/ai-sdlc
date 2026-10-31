@@ -1,5 +1,12 @@
 # AI SDLC Orchestration Skill — sjednocená pracovní specifikace
 
+> **Current implementation:** start with the English [workflow guide](workflow.md) and
+> [README](../README.md). This working design retains earlier increment scope and future
+> architecture. Story/Release models, Docker-first planning, the original 1–2-skill sketch
+> and `approved_for_deployment` are not a current executable feature matrix. The implemented
+> lifecycle uses four pinned domain packages and Engineering/QA tracks through `verified`;
+> later addenda and operation contracts describe those extensions.
+
 **Verze dokumentu:** 0.13 (Engineering and QA work tracks)
 **Datum:** 2026-10-28  
 **Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Increment 6 implementuje sdílenou infrastrukturu a Analysis approval k revizi; sekvenční engineering slice rozšiřuje PoC přes Technical Design, plán, vývoj, ověření a Security Review do verified; Stories a Release execution zůstávají plánované

@@ -1,4 +1,8 @@
-# Discovery, Business Refinement and Approval tests
+# Automated regression tests
+
+The suite covers the implemented Discovery-to-Verified workflow, installation and
+compatibility. Historical section counts below describe coverage when those increments
+were introduced; the actual current total is reported by the test runner.
 
 From the repository root, after the setup in [the operation contract](../scripts/README.md):
 

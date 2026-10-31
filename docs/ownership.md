@@ -1,5 +1,8 @@
 # Ownership, Assignment and Stage Handoff
 
+For the user journey, start with [Getting started](getting-started.md) and the
+[current workflow guide](workflow.md).
+
 Ownership tracks accountability independently of content approval and lifecycle.
 Owner means the person accountable for moving the request forward. Assignee means
 the person responsible for its next activity. Required role describes that activity;
@@ -33,7 +36,9 @@ that missing historical information is explicitly supplied.
 | Discovery | Requester / Business Stakeholder |
 | Business Refinement | Product Owner |
 | Functional Analysis | Business Analyst |
-| Technical Design readiness | Engineering Lead / Architect |
+| Technical Design readiness (legacy single-track handoff) | Engineering Lead / Architect |
+| Engineering work track | Engineering Lead |
+| QA work track | QA Lead / Tester |
 
 Discovery completion enters `ready_for_refinement`; Business advancement enters
 `ready_for_analysis`; Analysis advancement enters `ready_for_technical_design`.
@@ -47,14 +52,17 @@ The agent offers nomination after reporting successful advancement. If the next 
 is unknown, leave the pending state unchanged and retain the owner in Awaiting Handoff.
 A crash or lost response after advancement cannot hide the pending handoff: it is already
 persisted. Approval never creates a handoff. Assignment never approves, advances, changes
-a specification, alters a baseline, or starts the next stage. Technical Design execution
-remains unavailable even when a responsible architect has been nominated.
+a specification, alters a baseline, or starts the next stage. New Analysis advancements
+create independently owned Engineering and QA work tracks;
+Technical Design can be explicitly started through the implemented Engineering workflow.
+The scalar handoff description above applies to the shared path and retained legacy records;
+see [work tracks](work-tracks.md) for per-track ownership and transitions.
 
 ## Shared commands
 
 Codex uses `$sdlc inbox`, `$sdlc pending assignments` and `$sdlc assign [request-id]`.
 Claude uses the equivalent `/sdlc` invocations. Natural-language requests remain supported.
-The six existing commands retain their meanings. Resolve `assign` by active context or
+The shared stage-aware commands retain their meanings. Resolve `assign` by active context or
 an unambiguous title/ID, using the read-only context helper; never guess a request.
 Inbox and pending assignments are project-level views and need no active Epic selection.
 
