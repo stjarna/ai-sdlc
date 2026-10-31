@@ -32,6 +32,44 @@ domain instructions describing content.md concern legacy format, not new publica
 Never create aliases/copies or manually rename a baseline to improve presentation.
 
 
+## Resolve runtime authority before governed work
+
+For installed use read [runtime management](../../docs/runtime-version-management.md).
+The user loader selects a default, not automatic authority for every existing request.
+Use its verified resolver manager and `runtime-status` for the explicit project/request
+and track before loading domain guidance or writing. Never reinterpret an old request's
+missing runtime provenance as evidence it used today's default. Obtain explicit initial
+future-work binding; preserve unknown historical attribution and all old baselines.
+
+If another runtime is effective, stop using these current instructions for its work.
+Require a fresh conversation or host reload when the context already loaded another
+runtime. Read the effective snapshot's shared workflow, conversation/command policy,
+selected domain instructions and templates; create `runtime-session` with a truthful
+fresh-context declaration and exact returned instructions digest. Keep its receipt and
+scope internal, and pass `--runtime-session` to that exact runtime's CLI. Reusing a declared
+context ID across runtime versions is rejected; issuing a new ID in the same mixed
+conversation is not a legitimate substitute. The CLI cannot inspect the model's real
+cached context: this remains a procedural host responsibility, not authenticated proof.
+
+For a new request the current default is selected and recorded. For existing work,
+default updates/rollback leave request/track authority unchanged. Use `runtime-check`
+and present compatibility, future scope and consequences before explicit `runtime-bind`
+or `runtime-promote`; obtain actual human wording/identity and any required reconciliation.
+Do not promote during active artifact revisions, approval, execution or incomplete writes.
+Defer to a safe boundary; do not reopen approved upstream scope solely for a version change.
+Promotion is separate from approval, advancement and start. Engineering/QA selections are
+independent within their current Analysis cycle. The join must retain compatible runtime
+and current source/evidence authority, never silently reapprove the other track.
+
+For natural requests to list/update/roll back the default, use the actual install.py
+administrative operations, existing declared identity and explicit user-selected revision.
+No network fetch, automatic upgrade, speculative skill installation or Git mutation.
+Keep prior snapshots. On an interrupted switch or provenance write, use inspected explicit
+recovery/exact retry; never delete history, mint a replacement intent or bypass a lock.
+Only already recorded original transaction bytes may be recovered. Missing/corrupt or
+legacy runtimes without the execution protocol block managed writes; do not fall back to
+an unprotected CLI. Expose technical detail only when requested or needed to resolve a blocker.
+
 ## Use pinned document templates
 
 For a new human-readable document, resolve its canonical template using
@@ -282,7 +320,7 @@ inspect pending/orphan data and any abandoned lock before an exact retry. Missin
 corrupt approved baselines require known-good restoration, never replacement from the
 draft. Do not silently repair malformed artifacts or report an uncertain write as success.
 
-No automatic Git actions, skill installation, external AI APIs, custom UI or unapproved downstream
+No automatic Git actions, automatic skill installation, external AI APIs, custom UI or unapproved downstream
 implementation are part of this skill. Respect the user's explicit task boundaries.
 
 ## Engineering and QA with domain skills

@@ -3,7 +3,8 @@
 [Documentation index](README.md)
 
 For the beginner path, see [Getting started](getting-started.md). This page is the
-precise installation, compatibility and recovery contract.
+precise installation, compatibility and recovery contract. For the directory model,
+host discovery and domain instruction loading, read [installation architecture](installation-architecture.md).
 
 The local POSIX PoC installs a pinned runtime outside the application and registers a
 thin user-scoped Codex loader. It does not install application dependencies, edit project
@@ -54,10 +55,12 @@ Git newline conversion cannot change packaged resource bytes. Pins are local int
 checks, not signatures, authenticated identity or protection from an unrestricted editor.
 The selected Python environment must remain available separately from the runtime.
 
-An existing skill is never replaced, including a differently named folder declaring
+An ordinary install never replaces an existing skill, including a differently named folder declaring
 `name: sdlc`. An identical existing installation/loader can be verified and replayed.
-Upgrading or removing a registration is a deliberate operator action after inspection;
-there is no automatic overwrite, migration, uninstaller or current-release pointer.
+Explicit [update and rollback](runtime-version-management.md) now switch a verified owned
+registration with administrative history and recovery. Snapshot preparation is separate
+from activation. No automatic upgrade, unrelated-registration overwrite or uninstaller
+is added; ordinary install remains non-switching.
 Installation is staged then renamed. A handled preparation failure removes staging
 folders; interruption before registration may leave a complete unregistered runtime,
 which an exact retry verifies and reuses. A corrupt installation or abandoned lock needs
@@ -76,8 +79,8 @@ runtime=/absolute/path/returned/by/install
 
 Open the **application** repository in Codex CLI or the IDE. Inspect `/skills` or type
 `$sdlc status`; confirm the selected entry is the installed user loader. Restart if
-new discovery is not visible. The loader checks runtime integrity before loading the
-shared workflow and keeps the application as the explicit target. It does not treat
+new discovery is not visible. The resolver verifies registration/runtime integrity and resolves the request or track's
+effective pin before loading its workflow; the application remains the explicit target. It does not treat
 skill invocation as business approval or advance the lifecycle automatically.
 
 Host permissions must allow reading the external runtime and writing the selected
@@ -142,24 +145,15 @@ See [the demonstration evidence runbook](existing-project-demo.md) for before/af
 
 ## Runtime and project boundaries
 
-Installation keeps executable resources outside the existing application's source tree.
-The loader directs the agent to the pinned resources while the project stays explicit.
+The [architecture guide](installation-architecture.md) owns the directory topology,
+loader invocation sequence, domain-skill/template responsibilities and the distinction
+between installation, read-only adoption and governed execution. This contract owns the
+exact commands, pin validation, conflict behavior and recovery. Runtime resources and
+registration must remain outside the application and any Git repository; the target
+application is supplied explicitly, never inferred from the installed runtime path.
 
-```mermaid
-flowchart TB
-    H[Human using Codex] --> A[Coding agent]
-    L[Thin user-scoped SDLC loader] --> O[Orchestrator Skill]
-    A --> L
-    subgraph R[External pinned runtime]
-        O --> D[Independent domain skills]
-        O --> T[Versioned artifact templates]
-        O --> C[Deterministic operations and validators]
-    end
-    C --> P[Application requirements and governed QA records]
-    A --> S[Existing application source and tests: authorized activity only]
-```
-
-No runtime is copied into the application, and installation itself does not create
-requests or edit source. A separate local declared identity profile supplies attribution;
-it is not host authentication or enterprise RBAC. Git automation, ticketing, messaging
-and CI/CD integrations remain future work, not omitted boxes that secretly run here.
+New resolver loaders verify administrative registration and effective runtime before
+managed work. Historical loaders only instructed the runtime/environment check; explicit
+verify with `--skill-root` checks registration too. These are procedural agent steps,
+not Codex-enforced hooks. See [runtime selection and promotion](runtime-version-management.md).
+The installer still registers Codex only and performs no automatic upgrade.

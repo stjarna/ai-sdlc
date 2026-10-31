@@ -31,11 +31,13 @@ import ownership
 import engineering
 import domain_skills
 import work_tracks
+import runtime_selection
+import install as runtime_installer
 from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.13.0"
+ORCHESTRATOR_VERSION = "0.14.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
@@ -192,6 +194,12 @@ def read_epic(directory: Path) -> Epic:
         epic.diagnostics.append(error("E_METADATA", metadata_path, "Metadata must be a mapping."))
         return epic
     epic.metadata = data
+    try:
+        runtime_history=runtime_selection.read(directory)
+        if runtime_history is not None:
+            runtime_selection.require(runtime_history['request_id']==data.get('id'),'Runtime history belongs to another request.','E_RUNTIME_HISTORY')
+    except business.BusinessError as exc:
+        epic.diagnostics.append(error(exc.code,directory/runtime_selection.FILE,str(exc)))
     version = data.get("schema_version")
     expected_fields = set(FIELDS) if version == SCHEMA_VERSION else FIELDS | {"lifecycle"}
     if version in ("0.3", "0.4", "0.5", "0.6"):
@@ -364,6 +372,7 @@ def project_path(project: Path) -> Path:
 
 
 def scan(root: Path) -> tuple[list[Epic], list[Diagnostic]]:
+    runtime_selection.check_pending(root)
     requirements = root / "requirements"
     if requirements.is_symlink() or (requirements.exists() and not requirements.is_dir()):
         raise Rejected([error("E_REQUIREMENTS", requirements, "Expected a nonsymlink requirements directory.")])
@@ -414,7 +423,8 @@ def project_lock(root: Path):
     except FileExistsError:
         raise Rejected([error("E_PROJECT_BUSY", lock, "Another write may be running; inspect the lock before retrying.")]) from None
     try:
-        yield
+        with runtime_selection.managed_write(root):
+            yield
     finally:
         lock.rmdir()
 
@@ -439,6 +449,7 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
         slug = re.sub(r"[^a-z0-9]+", "-", normalized.lower()).strip("-")[:64].rstrip("-") or "epic"
         requirements = root / "requirements"
         directory = requirements / f"{epic_id}-{slug}"
+        runtime_selection.note_directory(directory)
         metadata = {
             "schema_version": SCHEMA_VERSION, "id": epic_id,
             "title": title.strip(), "status": "discovery", "artifacts": {"idea": "idea.md"},
@@ -451,6 +462,7 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
         selected_template=templates.resolve("idea", expected_template_digest)
         content = selected_template["content"].replace("{{problem}}", idea.strip())
         metadata["template_provenance"]={"schema_version":"0.1","idea":selected_template["pin"]}
+        runtime_selection.note_creation(metadata,content)
         made_requirements = False
         made_epic = False
         try:
@@ -1167,7 +1179,21 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", action="version", version=ORCHESTRATOR_VERSION)
     parser.add_argument("--project", type=Path, help="Explicit target project root")
+    parser.add_argument("--runtime-session", help="Fresh-context receipt for the exact effective runtime")
     commands = parser.add_subparsers(dest="operation", required=True)
+    for name in ("runtime-probe", "runtime-status", "runtime-session", "runtime-check", "runtime-bind", "runtime-promote", "runtime-recover"):
+        item=commands.add_parser(name,help="Inspect or explicitly manage future-work runtime authority")
+        if name!="runtime-recover":item.add_argument("id",nargs="?" if name in ("runtime-probe","runtime-status","runtime-session") else None)
+        if name not in ("runtime-probe","runtime-recover"):item.add_argument("--track",choices=("engineering","qa"))
+        if name in ("runtime-status","runtime-session"):item.add_argument("--skill-root",type=Path,default=Path.home()/".agents/skills")
+        if name=="runtime-status":item.add_argument("--artifact",help="Exact path, bundle ID or canonical filename for provenance")
+        if name in ("runtime-check","runtime-bind","runtime-promote"):item.add_argument("--runtime",type=Path,required=True)
+        if name in ("runtime-bind","runtime-promote"):
+            item.add_argument("--expected-runtime-revision",required=True);item.add_argument("--operation-id",required=True)
+            item.add_argument("--actor");item.add_argument("--expected-profile-revision")
+            item.add_argument("--decision",required=True);item.add_argument("--reason",required=True);item.add_argument("--reconciliation")
+        if name=="runtime-session":
+            item.add_argument("--fresh-context-id",required=True);item.add_argument("--instructions-digest",required=True)
     context = commands.add_parser("command-context", help="Read-only resolution/routing for a conversational SDLC command")
     context.add_argument("command", choices=command_ux.COMMANDS)
     context.add_argument("--request", dest="selector")
@@ -1321,8 +1347,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.operation == "templates":
         args.project = Path.cwd()
     diagnostic_base = args.project
+    runtime_context=runtime_selection.CALL.set(vars(args).copy())
     try:
-        if args.operation in ("track-review","qa-review"):
+        if args.operation.startswith("runtime-"):
+            root=project_path(args.project)
+            if args.operation=="runtime-probe": payload={"capabilities":runtime_selection.capabilities(root,args.id)}
+            elif args.operation=="runtime-status": payload=runtime_selection.status(root,args.id,args.track,args.skill_root,args.artifact)
+            elif args.operation=="runtime-session": payload=runtime_selection.session(root,args.id,args.track,args.fresh_context_id,args.instructions_digest,args.skill_root)
+            elif args.operation=="runtime-check":payload={"assessment":runtime_selection.assessment(root,args.id,args.runtime,args.track)}
+            elif args.operation=="runtime-recover":payload=runtime_selection.recover(root)
+            else:
+                actor,_=local_identity.attribution(root,args.actor,args.expected_profile_revision)
+                payload=runtime_selection.select_runtime(root,args.id,args.runtime,args.track,args.expected_runtime_revision,args.operation_id,actor,args.decision,args.reason,args.reconciliation,initial=args.operation=="runtime-bind")
+            output=result(args.operation,[],**payload)
+        elif args.operation in ("track-review","qa-review"):
             import qa_track
             selected=selected_epic(project_path(args.project),args.id)
             view=work_tracks.review(selected,project_path(args.project)) if args.operation=="track-review" else qa_track.review(selected,project_path(args.project))
@@ -1424,12 +1462,15 @@ def main(argv: list[str] | None = None) -> int:
             output = inspect_epics(args.project, args.operation, args.id)
     except business.BusinessError as exc:
         output = result(args.operation, [error(exc.code, (args.input_file if hasattr(args,"input_file") and exc.code in ("E_ENGINEERING_DOCUMENT","E_ENGINEERING_TRACE","E_ENGINEERING_PLAN","E_QA_DOCUMENT","E_QA_TRACE") else domain_skills.ROOT / exc.filename if exc.code == "E_SKILL" else diagnostic_base / exc.filename), str(exc))])
+    except runtime_installer.InstallError as exc:
+        output = result(args.operation, [error(exc.code, Path(exc.path), str(exc))])
     except local_identity.IdentityError as exc:
         output = result(args.operation, [error(exc.code, exc.path, str(exc))])
     except Rejected as exc:
         output = result(args.operation, exc.diagnostics)
     except (OSError, UnicodeError) as exc:
         output = result(args.operation, [error("E_IO", Path(getattr(exc, "filename", None) or args.project), str(exc))])
+    runtime_selection.CALL.reset(runtime_context)
     print(json.dumps(output, ensure_ascii=False))
     return 0 if output["ok"] else 1
 

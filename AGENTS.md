@@ -7,6 +7,7 @@ Develop a **reusable Git-native AI SDLC orchestration skill**, not the demo appl
 ## Mandatory reading
 
 - [Documentation index](docs/README.md) and [complete CLI inventory](docs/cli-reference.md): current human navigation and operation coverage.
+- [Runtime management](docs/runtime-version-management.md): default versus effective request/track authority, explicit promotion, matching context receipts and inspected recovery.
 - [README](README.md): human-facing orientation, setup and current capability boundaries.
 - [Working specification](docs/specification.md): [D] accepted decisions, [P] PoC limitations, [T] target architecture, [O] open design.
 - [Architecture decision register](docs/decisions/architecture-decisions.md): rationale and intentionally deferred approaches.
@@ -26,6 +27,7 @@ Read these before changing code. Flag conflicting requirements instead of silent
 - Git/Markdown/YAML are authoritative, not chat history. **No separate checkpoint.md subsystem.**
 - Interactive Discovery keeps identity/lifecycle in `metadata.yaml`, the original idea in `idea.md`, and authoritative append-only history in `discovery.yaml`. Use deterministic updates with revisions and operation IDs; preserve source evidence and do not reinterpret AI assumptions as user facts.
 - Ownership is separate from approval and advancement. New requests have a declared requester as owner; handoff retains accountability while awaiting separately confirmed assignment. Legacy owner evidence must be unambiguous or explicitly supplied. No automatic assignees, notifications or next-stage execution.
+- Installed governed writes require the effective pinned runtime and its declared fresh-context receipt. Default update/rollback never promotes requests. Do not mix instructions/CLI versions; require a fresh host conversation after a runtime-context change. Legacy initial binding does not invent historical provenance.
 - Preserve stable Epic IDs; Story/Release ID conventions are target design, not implemented operations. Use deterministic scripts for paths, state and schema mutation; explicit impact review on changes.
 - Human approval is required for business refinement, design and implementation plan, QA scenarios and automation review, human code review and release approval. Never fabricate approvals or test results.
 - New explicitly advanced Analysis forks independent Engineering and QA tracks. QA strategy/scenarios derive from Analysis without Design. Engineering Plan/code review is distinct from QA scenario/automation review; actual verification joins current approved outputs and evidence. Work tracks do not automatically run parallel AI agents. Legacy sequential records are retained without migration.

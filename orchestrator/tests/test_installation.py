@@ -250,7 +250,9 @@ class InstallationTests(unittest.TestCase):
 
     def test_new_remains_the_existing_request_initialization_operation(self):
         self.installed();before=(self.project/'app.py').read_bytes();head=git(self.project,'rev-parse','HEAD')
-        run=subprocess.run([sys.executable,'-B',str(self.runtime/'orchestrator/scripts/sdlc.py'),'--project',str(self.project),'new','--requester','Fictional Requester','--title','Fixture incremental change','--idea','A fictional request used only to verify adoption.'],capture_output=True,text=True)
+        import runtime_fixtures
+        context,env=runtime_fixtures.session(self.runtime,self.project,self.skills,self.base/'sessions')
+        run=subprocess.run([sys.executable,'-B',str(self.runtime/'orchestrator/scripts/sdlc.py'),'--project',str(self.project),'--runtime-session',context,'new','--requester','Fictional Requester','--title','Fixture incremental change','--idea','A fictional request used only to verify adoption.'],capture_output=True,text=True,env=env)
         self.assertEqual(run.returncode,0,run.stdout+run.stderr)
         value=json.loads(run.stdout);self.assertEqual(value['epic']['metadata']['status'],'discovery')
         self.assertEqual((self.project/'app.py').read_bytes(),before);self.assertEqual(git(self.project,'rev-parse','HEAD'),head)

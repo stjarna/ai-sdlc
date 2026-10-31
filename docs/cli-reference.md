@@ -3,9 +3,10 @@
 [Documentation index](README.md) · [Conversational commands](command-reference.md) · [Operation contract](../orchestrator/scripts/README.md)
 
 This is the tool-facing index for engineers maintaining integrations or inspecting a
-failure. Business users normally use the conversational commands. **50 operations**
+failure. Business users normally use the conversational commands. **57 operations**
 were extracted from the actual `sdlc.main` argparse tree at documentation baseline
-`41256c5f443f4591b30dc42a05c6772049ec607c`, before dispatch, without executing writes.
+`80b6c2e7098210f1cb920c69b8a914e63fd27451` plus this runtime-management increment,
+before dispatch, without executing writes.
 Installer/adoption entrypoints are listed separately below. This inventory complements,
 rather than replaces, the [operation contract](../orchestrator/scripts/README.md) and
 stage-specific schema/recovery contracts. No operation is hidden from the coverage table.
@@ -13,10 +14,15 @@ stage-specific schema/recovery contracts. No operation is hidden from the covera
 ## Invocation, results and recovery
 
 ```text
-PYTHON orchestrator/scripts/sdlc.py --project PROJECT OPERATION ARGUMENTS
+PYTHON orchestrator/scripts/sdlc.py --project PROJECT [--runtime-session RECEIPT] OPERATION ARGUMENTS
 PYTHON orchestrator/scripts/sdlc.py templates [TEMPLATE_ID]
 PYTHON orchestrator/scripts/sdlc.py --version
 ```
+
+Managed installed writes require the effective runtime and a matching procedural
+context receipt through global `--runtime-session`; legacy source-checkout tooling
+is not represented as managed runtime-provenance execution. Read-only inspection does
+not require a write receipt. See [runtime management](runtime-version-management.md).
 
 `PYTHON` means the installed pinned environment (or contributor `.venv/bin/python`),
 not a literal executable. PROJECT is an existing directory; every operation except
@@ -121,6 +127,13 @@ independent QA gates; do not reuse legacy approval semantics for them.
 | `qa-request-changes` | QA changes | [Arguments](#qa-request-changes) · [policy](work-tracks.md) |
 | `qa-advance` | QA advance/completion | [Arguments](#qa-advance) · [policy](work-tracks.md) |
 | `qa-check-run` | QA start approved checks | [Arguments](#qa-check-run) · [policy](work-tracks.md) |
+| `runtime-probe` | internal read-only candidate contract/input probe | [Arguments](#runtime-probe) · [policy](runtime-version-management.md) |
+| `runtime-status` | inspect default/effective selection and artifact runtime receipts | [Arguments](#runtime-status) · [policy](runtime-version-management.md) |
+| `runtime-session` | declare loaded instructions in a fresh context; external receipt only | [Arguments](#runtime-session) · [policy](runtime-version-management.md) |
+| `runtime-check` | read-only future-scope compatibility preview | [Arguments](#runtime-check) · [policy](runtime-version-management.md) |
+| `runtime-bind` | explicit initial legacy future-work selection; no past attribution | [Arguments](#runtime-bind) · [policy](runtime-version-management.md) |
+| `runtime-promote` | explicit compatible future-stage/track selection | [Arguments](#runtime-promote) · [policy](runtime-version-management.md) |
+| `runtime-recover` | inspected completion of original provenance/known transaction | [Arguments](#runtime-recover) · [policy](runtime-version-management.md) |
 
 ## Context, catalogs and validation
 
@@ -240,7 +253,7 @@ See [stage policy and diagnostics](ownership.md) for eligibility, artifact schem
 
 ## Discovery
 
-New creates metadata/idea; updates append Discovery history. Completion/reopening write lifecycle/ownership metadata, retaining original idea and downstream history.
+New creates metadata/idea and, in installed managed execution, runtime-history.json; updates append Discovery history. Completion/reopening write lifecycle/ownership metadata, retaining original idea and downstream history.
 
 See [stage policy and diagnostics](interactive-discovery.md) for eligibility, artifact schemas and recovery.
 
@@ -564,22 +577,97 @@ See [stage policy and diagnostics](work-tracks.md) for eligibility, artifact sch
 
 **Optional:** `--actor ACTOR`, `--expected-profile-revision EXPECTED_PROFILE_REVISION`, `--expected-source-revision EXPECTED_SOURCE_REVISION`.
 
+## Runtime selection, compatibility and provenance
+
+These operations preserve existing artifact/approval formats and never imply artifact
+approval, advancement or assignment. Selection writes only the Epic's runtime-history.json;
+ordinary managed writes journal an exact runtime/file receipt under the existing lock.
+Context receipts stay outside Git. Compatibility probes use installed local Python and
+actual read-only validators, not AI APIs. Use the [version-management contract](runtime-version-management.md)
+for safe boundaries, exact retry, interruption recovery and procedural trust limits.
+
+### runtime-probe
+
+**Mode:** read-only. **Purpose:** internal read-only candidate contract/input probe.
+
+**Required after the operation:** None.
+
+**Optional:** `ID`.
+
+### runtime-status
+
+**Mode:** read-only. **Purpose:** inspect default/effective selection and artifact runtime receipts.
+
+**Required after the operation:** None.
+
+**Optional:** `ID`, `--track {engineering,qa}`, `--skill-root SKILL_ROOT`, `--artifact ARTIFACT`.
+
+### runtime-session
+
+**Mode:** explicit write / external receipt or inspected recovery. **Purpose:** declare loaded instructions in a fresh context; external receipt only.
+
+**Required after the operation:** `--fresh-context-id FRESH_CONTEXT_ID`, `--instructions-digest INSTRUCTIONS_DIGEST`.
+
+**Optional:** `ID`, `--track {engineering,qa}`, `--skill-root SKILL_ROOT`.
+
+### runtime-check
+
+**Mode:** read-only. **Purpose:** read-only future-scope compatibility preview.
+
+**Required after the operation:** `ID`, `--runtime RUNTIME`.
+
+**Optional:** `--track {engineering,qa}`.
+
+### runtime-bind
+
+**Mode:** explicit write / external receipt or inspected recovery. **Purpose:** explicit initial legacy future-work selection; no past attribution.
+
+**Required after the operation:** `ID`, `--runtime RUNTIME`, `--expected-runtime-revision EXPECTED_RUNTIME_REVISION`, `--operation-id OPERATION_ID`, `--decision DECISION`, `--reason REASON`.
+
+**Optional:** `--track {engineering,qa}`, `--actor ACTOR`, `--expected-profile-revision EXPECTED_PROFILE_REVISION`, `--reconciliation RECONCILIATION`.
+
+### runtime-promote
+
+**Mode:** explicit write / external receipt or inspected recovery. **Purpose:** explicit compatible future-stage/track selection.
+
+**Required after the operation:** `ID`, `--runtime RUNTIME`, `--expected-runtime-revision EXPECTED_RUNTIME_REVISION`, `--operation-id OPERATION_ID`, `--decision DECISION`, `--reason REASON`.
+
+**Optional:** `--track {engineering,qa}`, `--actor ACTOR`, `--expected-profile-revision EXPECTED_PROFILE_REVISION`, `--reconciliation RECONCILIATION`.
+
+### runtime-recover
+
+**Mode:** explicit write / external receipt or inspected recovery. **Purpose:** inspected completion of original provenance/known transaction.
+
+**Required after the operation:** None.
+
+**Optional:** None.
+
 ## Additional entrypoints: installation and preflight
 
-These are outside `sdlc.py`'s 50-operation count. Arguments come from their parsers.
+These are outside `sdlc.py`'s 57-operation count. Arguments come from their parsers.
 See [installation](installation-and-adoption.md) for defaults, exact output, safe
 registration retirement and read-only preflight interpretation.
 
 | Entrypoint | Required flags | Optional flags | Effects / diagnostics |
 |---|---|---|---|
 | `install.py install` | `--revision REV --project PROJECT` | `--source SOURCE --runtime-root DIR --skill-root DIR --python PYTHON --preview-working-tree` | Writes external pinned runtime and non-overwriting loader; never application source. Validates environment/resources/pins. Preview must be explicit and bound to HEAD. |
+| `install.py prepare` | `--source SOURCE --revision SHA --project PROJECT` | `--runtime-root DIR --python PYTHON --preview-working-tree` | Publishes/validates an immutable snapshot without selecting it. |
+| `install.py update` | `--source SOURCE --revision SHA --project PROJECT --expected-default DIGEST --operation-id OP --actor NAME --decision TEXT` | `--skill-root DIR --runtime-root DIR --python PYTHON --preview-working-tree` | Prepares candidate beside old snapshot and explicitly switches verified owned default with audit/recovery. |
+| `install.py rollback` | `--expected-default DIGEST --operation-id OP --actor NAME --decision TEXT` | `--runtime EXACT_RECORDED_PATH --skill-root DIR` | Restores previous verified default only; never request/application state. |
+| `install.py show` | None | `--skill-root DIR` | Read default registration, resolver and administrative history. |
+| `install.py list` | None | `--runtime-root DIR` | Read/verify installed snapshots, including explicit corrupt-entry diagnostics. |
+| `install.py recover` | None | `--skill-root DIR` | Explicitly restore prior registration from inspected before/after intent; reject unrelated edits. |
 | `install.py verify` | `--runtime RUNTIME` | `--expected-digest DIGEST --skill-root DIR` | Reads/verifies files, interpreter, catalogs and registration; never repairs. |
 | `adoption.py` | `--project PROJECT` | `--runtime RUNTIME --skill-root DIR` | Read-only Git/layout/source/output/instruction/registration/environment checks; JSON ready and baseline_ready are not approvals. |
 
 Installation requires a retained interpreter, compatible dependencies, accessible Git
 revision and external destinations; a conflicting registration must be inspected, not
 overwritten. Installer errors are structured diagnostics; successful installation is
-not proof of host UI discovery. The isolated discovery smoke is a contributor test
+not proof of host UI discovery. The shared administrative parser also accepts --skill-root for prepare/list; those two
+operations do not use it to activate a registration. Default root help lists delegated
+operations; each OPERATION --help describes its actual parser.
+
+The isolated discovery smoke is a contributor test
 helper, not a product operation or an automatic approval mechanism.
 
 ## Important semantic restrictions beyond argparse

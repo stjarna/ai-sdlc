@@ -87,8 +87,10 @@ def main(argv=None):
       stderr.close();(area/'evidence/codex-protocol.json').write_text(json.dumps(transcript,indent=2))
     assert hashes(app)==before,'Installation/preflight/discovery changed the application or Git metadata'
     (area/'evidence/native-discovery.json').write_text(json.dumps(native,indent=2))
-    command=[sys.executable,'-B',str(runtime/'orchestrator/scripts/sdlc.py'),'--project',str(app),'new','--title','Smoke incremental request','--requester','Fictional smoke Requester','--idea','A fictional incremental request used only to verify external request initialization.']
-    created=subprocess.run(command,capture_output=True,text=True)
+    import runtime_fixtures
+    context,session_env=runtime_fixtures.session(runtime,app,skills,area/'sessions')
+    command=[sys.executable,'-B',str(runtime/'orchestrator/scripts/sdlc.py'),'--project',str(app),'--runtime-session',context,'new','--title','Smoke incremental request','--requester','Fictional smoke Requester','--idea','A fictional incremental request used only to verify external request initialization.']
+    created=subprocess.run(command,capture_output=True,text=True,env=session_env)
     (area/'evidence/new.json').write_text(created.stdout)
     assert created.returncode==0 and not created.stderr,created.stdout+created.stderr
     assert json.loads(created.stdout)['epic']['metadata']['status']=='discovery'

@@ -9,6 +9,8 @@ are illustrative unless a page links preserved execution evidence.
 ## Getting started
 
 - [Getting started](getting-started.md): install, check adoption, create and clarify a request, troubleshoot.
+- [Runtime management](runtime-version-management.md): prepare snapshots, update/roll back the default, resolve requests and explicitly promote compatible future work.
+- [Installation architecture](installation-architecture.md): where the runtime lives, one native loader, specialist guidance and project boundaries.
 - [Installation and adoption](installation-and-adoption.md): pinned external runtime, loader, preflight and operator recovery.
 - [Existing-project demo runbook](existing-project-demo.md): authentic before/after evidence capture outside governed source.
 
@@ -24,13 +26,13 @@ are illustrative unless a page links preserved execution evidence.
 
 - [Workflow responsibilities](workflow.md#who-does-what): agent judgment, deterministic persistence and human decisions.
 - [Governance corrections](engineering.md#governance-corrections-contract-01): prototype limitation consent and source-bound semantic review.
-- [Domain package contract](engineering.md#domain-instruction-packages) and [pinned catalog](../orchestrator/domain-skills/catalog.yaml): ownership and immutable instruction versions.
+- [Domain loading and current package roles](installation-architecture.md#how-specialist-guidance-is-selected-and-used), [legacy domain package contract](engineering.md#domain-instruction-packages) and [pinned catalog](../orchestrator/domain-skills/catalog.yaml): ownership and immutable instruction versions.
 - [Template contract](../orchestrator/templates/README.md): structure, validation compatibility and exact provenance.
 - [Artifact traceability](artifact-names.md#how-documents-become-evidence): revisions, approvals, source and actual checks.
 
 ## Advanced technical reference
 
-- [Complete CLI inventory](cli-reference.md): 50 parser operations, arguments, routes and contract links; installer/adoption entrypoints separately.
+- [Complete CLI inventory](cli-reference.md): 57 parser operations, arguments, routes and contract links; installer/adoption entrypoints separately.
 - [Operation contract](../orchestrator/scripts/README.md): JSON diagnostics, schemas and persistence guarantees.
 - [Interactive Discovery](interactive-discovery.md), [Business Refinement](business-refinement.md), [Functional Analysis](functional-analysis.md): stage data and source contracts.
 - [Command routing and local identity](command-ux.md): profile semantics and trust boundaries.

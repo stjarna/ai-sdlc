@@ -14,6 +14,8 @@ illustrative inputs and outcomes, not recorded transcripts or guaranteed literal
 - **Claude Code:** `/sdlc <command>`; its adapter receives trailing arguments differently.
   Adapter availability/static validation does not establish runtime acceptance. Codex is
   the demonstrated acceptance target.
+  The external installer registers Codex only; including the Claude adapter in the
+  runtime does not register it with Claude. See [installation architecture](installation-architecture.md).
 - Natural language expresses the same intent and obeys the same gates: “Review the
   current business specification” or “Show requests waiting for assignment.”
 
@@ -257,3 +259,14 @@ failed evidence, controlled fixes, fresh code review and relevant reruns. QA rew
 not silently change approved expected behavior. A persisted check operation's `ok: true`
 means evidence was saved: inspect `passed`/`failed`/`timeout`/`not_run` and exit status.
 Never bypass a blocker by editing metadata, deleting audits or creating a different retry ID.
+
+## Runtime management intentions
+
+“Which runtime is active?” reads the default registration. “Which runtime produced this
+Design?” reads runtime-status artifact receipts, including exact baseline files; legacy
+missing attribution stays unknown. “Use the new runtime for Analysis” requests a
+compatibility review and separate explicit future-scope promotion decision. “Roll back
+the default” changes installation selection only. These natural-language intentions use
+[implemented runtime operations](runtime-version-management.md), not extra routing enums.
+Approval and advance never imply promotion. A lost/mismatched runtime context requires
+correct instructions and a fresh conversation/receipt before managed writes.

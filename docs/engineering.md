@@ -43,6 +43,10 @@ verification. No general workflow engine, Stories or release implementation is a
 
 ## Domain instruction packages
 
+For current physical paths, catalog versions and agent loading behavior, see
+[domain-skill architecture](installation-architecture.md#how-specialist-guidance-is-selected-and-used).
+The version table below describes the original retained contract, not today's catalog.
+
 The original 1.0.0 packages (historical versions, not current catalog selection) live independently of Epics in `orchestrator/domain-skills/`:
 
 | Package | Maintainer responsibility | Usable instruction stages |

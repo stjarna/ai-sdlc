@@ -1,6 +1,6 @@
 # AI SDLC operation contract
 
-[Documentation index](../../docs/README.md) · [All 50 operations and arguments](../../docs/cli-reference.md) · [Conversational command manual](../../docs/command-reference.md)
+[Documentation index](../../docs/README.md) · [All 57 operations and arguments](../../docs/cli-reference.md) · [Conversational command manual](../../docs/command-reference.md)
 
 This page owns deterministic schemas, persistence and diagnostic conventions. The CLI
 inventory derives every operation and flag from the parser and links stage policies;
@@ -93,7 +93,9 @@ business correctness or readiness for approval or implementation.
 
 - `new`: validate the existing records, allocate highest existing numeric ID + 1
   (including cancelled records), derive a safe slug, and exclusively create the
-  two files. Existing content is never overwritten. Handled failures remove files
+  two original files. Installed managed execution also records runtime-history.json
+  through the [runtime transaction contract](../../docs/runtime-version-management.md).
+  Existing content is never overwritten. Handled creation failures remove files
   and the Epic directory created by that invocation. Empty input is allowed for
   business content, with warnings. A title is required.
 - `open ID`: scan and validate the repository, find the unique metadata ID, and return
@@ -311,7 +313,7 @@ external runtime and a thin user-scoped Codex loader. `adoption.py --project PRO
 source/output, instruction, registration and environment checks. It does not initialize
 Git or create requests. Existing `new` remains the request-creation operation. See the
 [installation contract](../../docs/installation-and-adoption.md) and
-[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.13.0
+[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.14.0
 is independent of unchanged lifecycle, artifact and validation-contract versions.
 
 
@@ -347,3 +349,23 @@ E_CONTEXT_MISSING, E_CONTEXT_AMBIGUOUS and E_TRACK_AMBIGUOUS. Template/catalog f
 must be resolved against the installed pins, never by editing consumed packages.
 The helper's advance/start mismatch at ready_for_development remains an implementation
 limitation: explicit successful development-start is required before application edits.
+
+## Runtime selection and installation administration
+
+[Runtime management](../../docs/runtime-version-management.md) defines explicit snapshot
+preparation, default update/rollback, request/track selection, compatibility and recovery.
+The CLI is 0.14.0; metadata/manifest/domain/template contract versions stay independent.
+Seven new tool operations are runtime-probe (internal read), runtime-status, runtime-session,
+runtime-check, runtime-bind, runtime-promote and runtime-recover. Global --runtime-session
+binds governed writes to the exact effective snapshot/context. Ordinary source-checkout
+legacy operations retain their existing contract until explicit binding; an installed
+managed runtime requires binding/receipts for work and never silently claims old history.
+
+install.py adds prepare, show, list, update, rollback and recover, preserving install/verify.
+Update/rollback use declared actor/actual decision, expected default digest and operation ID;
+request selection uses the existing project lock and exact current assessment revision.
+Runtime-history schema0.1 is separate from SDLC metadata and contains append-only selection
+and exact-file execution receipts. Transient provenance intent is under requirements/,
+not source or a new checkpoint. Historical baseline formats, hashes and lifecycle rules
+are unchanged. Fresh-context declarations are procedural, not authenticated model-state
+inspection. Unsupported old binaries are not used for managed writes by the resolver.

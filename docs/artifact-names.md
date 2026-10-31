@@ -118,3 +118,12 @@ business purpose; [template manifests](../orchestrator/templates/README.md) own 
 sections. Raw logs, screenshots and check JSON remain execution evidence, not templated
 requirements or proof of human approval. Preserve template and domain-skill pins when
 copying complete evidence; never attach today's provenance to an old document.
+
+## Runtime provenance alongside existing artifact pins
+
+New managed operations append exact runtime Git revision, snapshot pin and changed-file
+hash references to the Epic's runtime-history.json. Existing artifact.json/template/domain
+pins and approved baseline/source references remain authoritative; manifests and physical
+filenames are unchanged. An execution receipt's immutable bundle path identifies the
+exact artifact/approval baseline. Legacy artifacts gain no retrospective attribution.
+See [runtime provenance and recovery](runtime-version-management.md#artifact-provenance-without-historical-rewrites).

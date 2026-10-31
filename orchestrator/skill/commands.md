@@ -272,3 +272,17 @@ via `--authorize-limitation`; never fill this list merely because a Design conta
 Revalidate the revision before executing, retain the actual wording and confirm approval
 without advancement. Generic approval with outstanding limitation consent must prompt
 one focused question, not guess consent or silently approve a subset.
+
+## Runtime inspection and promotion intentions
+
+Runtime management uses natural language plus the existing deterministic runtime and
+install.py operations, not new entries in the ten-command routing vocabulary. Resolve
+runtime before routing a governed write as described in the shared workflow. “Which
+version produced this Design?” uses `runtime-status --artifact technical-design.md` and
+its exact receipt/baseline references; distinguish legacy missing attribution honestly.
+“Use the newer runtime for Analysis” requests compatibility inspection and an explicit
+future-scope promotion decision. It is not approval, completion or advancement. “Roll
+back the default” is administrative and never downgrades the request's effective pin.
+Handle expected revisions, operation IDs and fresh-context receipts internally. A host
+context carrying another runtime requires a fresh conversation, not silently invented
+fresh-context evidence. Keep responses concise and actual decisions attributable.

@@ -32,14 +32,21 @@ Use the [terminal commands in the README](../README.md#quick-start). They instal
 | `~/.agents/skills/sdlc/` | Thin user-scoped Codex loader pointing to that runtime. |
 | Your application's `requirements/` | Request-specific artifacts, approvals and evidence, after creation. |
 
+For why these locations are separate and how Codex loads the domain packages, see
+[installation architecture](installation-architecture.md). The venv above is explicitly
+created by the setup instructions, not automatically by the installer. The installer
+registers Codex only; the bundled Claude adapter is not a Claude installation.
+
 The selected Python environment must remain available. Installation does not copy the
 runtime into your application. There is no separate `init` command or checkpoint file.
 
-An existing registration is never replaced, even if another folder declares `name: sdlc`.
+An ordinary install never replaces an existing registration, including another folder
+declaring `name: sdlc`.
 An identical install can be verified/replayed. For a different installed revision, inspect
-its loader and recorded runtime first; deliberate registration retirement/replacement is
-an operator task. There is no automatic overwrite, upgrade or uninstaller. See the
-[installation details](installation-and-adoption.md) before changing a registration.
+its loader and runtime first; use the explicit [update/rollback operations](runtime-version-management.md),
+not registration deletion or ordinary install as a switch. Defaults and effective request
+runtimes are distinct; promotion is a separate human decision. There is no automatic
+upgrade or uninstaller.
 
 ## 3. Verify installation
 
@@ -115,6 +122,12 @@ is advisory; human completion is recorded separately. Open issues do not become 
 
 Resume with **“Continue REQ-0001”**. The ID is stable even if its directory is renamed.
 There is no need to maintain a separate conversational checkpoint.
+
+The assistant also resolves the effective request/track runtime before work, loads its
+instructions and uses a matching context receipt internally. After a runtime change,
+start a fresh conversation when requested; changing a loader cannot clear cached model
+instructions. Existing unpinned requests need explicit initial future-work binding,
+without inventing which runtime produced their history.
 
 ## 6. Review, approve, advance and start
 

@@ -162,7 +162,7 @@ def read_manifest(runtime, expected_digest=None):
         raise InstallError('E_INSTALL_INTEGRITY', str(exc), path) from exc
 
 
-def loader_text(runtime, manifest):
+def legacy_loader_text(runtime, manifest):
     verify = shlex.join([manifest['python'], '-B', str(runtime/'orchestrator/scripts/install.py'),
                         'verify', '--runtime', str(runtime), '--expected-digest', manifest['snapshot_digest']])
     cli = shlex.join([manifest['python'], '-B', str(runtime/'orchestrator/scripts/sdlc.py')])
@@ -194,6 +194,13 @@ This local pin detects changes; it is not a signature or authenticated authoriza
 '''
 
 
+def loader_text(runtime, manifest):
+    if 'orchestrator/scripts/runtime_selection.py' not in manifest['files']:
+        return legacy_loader_text(runtime, manifest)
+    import runtime_management
+    return runtime_management.loader(runtime, manifest)
+
+
 def verify(runtime, expected_digest=None, skill_root=None):
     runtime = Path(runtime).absolute()
     manifest = read_manifest(runtime, expected_digest)
@@ -203,9 +210,15 @@ def verify(runtime, expected_digest=None, skill_root=None):
         require(not registration.is_symlink() and registration.is_dir(), 'E_INSTALL_REGISTRATION', 'Skill registration is missing or unsafe.', registration)
         require({p.name for p in registration.iterdir()} == {'SKILL.md','installation.json'}, 'E_INSTALL_REGISTRATION', 'Skill registration contains unexpected files.', registration)
         require(not (registration/'SKILL.md').is_symlink() and not (registration/'installation.json').is_symlink(), 'E_INSTALL_REGISTRATION', 'Registration resources must be regular files.', registration)
-        require((registration/'SKILL.md').read_text() == loader_text(runtime,manifest)
-                and json.loads((registration/'installation.json').read_text()) == {'runtime':str(runtime),'snapshot_digest':manifest['snapshot_digest']},
-                'E_INSTALL_REGISTRATION', 'Skill registration differs from the pinned loader.', registration)
+        registration_data=json.loads((registration/'installation.json').read_text())
+        require(isinstance(registration_data,dict),'E_INSTALL_REGISTRATION','Registration metadata must be an object.',registration/'installation.json')
+        if registration_data.get('schema_version')=='0.2':
+            import runtime_management
+            runtime_management.validate_registration(registration, runtime, manifest)
+        else:
+            require((registration/'SKILL.md').read_text() in (loader_text(runtime,manifest), legacy_loader_text(runtime,manifest))
+                    and registration_data == {'runtime':str(runtime),'snapshot_digest':manifest['snapshot_digest']},
+                    'E_INSTALL_REGISTRATION', 'Skill registration differs from the pinned loader.', registration)
     return {'runtime':str(runtime), 'source_revision':manifest['source_revision'], 'preview':manifest['preview'],
             'snapshot_digest':manifest['snapshot_digest'], 'environment':checked}
 
@@ -231,8 +244,50 @@ def skill_registrations(root):
     return found
 
 
+def prepare_snapshot(files, pin, runtime_root):
+    runtime_root = Path(runtime_root)
+    runtime = runtime_root/(pin['source_revision'][:12]+'-'+pin['snapshot_digest'][:16])
+    manifest = {'schema_version': SCHEMA, **pin}
+    runtime_root.mkdir(parents=True,exist_ok=True)
+    if runtime.exists() or runtime.is_symlink():
+        existing=read_manifest(runtime,pin['snapshot_digest'])
+        require(existing==manifest,'E_INSTALL_CONFLICT','Existing installation uses different environment metadata.',runtime)
+        environment(runtime,manifest['python'])
+    else:
+        with tempfile.TemporaryDirectory(prefix='.install-',dir=runtime_root) as temporary:
+            stage=Path(temporary)/'runtime';stage.mkdir()
+            for name,raw in files.items():
+                target=stage/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
+            (stage/'installation.json').write_bytes(canonical(manifest))
+            environment(stage,manifest['python'])
+            stage.rename(runtime)
+    return runtime
+
+
+def prepare(source, revision, project, runtime_root, python, preview=False):
+    project=Path(project).resolve(); runtime_root=Path(runtime_root).expanduser().absolute()
+    require(runtime_root.resolve()==runtime_root and (not runtime_root.exists() or runtime_root.stat().st_uid==os.getuid()),
+            'E_INSTALL_PATH','Use an owned nonsymlink runtime root.',runtime_root)
+    require(project.is_dir(), 'E_INSTALL_PROJECT', 'Target project must exist.', project)
+    outside_repository(runtime_root, project)
+    files,pin=source_files(source, revision, preview)
+    pin={k:v for k,v in pin.items() if k!='snapshot_digest'}
+    pin['python']=str(Path(python).expanduser().absolute())
+    pin['snapshot_digest']=digest(canonical(pin))
+    # Publication is serialized separately from active registration switching.
+    runtime_root.mkdir(parents=True,exist_ok=True)
+    lock=runtime_root/'.sdlc-prepare.lock'
+    try: lock.mkdir()
+    except FileExistsError as exc: raise InstallError('E_INSTALL_BUSY','Snapshot preparation is busy; inspect before retrying.',lock) from exc
+    try:
+        runtime=prepare_snapshot(files,pin,runtime_root)
+        return verify(runtime,pin['snapshot_digest'])
+    finally: lock.rmdir()
+
+
 def install(source, revision, project, runtime_root, skill_root, python, preview=False):
-    project = Path(project).resolve(); runtime_root = Path(runtime_root).expanduser().resolve(); skill_root = Path(skill_root).expanduser().resolve()
+    project = Path(project).resolve(); runtime_root = Path(runtime_root).expanduser().absolute(); skill_root = Path(skill_root).expanduser().absolute()
+    require(runtime_root.resolve()==runtime_root and skill_root.resolve()==skill_root,'E_INSTALL_PATH','Use canonical nonsymlink registration/runtime roots.',skill_root)
     require(project.is_dir(), 'E_INSTALL_PROJECT', 'Target application must already exist.', project)
     outside_repository(runtime_root,project);outside_repository(skill_root,project)
     files, pin = source_files(source,revision,preview)
@@ -246,6 +301,12 @@ def install(source, revision, project, runtime_root, skill_root, python, preview
     require(not others, 'E_INSTALL_CONFLICT', 'Another skill already declares the sdlc name; no files were overwritten.', skill_root)
     # Never replace another skill, including an empty directory or a symlink.
     if registration.exists() or registration.is_symlink():
+        if registration.is_dir() and not registration.is_symlink() and (registration/'installation.json').is_file():
+            from runtime_management import read_json
+            current=read_json(registration/'installation.json')
+            require(isinstance(current,dict),'E_INSTALL_REGISTRATION','Registration metadata must be an object.',registration/'installation.json')
+            if current.get('schema_version')=='0.2' and current.get('runtime')==str(runtime) and current.get('snapshot_digest')==pin['snapshot_digest']:
+                return {**verify(runtime,pin['snapshot_digest'],skill_root), 'replayed':True}
         require(registration.is_dir() and not registration.is_symlink()
                 and (registration/'SKILL.md').is_file() and not (registration/'SKILL.md').is_symlink()
                 and (registration/'SKILL.md').read_text() == loader_text(runtime,manifest),
@@ -259,19 +320,7 @@ def install(source, revision, project, runtime_root, skill_root, python, preview
         raise InstallError('E_INSTALL_BUSY','Another installer may be running; inspect before retrying.',lock) from exc
     try:
         require(not registration.exists() and not registration.is_symlink(), 'E_INSTALL_CONFLICT', 'Registration appeared concurrently.', registration)
-        runtime_root.mkdir(parents=True,exist_ok=True)
-        if runtime.exists() or runtime.is_symlink():
-            existing=read_manifest(runtime,pin['snapshot_digest'])
-            require(existing==manifest,'E_INSTALL_CONFLICT','Existing installation uses different environment metadata.',runtime)
-            environment(runtime,manifest['python'])
-        else:
-            with tempfile.TemporaryDirectory(prefix='.install-',dir=runtime_root) as temporary:
-                stage=Path(temporary)/'runtime';stage.mkdir()
-                for name,raw in files.items():
-                    target=stage/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw)
-                (stage/'installation.json').write_bytes(canonical(manifest))
-                environment(stage,manifest['python'])
-                stage.rename(runtime)
+        prepare_snapshot(files, pin, runtime_root)
         with tempfile.TemporaryDirectory(prefix='.register-',dir=skill_root) as temporary:
             stage=Path(temporary)/'sdlc';stage.mkdir()
             (stage/'SKILL.md').write_text(loader_text(runtime,manifest))
@@ -283,7 +332,11 @@ def install(source, revision, project, runtime_root, skill_root, python, preview
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description=__doc__);commands=parser.add_subparsers(dest='operation',required=True)
+    selected=list(sys.argv[1:] if argv is None else argv)
+    if selected and selected[0] in ('prepare','update','rollback','list','show','recover'):
+        import runtime_management
+        return runtime_management.main(selected)
+    parser=argparse.ArgumentParser(description=__doc__,epilog='Runtime operations: prepare, update, rollback, list, show, recover. Use OPERATION --help for their contracts.');commands=parser.add_subparsers(dest='operation',required=True)
     create=commands.add_parser('install');create.add_argument('--source',type=Path,default=Path(__file__).resolve().parents[2]);create.add_argument('--revision',required=True)
     create.add_argument('--project',required=True,type=Path);create.add_argument('--runtime-root',type=Path,default=Path.home()/'.local/share/ai-sdlc/runtimes')
     create.add_argument('--skill-root',type=Path,default=Path.home()/'.agents/skills');create.add_argument('--python',default=sys.executable)

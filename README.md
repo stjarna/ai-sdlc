@@ -126,6 +126,21 @@ consequential Discovery question at a time. You do not supply YAML, hashes or op
 To resume later, ask: **“Continue Discovery for REQ-0001.”** For the next decision,
 use `$sdlc review`. Nothing is approved or advanced merely by creating or opening a request.
 
+## Where does the skill install?
+
+Codex discovers one user-scoped `$sdlc` loader in `~/.agents/skills/sdlc/`. It points
+to an external pinned runtime under `~/.local/share/ai-sdlc/runtimes/`. Architecture,
+Development, Testing and Security packages live **inside that runtime**; installation
+does not register them as four separate native skills. The host agent reads the relevant
+guidance as the workflow requires. Existing requests retain their effective runtime;
+[explicit updates, rollback and future-stage promotion](docs/runtime-version-management.md)
+keep default selection separate from governed execution. Your application keeps its own code/tests and later
+stores governed request artifacts under `requirements/`, with QA automation under `qa/`.
+
+[Installation architecture: locations, discovery and domain-skill loading](docs/installation-architecture.md)
+explains what gets installed, why user scope is used, and how this differs from adoption
+and authorized Development. The installer registers Codex only, not Claude Code.
+
 ## Commands inside Codex
 
 These are **conversational instructions**, not shell commands. The assistant resolves

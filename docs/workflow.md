@@ -18,6 +18,12 @@ questions, drafts documents and uses host tools to implement/test. Deterministic
 operations validate structure and revisions and persist state, history and approvals.
 A human supplies intent, reviews the results and makes consequential decisions.
 
+The [installation architecture](installation-architecture.md#how-specialist-guidance-is-selected-and-used)
+explains where these instructions live and when the agent reads them. Domain packages
+are bundled file resources, not four additional native registrations or automatically
+running specialist agents. Templates define document structure; Python checks and
+records the resulting artifacts, rather than executing the Markdown as a program.
+
 A role is an accountable responsibility, not necessarily another person. The PoC uses
 locally declared identities; it does not authenticate people or enforce role-based
 access. Different roles and QA's independent input authority do not establish an
@@ -209,3 +215,14 @@ scenario feedback on an existing scenario
 revision returns to test_design; automation feedback from test_automation,
 ready_for_verification or verified returns to test_automation. Neither authorizes
 changing approved product expectations. For the evidence join and check execution prerequisites, see [track synchronization](work-tracks.md#evidence-dependency-between-tracks).
+
+## Runtime authority is separate from lifecycle authority
+
+Explicit [runtime promotion](runtime-version-management.md) selects compatible future
+work at a supported boundary. It does not reopen approved requirements, approve an
+artifact, advance a stage or assign a person. Defaults can be updated/rolled back while
+existing request/track pins remain. Engineering and QA may use different compatible
+runtimes; the existing evidence join also checks their runtime contracts. New operation
+receipts bind exact artifact file hashes to runtime pins without rewriting old manifests.
+A missing historical runtime receipt is not retrospectively filled in. The correct
+runtime executable and fresh declared context are required before managed writes.

@@ -25,8 +25,9 @@ requirements/REQ-0001-example/
 └── discovery.yaml      # optional, authoritative typed Discovery history
 ```
 
-`new` still creates only the first two files. `open` and `validate` never initialize
-history. The first `discovery-update` creates `discovery.yaml`; an empty records list
+The Discovery model still initializes the first two files only; installed managed
+`new` additionally records the independent [runtime ledger](runtime-version-management.md).
+`open` and `validate` never initialize Discovery history. The first `discovery-update` creates `discovery.yaml`; an empty records list
 can initialize it explicitly. Metadata is not migrated or changed. Sidecar placement
 is a fixed convention, so the strict existing `artifacts: {idea: ...}` remains intact.
 The idea reference must not alias metadata or the reserved Discovery file.
