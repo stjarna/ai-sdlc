@@ -1,0 +1,18 @@
+name: business-requirements
+description: Specialist content guidance for business-requirements.
+version: 1.0.0
+owner: Product / Business Requirements Team
+stages:
+- business_refinement
+inputs:
+- Completed sourced Discovery and current resolutions
+outputs:
+- Reviewable business.md
+- Discovery-to-business traceability
+standards:
+- Source traceability
+- Explicit uncertainty
+- Human governance remains with the orchestrator
+dependencies: {}
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

@@ -165,7 +165,7 @@ class TemplateWorkflowTests(unittest.TestCase):
         for filename, name in (('business-history.yaml', 'business'), ('analysis-history.yaml', 'specification')):
             history = yaml.safe_load((f.directory / filename).read_text())
             record = history['revisions'][-1]
-            self.assertEqual(record['schema_version'], '0.2')
+            self.assertEqual(record['schema_version'], '0.3')
             self.assertEqual(record['template'], templates.resolve(name)['pin'])
         f.design_engineering()
         f.design_qa()

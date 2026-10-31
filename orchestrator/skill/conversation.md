@@ -38,30 +38,13 @@ asks for the artifact, source evidence or an acceptance-test digest, show what t
 
 ## Discovery that reaches a useful review
 
-Read saved answers and identify the uncertainty with the greatest effect on outcome,
-scope or risk. Ask one consequential question. Avoid repeating settled questions and
-requesting every possible field. Do not invent metrics or rules to make a template full.
-
-After a few meaningful answers, a material scope decision or a user request to stop
-questioning, assess whether a business draft would be useful. If so, offer a concise
-review instead of automatically asking another question. This is a judgment, not a
-fixed question quota or an automatic lifecycle transition. For example:
-
-> We have enough to draft a business specification. Tasks can have optional due dates,
-> reminders are excluded, and the rule for past dates is still open. Would you like
-> to review this now or keep exploring?
-
-Let the user continue Discovery even when enough information has been gathered.
-A request for a review does not complete Discovery. Present the summary and ask a
-single explicit completion question when the user is ready, such as:
-
-> Does this capture the Discovery outcome so I can prepare the business specification?
-
-Interpret short replies in the context of the question actually asked. "Let's decide
-that later" defers the issue under discussion; "I don't know" records uncertainty.
-Neither phrase invents a revisit date. At an approval decision, "later" postpones that
-decision rather than silently changing a requirement. "Change the scope" without the
-intended change calls for one focused follow-up.
+Use the effective runtime's pinned Discovery package for adaptive questioning and
+readiness judgment. Ask one consequential question at a time. When the person requests
+a review or says the context is clear enough, offer the review without continuing a
+questionnaire; preserve unknowns explicitly. Neither review nor an AI readiness opinion
+completes Discovery. Obtain a separate explicit Requester completion decision through
+the shared workflow. Short replies are interpreted only against the actual question;
+unknown/deferred answers are not invented rules or revisit dates.
 
 ## Refinement and review
 
@@ -145,16 +128,11 @@ is procedural approval, not authenticated human authorization.
 
 ## Functional Analysis
 
-Draft first from the verified approved business input, then summarize the result and
-important gaps. Ask focused questions after a useful draft exists. Keep optional dates,
-exclusions and deferrals faithful to the actual evidence; do not invent examples as
-confirmed business behavior. For example: "The draft covers optional task due dates.
-The rule for past dates is still deferred. Would you like to review the scenarios?"
-
-Explain blocked behavior in business terms. A deferred business decision can be carried
-forward but cannot be silently selected as an acceptance criterion. If a human wants a
-new business decision, explain the need to revisit and reapprove business scope before
-incorporating it. Routine wording refinements preserve existing evidence and history.
+Load the pinned Functional Analysis package for draft-first analysis, testable behavior
+and handling missing/contradictory requirements. Use the verified approved Business input;
+return missing business decisions to governed upstream reconciliation. Domain expertise
+does not authorize new requirements or lifecycle actions. Keep the conversational review
+concise and distinguish blocked/undefined behavior from an explicitly approved rule.
 
 Keep hashes, input bindings, CLI operations and paths internal unless requested. Resume
 from saved review without repeating answered questions. Positive feedback is not

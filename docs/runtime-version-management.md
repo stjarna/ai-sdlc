@@ -20,7 +20,7 @@ The installer still refuses to replace an occupied unrelated registration, and a
 
 ```text
 ~/.agents/skills/sdlc/
-    SKILL.md                       # one native Codex loader, not four domain registrations
+    SKILL.md                       # one native Codex loader, not seven domain registrations
     installation.json              # selected default; managed schema 0.2 adds manager/history
 ~/.local/share/ai-sdlc/
     venv/                          # explicitly prepared interpreter, retained separately
@@ -336,3 +336,27 @@ wrong/source runtime. Unrestricted old binaries or manual filesystem edits remai
 the cooperating-writer trust boundary. Deleting an entire runtime sidecar cannot be
 cryptographically distinguished from a legacy request: an installed writer requires
 explicit initial binding rather than silently adopting the default or inventing history.
+
+
+## Adding early-phase domain coverage
+
+The seven-package runtime adds Discovery, Business Requirements and Functional Analysis
+1.0.0; existing Engineering/QA packages retain their pins. New early artifacts record
+[domain provenance](../orchestrator/domain-skills/README.md#provenance-and-compatibility)
+alongside unchanged templates. Compatibility permits additive reader/package support,
+while changes to an existing contract still block. Actual candidate readers remain
+mandatory. New guidance/package pins require explicit future-scope reconciliation.
+
+For example, Discovery and Business under the previous four-package runtime remain
+approved. At Analysis readiness, inspect and explicitly promote to the new runtime,
+assessing the new Functional Analysis guidance without reapproving unchanged upstream
+scope. New specification history records its domain and template pins; the runtime
+ledger binds the operation's exact files. No old artifact receives a retrospective pin.
+The old reader may reject new envelopes; do not bypass that by falling back to its CLI.
+The verification join checks current selected readers and current-cycle track evidence,
+rather than requiring an historical shared-stage writer to read all later artifacts.
+
+Default rollback retains the verified resolver manager even if the selected older default
+already implements the execution protocol. Protocol presence alone does not mean it can
+parse newer provenance envelopes. The retained manager resolves a request still pinned
+to the newer runtime; rollback neither downgrades that request nor rewrites its artifacts.

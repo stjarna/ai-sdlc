@@ -37,7 +37,7 @@ class EngineeringCliTests(unittest.TestCase):
         return obj
 
     def test_fresh_process_drafting_approval_replay_and_stale_json_diagnostics(self):
-        self.assertEqual(len(self.cli('skills')['skills']),4)
+        self.assertEqual(len(self.cli('skills')['skills']),7)
         review=self.cli('engineering-review','REQ-0001')['engineering']
         path=self.outside/'design.json';path.write_text(json.dumps(self.fixture.document('design')))
         common=['REQ-0001','--expected-engineering-revision',review['revision'],'--operation-id','cli-design-fixture','--decision','Fixture: draft this design.']

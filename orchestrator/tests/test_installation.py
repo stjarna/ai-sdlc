@@ -79,7 +79,7 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(value['source_revision'],self.revision);self.assertFalse(value['preview'])
         self.assertEqual(before,hashes(self.project))
         self.assertEqual(len(value['environment']['templates']),11)
-        self.assertEqual(len(value['environment']['skills']),4)
+        self.assertEqual(len(value['environment']['skills']),7)
         text=(self.skills/'sdlc/SKILL.md').read_text()
         self.assertIn(str(self.runtime/'orchestrator/skill/SKILL.md'),text)
         self.assertIn(value['snapshot_digest'],text)

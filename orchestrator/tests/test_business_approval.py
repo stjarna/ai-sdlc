@@ -44,6 +44,7 @@ class BusinessApprovalTests(unittest.TestCase):
             self.assertEqual(set(manifest["files"]), set(approval.BASELINE_FILES))
 
     def setUp(self, legacy_templates=False):
+        self.legacy_templates=legacy_templates
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.project = Path(temporary.name)
@@ -56,6 +57,7 @@ class BusinessApprovalTests(unittest.TestCase):
         metadata.pop("ownership")
         if legacy_templates:
             metadata.pop("template_provenance")
+            metadata.pop("domain_provenance")
         metadata_path.write_text(yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
         self.append([record("user_statement", "Record deadlines against tasks."), record("question", "Dates or reminders?")])
         self.append([record("user_statement", "Dates only; reminders are excluded.", answers="D-0002"), record("ai_assumption", "Dates are optional.")])
@@ -79,6 +81,7 @@ class BusinessApprovalTests(unittest.TestCase):
             for entry in ledger["revisions"]:
                 entry.pop("schema_version", None)
                 entry.pop("template", None)
+                entry.pop("skills", None)
             path.write_text(yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True))
 
     def unique(self, prefix):
@@ -90,6 +93,14 @@ class BusinessApprovalTests(unittest.TestCase):
 
     def append(self, records):
         epic = sdlc.inspect_epics(self.project, "open", "REQ-0001")["epic"]
+        if self.legacy_templates:
+            # Use the retained pure legacy envelope from the outset. Retrofitting
+            # current operations would retain hashes of newer intermediate bytes.
+            path=self.directory/"discovery.yaml"
+            old=yaml.safe_load(path.read_text()) if path.exists() else sdlc.history.empty("REQ-0001")
+            candidate,_=sdlc.history.append(old,"REQ-0001",self.unique("fixture-discovery"),epic["revision"],records)
+            sdlc.atomic_history_write(path,yaml.safe_dump(candidate,sort_keys=False,allow_unicode=True))
+            return sdlc.inspect_epics(self.project,"open","REQ-0001")
         return sdlc.discovery_update(self.project, "REQ-0001", epic["revision"], self.unique("fixture-discovery"), records)
 
     def complete(self):

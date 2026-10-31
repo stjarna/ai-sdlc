@@ -3,9 +3,9 @@
 [Documentation index](README.md) · [Getting started](getting-started.md) · [Installation commands and recovery](installation-and-adoption.md)
 
 Install **one user-scoped SDLC skill loader**. It points to a complete runtime outside
-any application repository. Architecture, Development, Testing and Security are bundled,
+any application repository. Discovery, Business Requirements, Functional Analysis, Architecture, Development, Testing and Security are bundled,
 versioned instruction packages inside that runtime; this installer does not register
-them as four additional native Codex skills. The loader resolves a request/track's effective runtime separately from the selected
+them as seven additional native Codex skills. The loader resolves a request/track's effective runtime separately from the selected
 default; [runtime management](runtime-version-management.md) adds explicit update, rollback
 and future-work promotion. The application keeps its existing code,
 tests, instructions and Git history, then gains governed request artifacts during use.
@@ -35,6 +35,7 @@ The runtime preserves the relative resource layout:
     ├── skill/                       # shared SKILL.md, commands.md, conversation.md
     ├── domain-skills/
     │   ├── catalog.yaml             # reviewed current version/content pins
+    │   ├── discovery/, business-requirements/, functional-analysis/
     │   ├── architecture/            # manifest.yaml, SKILL.md, references/
     │   ├── development/
     │   ├── testing/
@@ -60,7 +61,7 @@ flowchart TB
     L[User Codex loader] -->|exact path and digest| R
     subgraph B[Inside runtime]
         O[Shared orchestration instructions]
-        D[Four domain packages and catalog]
+        D[Seven domain packages and catalog]
         T[Templates and catalog]
         C[Deterministic scripts]
     end
@@ -134,7 +135,7 @@ An unrestricted editor can alter
 the instruction to run the check; hashes do not authenticate people or prevent coordinated
 rewriting. Host permissions remain the security boundary.
 
-All four packages and template pins are structurally checked during environment
+All seven packages and template pins are structurally checked during environment
 verification. That does not mean their complete prose enters the model context or that
 specialist work ran during status. Loading selected guidance for a stage is a separate step.
 
@@ -145,10 +146,13 @@ the host model reading them and using authorized tools. The **deterministic runt
 validates and records artifacts, decisions, lifecycle and actual check evidence. An
 **artifact template** provides document structure. None is interchangeable with another.
 
-Current catalog pins, checked for this documentation revision:
+Current catalog pins, checked for this documentation revision. [Domain packages](../orchestrator/domain-skills/README.md) describe all seven and the early-history provenance envelopes. Resolve the effective runtime first, then use `skills --stage ACTIVITY` to select expertise:
 
 | Package / current version | Responsible domain | Used for | Relevant document templates |
 |---|---|---|---|
+| Discovery / 1.0.0 | Discovery Team | Adaptive questioning, evidence and review | idea; discovery.yaml remains untemplated history |
+| Business Requirements / 1.0.0 | Product / Business Requirements Team | Sourced business specification | business |
+| Functional Analysis / 1.0.0 | Business Analysis Team | Testable behavior and acceptance criteria from approved input | specification |
 | Architecture **1.3.0** | Architecture Team | Technical Design from approved Analysis and inspected code; consults its exact Security dependency, currently 1.2.0. | `technical-design` |
 | Development **1.3.0** | Engineering Enablement | Engineering Implementation Planning, controlled Development, unit/build checks and source-bound code review. | `implementation-plan`, `code-review` |
 | Testing **1.3.0** | QA / Quality Engineering | Independent QA strategy/scenarios, automation and actual integration/UI checks; joined verification and Final Verification reporting. | `test-strategy`, `test-scenarios`, `test-automation`, `verification-report` |
@@ -156,7 +160,7 @@ Current catalog pins, checked for this documentation revision:
 
 Each current package physically lives at
 `<runtime>/orchestrator/domain-skills/<name>/`, containing `manifest.yaml`, `SKILL.md`
-and `references/`. The catalog pins the **version and package digest**; the current
+and optional `references/`. The catalog pins the **version and package digest**; the current
 package directory is not itself named after its version. Retained prior snapshots are
 under `versions/<name>/<version>/`. Historical relative instruction links assume their
 original package layout; do not edit archived packages to make those links current.

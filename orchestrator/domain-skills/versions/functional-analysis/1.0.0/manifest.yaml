@@ -1,0 +1,19 @@
+name: functional-analysis
+description: Specialist content guidance for functional-analysis.
+version: 1.0.0
+owner: Business Analysis Team
+stages:
+- functional_analysis
+inputs:
+- Handoff-selected immutable approved Business baseline
+- Frozen supporting Discovery evidence
+outputs:
+- Reviewable specification.md
+- Business-to-functional coverage and acceptance criteria
+standards:
+- Source traceability
+- Explicit uncertainty
+- Human governance remains with the orchestrator
+dependencies: {}
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

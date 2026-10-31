@@ -37,7 +37,7 @@ from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.14.0"
+ORCHESTRATOR_VERSION = "0.15.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
@@ -220,6 +220,14 @@ def read_epic(directory: Path) -> Epic:
             templates.validate_pin(provenance["idea"],"idea")
         except business.BusinessError as exc:
             epic.diagnostics.append(error(exc.code,metadata_path,str(exc)))
+    if "domain_provenance" in data:
+        expected_fields.add("domain_provenance")
+        try:
+            domain=data["domain_provenance"]
+            domain_skills.require(isinstance(domain,dict) and set(domain)=={"schema_version","idea"} and domain["schema_version"]=="0.1", "Invalid idea domain envelope.")
+            domain_skills.validate_pins(domain["idea"],"discovery","discovery")
+        except business.BusinessError as exc:
+            epic.diagnostics.append(error(exc.code,metadata_path,str(exc)))
     if set(data) != expected_fields:
         epic.diagnostics.append(error(
             "E_METADATA", metadata_path,
@@ -315,7 +323,7 @@ def read_epic(directory: Path) -> Epic:
                 mark.line + 1 if mark else None,
             ))
             return epic
-        except history.HistoryError as exc:
+        except (history.HistoryError, business.BusinessError) as exc:
             epic.diagnostics.append(error(exc.code, discovery_path, str(exc)))
             return epic
         except (OSError, UnicodeError) as exc:
@@ -462,6 +470,8 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
         selected_template=templates.resolve("idea", expected_template_digest)
         content = selected_template["content"].replace("{{problem}}", idea.strip())
         metadata["template_provenance"]={"schema_version":"0.1","idea":selected_template["pin"]}
+        selected_domain=domain_skills.for_stage("discovery",StrictLoader)
+        metadata["domain_provenance"]={"schema_version":"0.1","idea":selected_domain}
         runtime_selection.note_creation(metadata,content)
         made_requirements = False
         made_epic = False
@@ -472,6 +482,7 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
             directory.mkdir()  # Exclusive ownership; never replace an existing directory.
             made_epic = True
             templates.assert_current(selected_template)
+            domain_skills.assert_current(selected_domain,"discovery",StrictLoader)
             write_new(directory / "metadata.yaml", yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
             write_new(directory / "idea.md", content)
             created = read_epic(directory)
@@ -565,7 +576,8 @@ def discovery_update(project: Path, epic_id: str, expected_revision: str, operat
         if expected_revision != epic.revision:
             raise Rejected([error("E_REVISION_CONFLICT", path, "Request artifacts changed; reopen and reconcile before sending a new operation.")])
         try:
-            candidate, operation = history.append(document, epic_id, operation_id, expected_revision, records)
+            selected_domain=domain_skills.for_stage("discovery",StrictLoader)
+            candidate, operation = history.append(document, epic_id, operation_id, expected_revision, records, selected_domain)
         except history.HistoryError as exc:
             raise Rejected([error(exc.code, path, str(exc))]) from exc
         content = yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True)
@@ -574,6 +586,7 @@ def discovery_update(project: Path, epic_id: str, expected_revision: str, operat
         require_valid(checked.diagnostics)
         if checked.revision != expected_revision:
             raise Rejected([error("E_REVISION_CONFLICT", path, "Request artifacts changed while preparing the update.")])
+        domain_skills.assert_current(selected_domain,"discovery",StrictLoader)
         atomic_history_write(path, content)
         updated = read_epic(epic.directory)
         require_valid(updated.diagnostics)
@@ -673,7 +686,8 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
             coverage = business.validate_markdown(content, epic_id, expected_source, epic.discovery, epic.discovery_state)
             selected_template = templates.resolve("business", expected_template_digest)
             templates.validate_document(selected_template, content)
-            candidate = business.append(ledger, epic_id, content, expected_source, editor, reason, operation_id, mode, selected_template["pin"])
+            selected_domain=domain_skills.for_stage("business_refinement",StrictLoader)
+            candidate = business.append(ledger, epic_id, content, expected_source, editor, reason, operation_id, mode, selected_template["pin"], selected_domain)
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
         files = {"business.md": content, "business-history.yaml": yaml.safe_dump(candidate, sort_keys=False, allow_unicode=True).encode("utf-8")}
@@ -688,6 +702,7 @@ def business_write(project: Path, epic_id: str, expected_source: str, expected_b
             raise Rejected([error("E_REVISION_CONFLICT", ledger_path, "Epic changed during business write preparation.")])
         try:
             templates.assert_current(selected_template)
+            domain_skills.assert_current(selected_domain,"business_refinement",StrictLoader)
             business.publish(epic.directory, files)
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
@@ -944,8 +959,9 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             entry = {"digest": business.digest(content), "previous": expected_analysis, "content_base64": base64.b64encode(content).decode("ascii"), **{k: source[k] for k in ("baseline_id", "approval_id", "handoff_id")}, "editor": editor, "reason": reason, "timestamp": business.timestamp(), "operation_id": operation_id, "expected_review": expected_review, "mode": mode, "feedback": feedback}
             selected_template = templates.resolve("specification", expected_template_digest)
             templates.validate_document(selected_template, content)
-            ledger["schema_version"] = "0.2"
-            entry.update(schema_version="0.2", template=selected_template["pin"])
+            selected_domain=domain_skills.for_stage("functional_analysis",StrictLoader)
+            ledger["schema_version"] = "0.3"
+            entry.update(schema_version="0.3", template=selected_template["pin"], skills=selected_domain)
             ledger["revisions"].append(entry)
             files = {"specification.md": content, "analysis-history.yaml": yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True).encode("utf-8")}
             if epic.metadata["status"] == "ready_for_analysis":
@@ -956,6 +972,7 @@ def analysis_write(project: Path, epic_id: str, expected_review: str, expected_a
             require_valid(checked.diagnostics)
             analysis.require(checked.analysis_review_revision == expected_review, "Artifacts changed during Analysis preparation.", "E_REVISION_CONFLICT")
             templates.assert_current(selected_template)
+            domain_skills.assert_current(selected_domain,"functional_analysis",StrictLoader)
             business.publish(epic.directory, files, analysis=True)
         except business.BusinessError as exc:
             raise Rejected([error(exc.code, epic.directory / exc.filename, str(exc))]) from exc
@@ -1245,7 +1262,7 @@ def main(argv: list[str] | None = None) -> int:
         if name=="qa-approve":item.add_argument("--acknowledge-open-item",action="append",default=[])
     commands.add_parser("templates", help="Read pinned document templates").add_argument("template_id", nargs="?", choices=tuple(templates.ARTIFACTS))
     commands.add_parser("adoption-preflight", help="Read-only existing-project adoption checks")
-    commands.add_parser("skills", help="Read approved local domain skill catalog")
+    commands.add_parser("skills", help="Read approved local domain skill catalog").add_argument("--stage",choices=tuple(domain_skills.STAGE_SKILLS))
     commands.add_parser("engineering-review", help="Read the sequential engineering state").add_argument("id")
     for name in ("engineering-write", "engineering-approve", "engineering-request-changes", "engineering-advance", "development-start", "check-run", "security-remediate", "verification-remediate", "engineering-finalize"):
         eng = commands.add_parser(name, help="Revision-bound sequential engineering operation")
@@ -1390,7 +1407,7 @@ def main(argv: list[str] | None = None) -> int:
             import adoption
             output = adoption.preflight(args.project)
         elif args.operation == "skills":
-            output = result("skills", [], skills=domain_skills.catalog(StrictLoader))
+            output = result("skills", [], skills=domain_skills.catalog(StrictLoader), **({"selection":domain_skills.for_stage(args.stage,StrictLoader)} if args.stage else {}))
         elif args.operation == "templates":
             selected = templates.resolve(args.template_id) if args.template_id else templates.catalog()
             output = result("templates", [], templates=selected)

@@ -16,6 +16,9 @@ New document layout is selected from the [pinned template catalog](../orchestrat
 The schemas/examples here explain validation and historical compatibility; existing
 validators remain authoritative and legacy records are not reformatted.
 
+
+New early-phase writes additionally record exact [domain skill provenance](../orchestrator/domain-skills/README.md#provenance-and-compatibility): optional idea metadata envelope 0.1, Discovery history/operation 0.2 and Business/Analysis history/revision 0.3. The document/record formats below remain the source contract; older examples omit the new provenance fields and stay readable. No historical artifact is backfilled or reformatted.
+
 ## Lifecycle and artifacts
 
 ```text

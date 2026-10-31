@@ -8,9 +8,9 @@ No unrelated edits were present. Runtime, skill instructions/adapters, domain/te
 packages, tests, approved artifacts, the 448-file archive and the Littlelist repository
 are outside the edit scope. Maintainers own this audit; domain owners review their contracts.
 
-> **Current implementation pass:** runtime management and future-work promotion extend
-> the prior documentation-only scope. Its verification is recorded in the runtime
-> addendum below; earlier scopes, limitations and results remain dated historical context.
+> **Latest implementation pass:** early-phase domain extraction extends the verified
+> runtime-management foundation. See the final addendum for provenance, compatibility
+> and actual test results; earlier scopes and results remain dated historical context.
 
 ## Complete docs inventory
 
@@ -307,3 +307,80 @@ against coordinated unrestricted edits. Unbound source tooling and old unrestric
 binaries are outside managed runtime-provenance guarantees. Historical missing attribution
 stays unknown. Regular active-stage promotion is deferred; no automatic migration,
 network updates, Git automation or Claude runtime acceptance is introduced.
+
+## Early-phase domain extraction — 2026-10-31
+
+Baseline: `d5009d8aae78be6bfefe5aac466a03f080599fbd`, including verified runtime
+management. Discovery, Business Requirements and Functional Analysis now have separate
+1.0.0 packages owned by their domain teams, alongside the unchanged four Engineering/QA
+packages. Current and retained package bytes use the existing manifest/catalog contract.
+
+### Responsibility and compatibility review
+
+- Extract adaptive questioning/readiness judgment, business content quality and functional
+  behavior/acceptance guidance. The shared coordinator retains source authority, record
+  persistence, ownership, explicit human decisions, audit, approvals and separate advancement.
+  Conversation policy retains concise presentation and gate semantics.
+- Templates retain their exact versions/content digests. No human-readable document layout
+  or approval manifest changes. Deterministic early writers record selected domain pins in
+  explicitly versioned metadata/history envelopes; old entries and approved snapshots are
+  not retrospectively assigned new guidance.
+- `skills --stage ACTIVITY` adds read-only deterministic selection without changing the
+  unqualified catalog result or adding a new conversational command. CLI 0.15.0 is separate
+  from package 1.0.0, domain validation contract 1 and the existing template contracts.
+- Runtime comparison permits additive reader/package support, while existing contract
+  changes still block. Actual readers remain mandatory. Current selected and current-cycle
+  track evidence runtimes are checked at verification; obsolete shared-stage writers need
+  not parse newer downstream artifacts. No current track evidence check is omitted.
+- A disposable real-process test preserves Business approval/baseline bytes under the
+  committed four-package runtime, explicitly reconciles/promotes future Analysis, and
+  records new Functional Analysis/domain/template/runtime provenance without upstream
+  reapproval. It also rolls the default back to the older protocol-capable runtime,
+  retaining the verified manager so the newer request remains resolvable. Decisions in
+  this fixture are fictional, not actual user approval.
+- The pre-template golden fixture now constructs legacy Discovery envelopes from the outset:
+  stripping new provenance after intermediate revision hashes were computed was incorrect.
+  Original expected review/baseline hashes remain unchanged and are checked by regression.
+
+### Validation boundaries
+
+The focused ten-test suite covers catalog/stage resolution, retained pins and corruption,
+source-projection/content equivalence, mixed history, original-idea preservation, retries,
+pin-drift cleanup, additive compatibility, relevant verification readers and actual forward
+promotion. It compares representative persisted content and references, not deterministic
+AI prose. Static skill checks validate all three new entrypoints. The full-suite result is
+recorded in the completion note below.
+
+Local installation smoke testing uses a labelled working-tree preview and disposable
+external runtime/registration/application. Actual Codex discovery starts no model turn.
+No real installed runtime/profile, Littlelist repository or historical evidence is updated.
+Domain instructions still depend on agent execution and human semantic review; pins identify
+selected guidance, not proof the model followed it. Older readers may reject new envelopes;
+that incompatibility blocks writes instead of migrating evidence or bypassing gates.
+
+
+### Completion evidence
+
+- Complete suite exercised **467 distinct tests** in two module groups: 218 tests passed
+  in 922.489s; the 249-test group had one outdated CLI assertion expecting four packages.
+  Only that assertion was corrected to seven; the entire **seven-test CLI module passed**
+  in 40.080s. Consolidated latest outcomes are **467 passing tests**, with **474 test
+  executions**, retaining the initial failure and retry. The run's blanket file-hash guard
+  detected the test-only edit; no production change was made during this final run.
+- All ten added tests passed, including actual committed-A/new-B promotion and default
+  rollback with the newer request retained. Historical golden review/baseline hashes
+  passed unchanged after correcting legacy fixture construction, not expected constants.
+- Static skill validation passed for all three new entrypoints. Compilation, all 57 SDLC
+  and eight installer operation help checks, tracked/new-file whitespace and final diff
+  checks passed. Parsed link validation covered 29 Markdown files/466 references before
+  this completion note; no broken local targets/anchors were found.
+- Thirteen Mermaid diagrams rendered in light/default and dark themes (26 renders).
+  Reviewed the new lifecycle/domain map and normal-width documentation renders.
+- Disposable installation smoke and actual Codex CLI discovery passed with the final
+  implementation. No model turn was run. Read-only preservation verification passed for
+  448 archived files, seven historical skill pins and 51 evidence bindings, with both
+  tracks Verified. All pre-existing domain package and template bytes are unchanged.
+
+No new live conversational acceptance is claimed. A focused human rehearsal is described
+in domain-skills/README.md. Existing installed runtimes are not updated by this source
+change: installation/default update and request promotion remain separate explicit actions.

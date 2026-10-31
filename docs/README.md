@@ -24,6 +24,8 @@ are illustrative unless a page links preserved execution evidence.
 
 ## Architecture and governance
 
+- [Seven domain skills](../orchestrator/domain-skills/README.md): specialist ownership, stage selection, template relationships and backward-compatible provenance.
+
 - [Workflow responsibilities](workflow.md#who-does-what): agent judgment, deterministic persistence and human decisions.
 - [Governance corrections](engineering.md#governance-corrections-contract-01): prototype limitation consent and source-bound semantic review.
 - [Domain loading and current package roles](installation-architecture.md#how-specialist-guidance-is-selected-and-used), [legacy domain package contract](engineering.md#domain-instruction-packages) and [pinned catalog](../orchestrator/domain-skills/catalog.yaml): ownership and immutable instruction versions.

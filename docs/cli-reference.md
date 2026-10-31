@@ -5,7 +5,7 @@
 This is the tool-facing index for engineers maintaining integrations or inspecting a
 failure. Business users normally use the conversational commands. **57 operations**
 were extracted from the actual `sdlc.main` argparse tree at documentation baseline
-`80b6c2e7098210f1cb920c69b8a914e63fd27451` plus this runtime-management increment,
+`d5009d8aae78be6bfefe5aac466a03f080599fbd` plus this early-domain increment,
 before dispatch, without executing writes.
 Installer/adoption entrypoints are listed separately below. This inventory complements,
 rather than replaces, the [operation contract](../orchestrator/scripts/README.md) and
@@ -174,6 +174,10 @@ See [stage policy and diagnostics](command-ux.md) for eligibility, artifact sche
 **Optional:** `TEMPLATE_ID {idea,business,specification,technical-design,implementation-plan,code-review,security-review,verification-report,test-strategy,test-scenarios,test-automation}`.
 
 ### skills
+
+Optional `--stage ACTIVITY` selects pinned expertise for a lifecycle/readiness or QA
+activity (see `skills --help` for choices), adding `selection` without replacing the
+existing `skills` catalog response. This is read-only and authorizes no work.
 
 **Mode:** read-only. **Purpose:** internal domain guidance resolution.
 

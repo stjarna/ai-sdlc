@@ -12,3 +12,12 @@ skills:
   security:
     version: 1.2.0
     digest: 5698ff24151fffff13837297dbe36e33a0c26ffb180256c95814c3f1c63c94ee
+  discovery:
+    version: 1.0.0
+    digest: 4e7b591e30b0fe8cf539e798c1ebdc2cc082bcc925347fd0635c41feabe39c2a
+  business-requirements:
+    version: 1.0.0
+    digest: 492889be3a36d25b858afebf7e89264de1ef7505a030020b21f88347378040ee
+  functional-analysis:
+    version: 1.0.0
+    digest: 1ab5ac4e7f448cacd2b1a2517689ae617942f84b52d8cd76bf8763d4c8d3d05d

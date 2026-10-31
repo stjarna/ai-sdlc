@@ -8,7 +8,7 @@
 > [README](../README.md). This working design retains earlier increment scope and future
 > architecture. Story/Release models, Docker-first planning, the original 1–2-skill sketch
 > and `approved_for_deployment` are not a current executable feature matrix. The implemented
-> lifecycle uses four pinned domain packages and Engineering/QA tracks through `verified`;
+> lifecycle uses seven pinned domain packages and Engineering/QA tracks through `verified`;
 > later addenda and operation contracts describe those extensions.
 
 **Verze dokumentu:** 0.13 (Engineering and QA work tracks)

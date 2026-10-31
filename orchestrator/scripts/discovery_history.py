@@ -91,12 +91,18 @@ def project(history, epic_id):
     """Validate the append-only ledger and derive mechanical resolution states."""
     require(isinstance(history, dict) and set(history) == {"schema_version", "request_id", "operations"},
             "History must contain schema_version, request_id and operations.")
-    require(history["schema_version"] == SCHEMA_VERSION, "Unsupported Discovery schema version.", "E_DISCOVERY_VERSION")
+    require(history["schema_version"] in (SCHEMA_VERSION,"0.2"), "Unsupported Discovery schema version.", "E_DISCOVERY_VERSION")
     require(history["request_id"] == epic_id, "Discovery request_id does not match the Epic.")
     require(isinstance(history["operations"], list), "History operations must be a list.")
     seen, operation_ids, questions, assumptions, superseded = {}, set(), {}, {}, {}
     for operation in history["operations"]:
-        require(isinstance(operation, dict) and set(operation) == {"id", "base_revision", "records"},
+        fields={"id", "base_revision", "records"}
+        if isinstance(operation,dict) and "schema_version" in operation:
+            require(history["schema_version"]=="0.2" and operation["schema_version"]=="0.2", "Invalid Discovery provenance envelope.")
+            fields|={"schema_version","skills"}
+            import domain_skills
+            domain_skills.validate_pins(operation.get("skills"),"discovery","discovery")
+        require(isinstance(operation, dict) and set(operation) == fields,
                 "Each operation requires id, base_revision and records.")
         operation_id = operation["id"]
         require(valid_operation_id(operation_id), "Invalid operation ID.")
@@ -150,7 +156,7 @@ def project(history, epic_id):
     return {"questions": list(questions.values()), "assumptions": list(assumptions.values()), "superseded_by": superseded}
 
 
-def append(history, epic_id, operation_id, revision, records):
+def append(history, epic_id, operation_id, revision, records, skills=None):
     """Return a validated candidate; never mutate the supplied history or records."""
     project(history, epic_id)
     candidate = deepcopy(history)
@@ -161,6 +167,9 @@ def append(history, epic_id, operation_id, revision, records):
         require(isinstance(record, dict) and "id" not in record, "Record IDs are assigned by the operation.", "E_UPDATE_INPUT")
         added.append({"id": f"D-{index:04d}", **deepcopy(record)})
     operation = {"id": operation_id, "base_revision": revision, "records": added}
+    if skills is not None:
+        candidate["schema_version"]="0.2"
+        operation.update(schema_version="0.2",skills=skills)
     candidate["operations"].append(operation)
     project(candidate, epic_id)
     return candidate, operation

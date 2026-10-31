@@ -20,7 +20,7 @@ A human supplies intent, reviews the results and makes consequential decisions.
 
 The [installation architecture](installation-architecture.md#how-specialist-guidance-is-selected-and-used)
 explains where these instructions live and when the agent reads them. Domain packages
-are bundled file resources, not four additional native registrations or automatically
+are bundled file resources, not seven additional native registrations or automatically
 running specialist agents. Templates define document structure; Python checks and
 records the resulting artifacts, rather than executing the Markdown as a program.
 
@@ -226,3 +226,25 @@ runtimes; the existing evidence join also checks their runtime contracts. New op
 receipts bind exact artifact file hashes to runtime pins without rewriting old manifests.
 A missing historical runtime receipt is not retrospectively filled in. The correct
 runtime executable and fresh declared context are required before managed writes.
+
+
+## Specialist coverage throughout the lifecycle
+
+```mermaid
+flowchart TB
+    O[Orchestrator: lifecycle and human gates] --> D[Discovery skill]
+    D --> B[Business Requirements skill]
+    B --> F[Functional Analysis skill]
+    F --> E[Engineering track]
+    F --> Q[Independent QA track]
+    E --> A[Architecture / Development / Security]
+    Q --> T[Testing]
+    S[Templates: structure] -.-> O
+    V[Runtime: validation and persistence] -.-> O
+```
+
+Arrows identify expertise by activity, not automatic agent calls or authority to advance.
+Domain teams own content practices; the coordinator still owns every explicit completion,
+approval, advancement and handoff. [Package contracts](../orchestrator/domain-skills/README.md)
+explain stage routing, exact provenance and legacy compatibility. A passing structural
+check does not establish business completeness or semantic correctness.

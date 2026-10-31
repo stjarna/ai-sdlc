@@ -175,8 +175,9 @@ def switch(root, candidate, expected, operation, actor, decision, action):
         before={'runtime':old['runtime'],'snapshot_digest':old['snapshot_digest']}
         fail(candidate!=before,'Selected runtime is already the default; use show.',root,'E_INSTALL_ALREADY_ACTIVE')
         manager=old['manager']
-        # Prefer a capable candidate as resolver, retaining that manager on rollback to legacy.
-        if (Path(candidate['runtime'])/'orchestrator/scripts/runtime_selection.py').is_file():manager=candidate
+        # Updating adopts the candidate resolver. Default rollback retains the verified
+        # manager: older protocol-capable readers may lack newer artifact envelopes.
+        if action=='update' and (Path(candidate['runtime'])/'orchestrator/scripts/runtime_selection.py').is_file():manager=candidate
         fail((Path(manager['runtime'])/'orchestrator/scripts/runtime_selection.py').is_file()
              and (Path(manager['runtime'])/'orchestrator/scripts/runtime_management.py').is_file(),
              'A capable resolver must remain installed; select a managed runtime before rolling back to a legacy default.',

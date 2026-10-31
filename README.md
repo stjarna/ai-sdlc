@@ -129,9 +129,9 @@ use `$sdlc review`. Nothing is approved or advanced merely by creating or openin
 ## Where does the skill install?
 
 Codex discovers one user-scoped `$sdlc` loader in `~/.agents/skills/sdlc/`. It points
-to an external pinned runtime under `~/.local/share/ai-sdlc/runtimes/`. Architecture,
+to an external pinned runtime under `~/.local/share/ai-sdlc/runtimes/`. Discovery, Business Requirements, Functional Analysis, Architecture,
 Development, Testing and Security packages live **inside that runtime**; installation
-does not register them as four separate native skills. The host agent reads the relevant
+does not register these seven packages as separate native skills. The host agent reads the relevant
 guidance as the workflow requires. Existing requests retain their effective runtime;
 [explicit updates, rollback and future-stage promotion](docs/runtime-version-management.md)
 keep default selection separate from governed execution. Your application keeps its own code/tests and later
@@ -233,14 +233,18 @@ The current [pinned catalog](orchestrator/domain-skills/catalog.yaml) contains:
 
 | Skill | Version | Maintainer | Responsibility |
 |---|---|---|---|
+| Discovery | 1.0.0 | Discovery Team | Adaptive clarification, evidence and review. |
+| Business Requirements | 1.0.0 | Product / Business Requirements Team | Sourced business specification. |
+| Functional Analysis | 1.0.0 | Business Analysis Team | Testable behavior and acceptance criteria. |
 | Architecture | 1.3.0 | Architecture Team | Technical Design, with Security input. |
 | Development | 1.3.0 | Engineering Enablement | Planning, implementation and code review. |
 | Testing | 1.3.0 | QA / Quality Engineering | Strategy, scenarios, automation and verification. |
 | Security | 1.2.0 | Application Security | Security-by-design and scoped implementation review. |
 
 Organizations can maintain their own versioned specialist guidance. The bundled
-packages demonstrate this model locally; there is no enterprise skill registry or
-separate implemented Analysis package. [Templates](orchestrator/templates/README.md)
+packages demonstrate this model locally; there is no enterprise skill registry.
+[Domain-team responsibilities and provenance](orchestrator/domain-skills/README.md)
+cover all seven packages. The coordinator retains every human gate. [Templates](orchestrator/templates/README.md)
 define document structure, while skills provide domain judgment and validators enforce
 machine-checkable contracts. Existing approved artifacts retain their original pins.
 

@@ -70,6 +70,21 @@ Only already recorded original transaction bytes may be recovered. Missing/corru
 legacy runtimes without the execution protocol block managed writes; do not fall back to
 an unprotected CLI. Expose technical detail only when requested or needed to resolve a blocker.
 
+## Resolve domain expertise by activity
+
+After resolving the effective runtime, use its `sdlc.py skills --stage ACTIVITY` to load
+exact selected package paths/version/digests (including declared dependencies). Read the
+selected SKILL.md before generating or reviewing content. Discovery uses `discovery`,
+Business readiness/refinement uses `business-requirements`, and Analysis readiness/work
+uses `functional-analysis`. Downstream Engineering/QA packages retain their existing
+contracts. See the runtime's domain-skills/README.md for the activity map.
+
+Domain packages own questioning and content-quality practices; templates own structure.
+This coordinator owns evidence persistence, lifecycle, ownership, human decisions and
+separate advancement. Domain advice is never authority to transition or invent business
+decisions. Writers record pins for new operations; preserve unknown legacy provenance.
+Never load today's packages for a request still governed by an older runtime.
+
 ## Use pinned document templates
 
 For a new human-readable document, resolve its canonical template using
@@ -117,7 +132,9 @@ A lost conversational approval context requires a fresh review and decision.
 
 ## Persist Discovery evidence
 
-Use the conversation policy to select the next useful question or offer a review.
+Use the selected Discovery package for questioning/readiness guidance and the shared
+conversation policy for concise presentation. Respect a request for review rather than
+continuing questions; review alone never completes Discovery.
 Persist meaningful evidence before continuing, using `discovery-update`, the revision
 returned by `open`, an operation ID and a temporary JSON changes file. Let the CLI
 assign record IDs; use returned IDs when linking later records.
@@ -160,16 +177,10 @@ then obtain renewed completion. Do not silently merge sources into the draft.
 
 ## Draft and refine business requirements
 
-Derive confirmed content from current user statements, substantive human decisions,
-and explicitly confirmed AI assumptions, following correction and resolution chains.
-Keep unresolved questions and proposed assumptions separate. Original idea prose is
-context, not substitute evidence. Preserve source traceability inside the artifact.
-
-Draft `business.md` in the documented format with stable B/U/P IDs and supporting
-Discovery references. Cover value, users, scope, exclusions, success measures,
-constraints and dependencies where supported; do not invent content to fill sections.
-Include every current source record in its correct category. Present business wording
-for human review using the conversation policy, with technical evidence available.
+Load the pinned Business Requirements package for source interpretation, scope/rule
+quality and a business-oriented review. Resolve the `business` template and draft from
+current completed Discovery evidence; keep IDs and references under existing validators.
+Domain judgment never replaces source authority or the Product Owner's decision.
 
 Persist the initial or stale regenerated draft through `business-generate`, or an
 explicit human refinement through `business-revise`, using the current source and
@@ -238,12 +249,10 @@ with an extensive questionnaire. Never use a mutable draft or conversational rec
 as an alternative approved source. If no valid business advancement exists, explain
 what is missing rather than choosing a historical baseline.
 
-Use stable FR/UC/BR/AC/AQ/AP items, complete business coverage dispositions and the exact
-inherited U/P lines. Context and exclusions need no artificial FRs. Produce observable
-Given/When/Then criteria, supported use cases/alternative flows and business rules.
-Assess clarity, testability, observable outcomes, missing edge cases, contradictions
-and source alignment yourself; the CLI does not judge prose semantics. Preserve deferred
-business decisions. Identify affected behavior without selecting an unapproved option.
+Load the pinned Functional Analysis package for behavior, acceptance criteria, edge
+cases and semantic consistency. Resolve the `specification` template. The package guides
+content; the validator owns supported item fields/coverage and inherited references.
+Keep approved Business input and unresolved authority under this coordinator's gates.
 
 Persist through `analysis-generate` using the fresh complete Analysis review token,
 asserted baseline/handoff, operation ID and declared editor/reason. First generation

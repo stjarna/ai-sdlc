@@ -107,7 +107,7 @@ class InteractiveDiscoveryTests(unittest.TestCase):
         result = self.update([])
         self.assertTrue(result["ok"])
         data = yaml.safe_load(self.path.read_text())
-        self.assertEqual(data["schema_version"], "0.1")
+        self.assertEqual(data["schema_version"], "0.2")
         self.assertEqual(data["request_id"], "REQ-0001")
         self.assertEqual(data["operations"][0]["records"], [])
         self.assertEqual((self.epic / "metadata.yaml").read_bytes(), self.metadata_bytes)

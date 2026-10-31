@@ -131,7 +131,7 @@ def capabilities(project,epic_id=None):
     import sdlc,domain_skills,artifact_templates,engineering,engineering_contract,qa_track
     skills=domain_skills.catalog(sdlc.StrictLoader);templates=artifact_templates.catalog()
     result={'protocol':PROTOCOL,'metadata':['0.1','0.2','0.3','0.4','0.5','0.6'],
-        'storage':['business/0.1','analysis/0.1','engineering/0.1','engineering/0.2'],
+        'storage':['business/0.1','analysis/0.1','engineering/0.1','engineering/0.2','discovery/0.2','business-history/0.3','analysis-history/0.3'],
         'governance':['legacy','governance/0.1'],'work_track_schemas':['0.1','0.2'],
         'approval_contracts':['business/1','analysis/1','engineering/1','qa/1'],
         'evidence_contract':'source-bound-checks/1','recovery_contract':'journal-and-atomic-metadata/1',
@@ -180,14 +180,30 @@ def boundary(epic,track):
     return status in SAFE,status
 
 
+# Additive reader/package support is compatible; changes to an existing contract are
+# not. Actual candidate readers still validate the entire current request and inputs.
+CONTRACTS=('protocol','metadata','storage','governance','work_track_schemas','approval_contracts','evidence_contract','recovery_contract','engineering_transitions','qa_states','source_fingerprint','domain_contracts','template_contracts')
+
+
+def compatible_contracts(previous, candidate):
+    for key in CONTRACTS:
+        old,new=previous.get(key),candidate.get(key)
+        if key in ('metadata','storage','governance','work_track_schemas'):
+            if not isinstance(old,list) or not isinstance(new,list) or not set(old)<=set(new):return False
+        elif key in ('domain_contracts','template_contracts'):
+            if not isinstance(old,dict) or not isinstance(new,dict) or any(new.get(k)!=v for k,v in old.items()):return False
+        elif json.loads(json.dumps(old))!=json.loads(json.dumps(new)):return False
+    return True
+
+
 def assessment(project,epic_id,candidate,track=None):
     epic=find(project,epic_id);value=read(epic.directory);scope=scope_for(epic,track);old,_=selected(value,scope)
     token=revision(project,epic,value);safe,stage=boundary(epic,track)
     try:
         new,new_contract=probe(candidate,project,epic_id)
         old_contract=probe(old['runtime'],project,epic_id)[1] if old else capabilities(project,epic_id)
-        stable=('protocol','metadata','storage','governance','work_track_schemas','approval_contracts','evidence_contract','recovery_contract','engineering_transitions','qa_states','source_fingerprint','domain_contracts','template_contracts')
-        same=all(json.loads(json.dumps(old_contract[k]))==json.loads(json.dumps(new_contract[k])) for k in stable)
+        stable=CONTRACTS
+        same=compatible_contracts(old_contract,new_contract)
         classification='compatible' if same else 'incompatible'
         reasons=[] if same else ['Validation, transitions, storage or actual source interpretation differs.']
         pins_changed=any(old_contract[k]!=new_contract[k] for k in ('domain_pins','template_pins'))
@@ -366,14 +382,20 @@ def verify_join(project,epic,value):
     if not value:return
     scopes={'shared',scope_for(epic,'engineering'),scope_for(epic,'qa')}
     pins={}
+    # Historical shared-stage writers need not understand new downstream envelopes.
+    # Current readers verify their frozen inputs; current-cycle track evidence keeps
+    # its own recorded execution runtime and is still checked at the join.
+    for scope in scopes:
+        chosen,_=selected(value,scope)
+        if chosen:pins[chosen['snapshot_digest']]=chosen
     for wrapper in value['events']:
         event=wrapper['event']
-        if event['scope'] in scopes:pins[event['runtime']['snapshot_digest']]=event['runtime']
+        if event['scope'] in scopes-{'shared'}:pins[event['runtime']['snapshot_digest']]=event['runtime']
     contracts=[]
     for chosen in pins.values():
         _,contract=probe(chosen['runtime'],project,epic.metadata['id']);contracts.append(contract)
-    stable=('protocol','metadata','storage','governance','work_track_schemas','approval_contracts','evidence_contract','recovery_contract','engineering_transitions','qa_states','source_fingerprint','domain_contracts','template_contracts')
-    require(all(all(json.loads(json.dumps(c[k]))==json.loads(json.dumps(contracts[0][k])) for k in stable) for c in contracts[1:]),
+    stable=CONTRACTS
+    require(all(compatible_contracts(a,b) or compatible_contracts(b,a) for i,a in enumerate(contracts) for b in contracts[i+1:]),
             'Mixed-runtime verification inputs are incompatible.','E_RUNTIME_INCOMPATIBLE')
 
 

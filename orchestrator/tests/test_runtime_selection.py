@@ -36,7 +36,7 @@ class RuntimeSelectionTests(unittest.TestCase):
         self.assertTrue(self.source.is_relative_to(Path(type(self).fixture.name)))
         install_fixture.git(self.source,'reset','--hard',self.revision) # disposable fixture only
         (self.source/'README.md').write_bytes((self.source/'README.md').read_bytes()+b'\nFictional B fixture.\n')
-        code=self.source/'orchestrator/scripts/sdlc.py';code.write_text(code.read_text().replace('ORCHESTRATOR_VERSION = "0.14.0"','ORCHESTRATOR_VERSION = "0.14.1"'))
+        code=self.source/'orchestrator/scripts/sdlc.py';code.write_text(code.read_text().replace('ORCHESTRATOR_VERSION = "0.15.0"','ORCHESTRATOR_VERSION = "0.15.1"'))
         if change:change(self.source)
         install_fixture.git(self.source,'add','.');install_fixture.git(self.source,'commit','-qm','Fictional runtime B fixture')
         value=install.prepare(self.source,install_fixture.git(self.source,'rev-parse','HEAD').strip(),self.project,self.runtime_root,sys.executable)
@@ -315,9 +315,9 @@ class RuntimeSelectionTests(unittest.TestCase):
         self.new();b=self.candidate();self.select(b['runtime'])
         # Read exact existing committed legacy bytes; never modify the real checkout.
         legacy_root=self.base/'legacy-skills'
-        legacy=install.install(install_fixture.REPO,install_fixture.git(install_fixture.REPO,'rev-parse','HEAD').strip(),
+        legacy=install.install(install_fixture.REPO,'80b6c2e7098210f1cb920c69b8a914e63fd27451',
                                self.project,self.runtime_root,legacy_root,sys.executable)
-        another_legacy=install.prepare(install_fixture.REPO,install_fixture.git(install_fixture.REPO,'rev-parse','HEAD').strip(),
+        another_legacy=install.prepare(install_fixture.REPO,'80b6c2e7098210f1cb920c69b8a914e63fd27451',
                                       self.project,self.base/'other-legacy-runtimes',sys.executable)
         original_registration=install_fixture.hashes(legacy_root/'sdlc')
         with self.assertRaises(install.InstallError) as caught:

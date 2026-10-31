@@ -70,3 +70,59 @@ def pins(names, stage, loader):
         for dep in m['dependencies']: add(dep)
     for name in names: add(name)
     return found
+
+
+# Routing selects expertise, not lifecycle authorization. Readiness maps to its next
+# activity; independently selected QA states do not depend on Engineering Design.
+STAGE_SKILLS = {
+    'discovery': ('discovery', 'discovery'),
+    'ready_for_refinement': ('business-requirements', 'business_refinement'),
+    'business_refinement': ('business-requirements', 'business_refinement'),
+    'ready_for_analysis': ('functional-analysis', 'functional_analysis'),
+    'functional_analysis': ('functional-analysis', 'functional_analysis'),
+    'ready_for_technical_design': ('architecture', 'technical_design'),
+    'technical_design': ('architecture', 'technical_design'),
+    'ready_for_implementation_planning': ('development', 'implementation_planning'),
+    'implementation_planning': ('development', 'implementation_planning'),
+    'ready_for_development': ('development', 'development'),
+    'development': ('development', 'development'),
+    'ready_for_test_design': ('testing', 'test_design'),
+    'test_design': ('testing', 'test_design'),
+    'test_automation': ('testing', 'test_automation'),
+    'ready_for_verification': ('testing', 'ready_for_verification'),
+    'verification': ('testing', 'verification'),
+    'security_review': ('security', 'security_review'),
+    'final_verification': ('testing', 'final_verification'),
+    'verified': ('testing', 'verified'),
+}
+
+
+def for_stage(stage, loader):
+    require(stage in STAGE_SKILLS, 'Unknown domain activity: '+str(stage))
+    name, activity = STAGE_SKILLS[stage]
+    return pins([name], activity, loader)
+
+
+def validate_pins(value, name, stage):
+    """Read exact retained packages; never reinterpret history using today's catalog."""
+    from sdlc import StrictLoader
+    require(isinstance(value, dict) and set(value) == {name}, 'Invalid early-phase domain provenance.')
+    pin = value[name]
+    require(isinstance(pin, dict) and set(pin) == {'version','digest'} and isinstance(pin['version'],str)
+            and VERSION.fullmatch(pin['version']) and isinstance(pin['digest'],str)
+            and re.fullmatch('[0-9a-f]{64}',pin['digest']), 'Invalid domain version/digest.')
+    retained = ROOT/'versions'/name/pin['version']
+    require(not any(p.is_symlink() for p in (ROOT, ROOT/'versions', retained.parent)), 'Unsafe retained skill path.')
+    matches = [p for p in (ROOT/name,retained) if p.is_dir() and package(p)==pin['digest']]
+    require(bool(matches), 'Pinned domain package is missing or changed: '+name)
+    try:
+        manifest = yaml.load((matches[0]/'manifest.yaml').read_text(encoding='utf-8'),Loader=StrictLoader)
+        require(isinstance(manifest,dict) and manifest.get('name')==name and manifest.get('version')==pin['version']
+                and manifest.get('validation_contract')=='sdlc-domain/1' and stage in manifest.get('stages',[]),
+                'Pinned domain package has an incompatible contract.')
+    except (OSError,UnicodeError,yaml.YAMLError,TypeError,RecursionError) as exc:
+        raise business.BusinessError('E_SKILL',str(exc),'catalog.yaml') from exc
+
+
+def assert_current(value, stage, loader):
+    require(value == for_stage(stage,loader), 'Domain selection changed during preparation; resolve again.')
