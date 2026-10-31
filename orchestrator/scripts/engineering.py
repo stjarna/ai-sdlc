@@ -639,6 +639,7 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
                         'Pre-development replanning is unavailable after Development has started.', 'E_STATUS')
                 target = 'implementation_planning'
             draft,doc=latest(epic,kind)
+            if action=='approve':templates.assert_resolved(doc['content'])
             if action == 'approve' and kind == 'plan':
                 require_plan_source(epic, source)
             if action=='approve' and kind=='plan' and epic.metadata.get('work_tracks'):
@@ -740,7 +741,8 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             require(sec['source_revision']==source and not any(f['status']=='open' for f in sec['findings']),'Security review is stale or unresolved.','E_SECURITY_FINDINGS')
             selected_template=templates.resolve('verification-report',expected_template_digest)
             content=final_report(epic,project,source,checks,sec,selected_template)
-            templates.validate_document(selected_template,content['content'])
+            # The deterministic renderer already validates its exact scaffold and
+            # resulting layout. Literal evidence must not be rescanned as slot syntax.
             skills=domain_skills.pins(['testing'],status,_loader()); target='verified'
         # Keep original intent for exact retries without reconstructing generated execution output.
         content['_request']=payload

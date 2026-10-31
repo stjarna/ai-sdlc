@@ -150,7 +150,7 @@ Current catalog pins, checked for this documentation revision. [Domain packages]
 
 | Package / current version | Responsible domain | Used for | Relevant document templates |
 |---|---|---|---|
-| Discovery / 1.0.0 | Discovery Team | Adaptive questioning, evidence and review | idea; discovery.yaml remains untemplated history |
+| Discovery / 1.1.0 | Discovery Team | Adaptive questioning, evidence and review | idea; discovery.yaml remains untemplated history |
 | Business Requirements / 1.0.0 | Product / Business Requirements Team | Sourced business specification | business |
 | Functional Analysis / 1.0.0 | Business Analysis Team | Testable behavior and acceptance criteria from approved input | specification |
 | Architecture **1.3.0** | Architecture Team | Technical Design from approved Analysis and inspected code; consults its exact Security dependency, currently 1.2.0. | `technical-design` |

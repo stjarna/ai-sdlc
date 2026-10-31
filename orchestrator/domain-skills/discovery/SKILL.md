@@ -49,3 +49,21 @@ user quotations for statements/decisions and preserve AI provenance for proposal
 Do not add a second business specification or checkpoint. Persist through the coordinator;
 its writer records this package's exact version/digest. Template, skill, CLI and validator
 versions are independent. Reproduce pinned instructions, not deterministic AI wording.
+
+
+## Idea 1.1 generation slots
+
+The coordinator deterministically renders the original idea into `problem`. Other slots
+are `users`, `expected_value`, `initial_scope`, `success_criteria`, `assumptions` and
+`open_questions`. Supply optional section text through the internal `--idea-details-file`
+only when actually provided by the person; never infer facts from a blank section or
+extract new decisions with Python. Missing/null/empty values render `Not provided.` and
+remain completeness warnings, not structural errors or approval blockers.
+
+Unknown is distinct from a human-confirmed absence (`Confirmed: none.`), an `Unconfirmed
+proposal: ...`, or a `Deferred: ...` question. Preserve those actual declarations in
+section text and then use typed Discovery records as authoritative conversational history.
+Do not default assumptions/questions to none. Keep the original description in Problem
+and never rewrite idea.md during later answers. New requests use the effective runtime's
+catalog; existing requests retain their original Idea/template pin. Literal braces in
+user input are data and are never evaluated as another template.

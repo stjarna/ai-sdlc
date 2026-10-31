@@ -1,6 +1,6 @@
 name: discovery
 description: Specialist content guidance for discovery.
-version: 1.0.0
+version: 1.1.0
 owner: Discovery Team
 stages:
 - discovery

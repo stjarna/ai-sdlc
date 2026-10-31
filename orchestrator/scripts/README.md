@@ -313,7 +313,7 @@ external runtime and a thin user-scoped Codex loader. `adoption.py --project PRO
 source/output, instruction, registration and environment checks. It does not initialize
 Git or create requests. Existing `new` remains the request-creation operation. See the
 [installation contract](../../docs/installation-and-adoption.md) and
-[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.15.0
+[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.16.0
 is independent of unchanged lifecycle, artifact and validation-contract versions.
 
 
@@ -354,7 +354,7 @@ limitation: explicit successful development-start is required before application
 
 [Runtime management](../../docs/runtime-version-management.md) defines explicit snapshot
 preparation, default update/rollback, request/track selection, compatibility and recovery.
-The CLI is 0.15.0; metadata/manifest/domain/template contract versions stay independent.
+The CLI is 0.16.0; metadata/manifest/domain/template contract versions stay independent.
 Seven new tool operations are runtime-probe (internal read), runtime-status, runtime-session,
 runtime-check, runtime-bind, runtime-promote and runtime-recover. Global --runtime-session
 binds governed writes to the exact effective snapshot/context. Ordinary source-checkout
@@ -379,3 +379,13 @@ Discovery operation/history0.2 and Business/Analysis revision/history0.3 record 
 beside existing template provenance. Legacy/mixed entries remain readable without
 backfilling; approval formats, document bytes, IDs and governance rules are unchanged.
 See [domain contracts](../domain-skills/README.md) for ownership and runtime compatibility.
+
+
+### Placeholder contracts
+
+Template package loading lints each slot against a fixed named generation contract.
+Single-pass rendering is shared by Idea creation and Final Verification; agent-authored
+new writes/approvals reject unresolved tokens without retrospectively scanning historical
+approvals. `new --idea-details-file` optionally supplies six explicit section strings;
+Idea 1.1.0 represents absent values as `Not provided.` and retains warning-only Discovery
+completeness. Literal source/evidence braces are data. See [template contracts](../templates/README.md).

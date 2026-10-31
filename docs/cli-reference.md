@@ -263,6 +263,11 @@ See [stage policy and diagnostics](interactive-discovery.md) for eligibility, ar
 
 ### new
 
+Optional `--idea-details-file PATH` supplies a strict mapping of six section strings/nulls:
+`users`, `expected_value`, `initial_scope`, `success_criteria`, `assumptions`, `open_questions`.
+The original Problem comes only from `--idea`. No inference or semantic classification
+is performed. Unknown keys/types/duplicate keys reject with `E_TEMPLATE_CONTEXT`.
+
 **Mode:** write / explicit managed operation. **Purpose:** new shorthand.
 
 **Required after the operation:** `--title TITLE`.

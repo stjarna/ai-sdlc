@@ -161,10 +161,5 @@ def render(report, template_item=None):
         'residual_risks': body(report.get('residual_risks'), 'No additional residual risks recorded; unresolved and blocked behavior remains disclosed above.'),
         'references': body(refs),
     }
-    layout = template_item['content']
-    slots = re.findall(r'\{\{([a-z_]+)\}\}', layout)
-    artifact_templates.require(set(slots) == set(values) and len(slots) == len(values),
-                               'Final report template must contain each fixed projection slot exactly once.', 'E_TEMPLATE_CONTRACT')
-    rendered = re.sub(r'\{\{([a-z_]+)\}\}', lambda match: values[match[1]], layout)
-    artifact_templates.validate_document(template_item, rendered)
+    rendered = artifact_templates.render(template_item, values)
     return rendered.rstrip() + '\n'

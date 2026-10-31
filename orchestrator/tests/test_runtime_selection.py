@@ -36,7 +36,7 @@ class RuntimeSelectionTests(unittest.TestCase):
         self.assertTrue(self.source.is_relative_to(Path(type(self).fixture.name)))
         install_fixture.git(self.source,'reset','--hard',self.revision) # disposable fixture only
         (self.source/'README.md').write_bytes((self.source/'README.md').read_bytes()+b'\nFictional B fixture.\n')
-        code=self.source/'orchestrator/scripts/sdlc.py';code.write_text(code.read_text().replace('ORCHESTRATOR_VERSION = "0.15.0"','ORCHESTRATOR_VERSION = "0.15.1"'))
+        code=self.source/'orchestrator/scripts/sdlc.py';code.write_text(code.read_text().replace('ORCHESTRATOR_VERSION = "0.16.0"','ORCHESTRATOR_VERSION = "0.16.1"'))
         if change:change(self.source)
         install_fixture.git(self.source,'add','.');install_fixture.git(self.source,'commit','-qm','Fictional runtime B fixture')
         value=install.prepare(self.source,install_fixture.git(self.source,'rev-parse','HEAD').strip(),self.project,self.runtime_root,sys.executable)

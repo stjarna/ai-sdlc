@@ -31,8 +31,8 @@ class EarlyDomainTests(unittest.TestCase):
         catalog=domains.catalog(sdlc.StrictLoader)
         self.assertEqual(set(catalog),set(EARLY)|{'architecture','development','testing','security'})
         for name,stage in EARLY.items():
-            info=catalog[name];self.assertEqual(info['version'],'1.0.0')
-            retained=domains.ROOT/'versions'/name/'1.0.0'
+            info=catalog[name];self.assertEqual(info['version'],'1.1.0' if name=='discovery' else '1.0.0')
+            retained=domains.ROOT/'versions'/name/info['version']
             self.assertEqual(domains.package(retained),info['digest'])
             pins=domains.for_stage(stage,sdlc.StrictLoader)
             domains.validate_pins(pins,name,stage)
@@ -86,7 +86,7 @@ class EarlyDomainTests(unittest.TestCase):
             (root/'discovery/SKILL.md').write_text('A future current package.\n')
             with patch.object(domains,'ROOT',root):
                 domains.validate_pins(pins,'discovery','discovery')
-                (root/'versions/discovery/1.0.0/SKILL.md').write_text('Corrupt retained package.\n')
+                (root/'versions/discovery/1.1.0/SKILL.md').write_text('Corrupt retained package.\n')
                 with self.assertRaises(business.BusinessError):domains.validate_pins(pins,'discovery','discovery')
 
     def test_business_and_analysis_new_envelopes_and_legacy_equivalence(self):

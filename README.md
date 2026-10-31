@@ -233,7 +233,7 @@ The current [pinned catalog](orchestrator/domain-skills/catalog.yaml) contains:
 
 | Skill | Version | Maintainer | Responsibility |
 |---|---|---|---|
-| Discovery | 1.0.0 | Discovery Team | Adaptive clarification, evidence and review. |
+| Discovery | 1.1.0 | Discovery Team | Adaptive clarification, evidence and review. |
 | Business Requirements | 1.0.0 | Product / Business Requirements Team | Sourced business specification. |
 | Functional Analysis | 1.0.0 | Business Analysis Team | Testable behavior and acceptance criteria. |
 | Architecture | 1.3.0 | Architecture Team | Technical Design, with Security input. |

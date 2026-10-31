@@ -7,7 +7,7 @@ bundled resources, not additional native skills or automatically launched agents
 
 | Package | Current version | Domain owner | Activity / output |
 |---|---|---|---|
-| Discovery | 1.0.0 | Discovery Team | Adaptive clarification; idea.md context, typed discovery.yaml evidence and review |
+| Discovery | 1.1.0 | Discovery Team | Adaptive clarification; idea.md context, typed discovery.yaml evidence and review |
 | Business Requirements | 1.0.0 | Product / Business Requirements Team | business.md from completed sourced Discovery |
 | Functional Analysis | 1.0.0 | Business Analysis Team | specification.md from the handoff-selected approved Business baseline |
 | Architecture | 1.3.0 | Architecture Team | technical-design.md; Security dependency retained |
@@ -24,7 +24,7 @@ catalog paths to read selected SKILL.md files. Readiness routes to the next acti
 QA is selected independently of Engineering. Resolution does not start work or approve.
 
 The catalog uses schema 0.1, with exact semantic version/content pins. Modern manifests
-use schema 0.2 and `sdlc-domain/1`, independent of CLI 0.15.0 and template contracts.
+use schema 0.2 and `sdlc-domain/1`, independent of CLI 0.16.0 and template contracts.
 Current packages live at `<name>/`; retained immutable versions live at
 `versions/<name>/<version>/`, following existing repository conventions. Do not modify
 consumed versions. Publish reviewed changes under a new version/pin and preserve old

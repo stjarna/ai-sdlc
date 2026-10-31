@@ -58,6 +58,9 @@ class BusinessApprovalTests(unittest.TestCase):
         if legacy_templates:
             metadata.pop("template_provenance")
             metadata.pop("domain_provenance")
+            import artifact_templates
+            old_idea=artifact_templates.package('idea','1.0.0')['content'].replace('{{problem}}','People forget commitments.')
+            (self.directory/'idea.md').write_text(old_idea)
         metadata_path.write_text(yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True))
         self.append([record("user_statement", "Record deadlines against tasks."), record("question", "Dates or reminders?")])
         self.append([record("user_statement", "Dates only; reminders are excluded.", answers="D-0002"), record("ai_assumption", "Dates are optional.")])

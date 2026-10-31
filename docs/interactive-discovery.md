@@ -245,3 +245,13 @@ tests or the skill format validator does not prove the assistant reasons correct
   proprietary company content; use fictional examples or an appropriately scoped project.
 - No autonomous lifecycle transitions, Analysis, subsequent SDLC stages, external
   AI service, ticketing integration, automatic Git actions or host skill installation.
+
+
+## Idea creation context
+
+New Idea 1.1.0 rendering preserves the original description and optionally accepts six
+provided section strings through internal `new --idea-details-file`. Missing information
+is `Not provided.` with mechanical completeness warnings, never an invented requirement
+or confirmed absence. Discovery history remains authoritative for assumptions, unanswered
+and deferred questions. Later conversation does not rewrite idea.md. See the
+[template generation contract](../orchestrator/templates/README.md#named-placeholders-and-missing-information).

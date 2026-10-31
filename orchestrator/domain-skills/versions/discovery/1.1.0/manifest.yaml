@@ -1,0 +1,19 @@
+name: discovery
+description: Specialist content guidance for discovery.
+version: 1.1.0
+owner: Discovery Team
+stages:
+- discovery
+inputs:
+- Original human idea
+- Persisted current statements and resolution chains
+outputs:
+- Discovery review
+- Sourced typed Discovery records
+standards:
+- Source traceability
+- Explicit uncertainty
+- Human governance remains with the orchestrator
+dependencies: {}
+schema_version: '0.2'
+validation_contract: sdlc-domain/1

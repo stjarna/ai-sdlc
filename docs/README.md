@@ -24,6 +24,8 @@ are illustrative unless a page links preserved execution evidence.
 
 ## Architecture and governance
 
+- [Template placeholder audit](template-placeholder-audit.md): all eleven layouts, deterministic/agent generation, Idea 1.1.0 and historical compatibility.
+
 - [Seven domain skills](../orchestrator/domain-skills/README.md): specialist ownership, stage selection, template relationships and backward-compatible provenance.
 
 - [Workflow responsibilities](workflow.md#who-does-what): agent judgment, deterministic persistence and human decisions.

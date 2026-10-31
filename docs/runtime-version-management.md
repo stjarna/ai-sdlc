@@ -360,3 +360,9 @@ Default rollback retains the verified resolver manager even if the selected olde
 already implements the execution protocol. Protocol presence alone does not mean it can
 parse newer provenance envelopes. The retained manager resolves a request still pinned
 to the newer runtime; rollback neither downgrades that request nor rewrites its artifacts.
+
+
+Idea 1.1.0 and Discovery guidance 1.1.0 add named creation slots and explicit unknown
+markers. They are selected for new requests in a runtime that pins them. Older requests
+keep their original idea file and template/domain pins; runtime promotion does not
+regenerate it. See [placeholder and generation contracts](../orchestrator/templates/README.md#named-placeholders-and-missing-information).

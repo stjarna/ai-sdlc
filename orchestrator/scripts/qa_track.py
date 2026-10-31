@@ -363,10 +363,12 @@ def update(project,epic_id,expected_revision,operation_id,action,kind,payload,ac
             elif kind=='scenarios':
                 require(stage=='test_design','Scenarios are not awaiting approval.','E_STATUS')
                 common.exact_acknowledgements(payload['acknowledged'],unresolved(epic),'Acknowledge all QA design uncertainty without resolving it.')
+                for artifact_kind in ('strategy','scenarios'):templates.assert_resolved(latest(epic,artifact_kind)[1]['content'])
                 content={'documents':scenario_context(epic),'acknowledged':payload['acknowledged'],'content':decision}
             else:
                 require(stage=='test_automation','Automation is not awaiting approval.','E_STATUS')
                 scenario=scenario_approval(epic);draft,doc=latest(epic,'automation')
+                templates.assert_resolved(doc['content'])
                 require(doc['scenarios_approval']==scenario['baseline_id'],'Scenarios changed; regenerate or reconcile the automation artifact.','E_APPROVAL_STALE')
                 require(payload['source_revision']==own_source==doc['source_revision'],'QA code changed since the automation review.','E_REVISION_CONFLICT')
                 require(doc['engineering_design']==design_context(epic,project),'Technical interfaces changed; adapt automation.','E_APPROVAL_STALE')

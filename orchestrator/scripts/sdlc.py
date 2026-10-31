@@ -37,7 +37,7 @@ from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.15.0"
+ORCHESTRATOR_VERSION = "0.16.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
@@ -149,7 +149,7 @@ class Epic:
         }
 
 
-def business_warnings(path: Path, content: str) -> list[Diagnostic]:
+def business_warnings(path: Path, content: str, unknown_marker=None) -> list[Diagnostic]:
     """Check template sections mechanically; never judge business readiness."""
     parts = re.split(r"(?m)^##[ \t]+([^\n]+)\n?", content)
     sections = {
@@ -161,7 +161,7 @@ def business_warnings(path: Path, content: str) -> list[Diagnostic]:
             "warning", "W_DISCOVERY_INCOMPLETE", str(path),
             f"Discovery section '{name}' is missing or empty; clarification may be needed.",
         )
-        for name in SECTIONS if not sections.get(name.casefold())
+        for name in SECTIONS if not sections.get(name.casefold()) or (unknown_marker is not None and sections.get(name.casefold())==unknown_marker)
     ]
 
 
@@ -305,7 +305,10 @@ def read_epic(directory: Path) -> Epic:
     except (OSError, UnicodeError, ValueError, RuntimeError) as exc:
         epic.diagnostics.append(error("E_READ", idea_path, str(exc)))
         return epic
-    epic.diagnostics.extend(business_warnings(idea_path, epic.idea))
+    provenance=data.get("template_provenance")
+    idea_pin=provenance.get("idea") if isinstance(provenance,dict) else None
+    marker=templates.UNKNOWN if isinstance(idea_pin,dict) and idea_pin.get("version") not in (None,"1.0.0") else None
+    epic.diagnostics.extend(business_warnings(idea_path,epic.idea,marker))
     discovery_path = directory / "discovery.yaml"
     discovery_bytes = None
     if discovery_path.is_symlink() or (discovery_path.exists() and not discovery_path.is_file()):
@@ -442,7 +445,7 @@ def write_new(path: Path, content: str) -> None:
         stream.write(content)
 
 
-def new_epic(project: Path, title: str, idea: str = "", requester: str | None = None, expected_template_digest: str | None = None) -> dict:
+def new_epic(project: Path, title: str, idea: str = "", requester: str | None = None, expected_template_digest: str | None = None, idea_details: dict | None = None) -> dict:
     root = project_path(project)
     if not valid_title(title):
         raise Rejected([error("E_TITLE", root, "Title must be nonempty, single-line text.")])
@@ -468,7 +471,7 @@ def new_epic(project: Path, title: str, idea: str = "", requester: str | None = 
         metadata["ownership"] = ownership.initialized("discovery", requester, requester, source,
             "ownership-created", "Initial accountability belongs to the declared requester.")
         selected_template=templates.resolve("idea", expected_template_digest)
-        content = selected_template["content"].replace("{{problem}}", idea.strip())
+        content = templates.render_idea(selected_template,idea,idea_details)
         metadata["template_provenance"]={"schema_version":"0.1","idea":selected_template["pin"]}
         selected_domain=domain_skills.for_stage("discovery",StrictLoader)
         metadata["domain_provenance"]={"schema_version":"0.1","idea":selected_domain}
@@ -819,6 +822,7 @@ def analysis_gate(project: Path, epic_id: str, expected_review: str, expected_an
                 if action == "approve":
                     approval_common.exact_acknowledgements(acknowledged, epic.analysis_open_items, "Explicitly acknowledge exactly all unresolved items shown by analysis-review; acknowledgement does not resolve them.")
                     analysis_gate_policy.require(analysis_gate_policy.current_inputs_match(epic, StrictLoader), "Live supporting artifacts differ from the approved Business baseline; explicitly reconcile upstream before approval.", "E_APPROVAL_STALE")
+                    templates.assert_resolved(epic.analysis["content"])
                     snapshot = analysis_gate_policy.read_snapshot(epic.directory)
                     analysis_gate_policy.require(analysis.review_revision(epic) == expected_review, "Artifacts changed before baseline preparation.", "E_REVISION_CONFLICT")
                     baseline_id = analysis_gate_policy.publish_baseline(epic.directory, epic.metadata, epic.analysis, snapshot, acknowledged, StrictLoader)
@@ -880,6 +884,7 @@ def business_gate(project: Path, epic_id: str, expected_review: str, expected_bu
             if action == "approve":
                 try:
                     approval_common.exact_acknowledgements(acknowledged, epic.open_items, "Explicitly acknowledge exactly the unresolved issues and unconfirmed proposals shown by business-review.")
+                    templates.assert_resolved(epic.business["content"])
                 except business.BusinessError as exc:
                     raise Rejected([error(exc.code, path, str(exc))]) from exc
             if action == "approve":
@@ -1285,6 +1290,7 @@ def main(argv: list[str] | None = None) -> int:
     create.add_argument("--expected-template-digest")
     create.add_argument("--title", required=True)
     create.add_argument("--requester", help="Explicit initial requester; otherwise use the local declared identity profile")
+    create.add_argument("--idea-details-file",type=Path,help="Optional structured section text; no semantic extraction")
     create.add_argument("--idea", default="", help="Initial business description; stored as content only")
     commands.add_parser("open", help="Read an Epic by stable ID").add_argument("id")
     commands.add_parser("validate", help="Validate one Epic or all local Epics").add_argument("id", nargs="?")
@@ -1447,7 +1453,17 @@ def main(argv: list[str] | None = None) -> int:
         elif args.operation in ("identity-setup", "identity-edit"):
             output = result(args.operation, [], identity=local_identity.save(args.project, args.display_name, args.role, edit=args.operation == "identity-edit", expected_revision=getattr(args, "expected_profile_revision", None)))
         elif args.operation == "new":
-            output = new_epic(args.project, args.title, args.idea, requester=args.requester, expected_template_digest=args.expected_template_digest)
+            details=None
+            if args.idea_details_file:
+                try:details=yaml.load(args.idea_details_file.read_text(encoding="utf-8"),Loader=StrictLoader)
+                except (OSError,UnicodeError,yaml.YAMLError,RecursionError) as exc:
+                    raise Rejected([error("E_TEMPLATE_CONTEXT",args.idea_details_file,str(exc))]) from exc
+                if not isinstance(details,dict):raise Rejected([error("E_TEMPLATE_CONTEXT",args.idea_details_file,"Expected a mapping of Idea section text.")])
+            try:output = new_epic(args.project, args.title, args.idea, requester=args.requester, expected_template_digest=args.expected_template_digest,idea_details=details)
+            except business.BusinessError as exc:
+                if exc.code=="E_TEMPLATE_CONTEXT" and args.idea_details_file:
+                    raise Rejected([error(exc.code,args.idea_details_file,str(exc))]) from exc
+                raise
         elif args.operation == "discovery-update":
             output = discovery_update(args.project, args.id, args.expected_revision, args.operation_id, read_changes(args.changes_file))
         elif args.operation in ("discovery-complete", "discovery-reopen"):

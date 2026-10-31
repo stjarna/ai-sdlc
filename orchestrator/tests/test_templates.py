@@ -48,9 +48,9 @@ class TemplateTests(unittest.TestCase):
                     self.assertEqual(templates.resolve(name), item)
                     self.assertEqual(item['pin']['content_digest'], hashlib.sha256(item['content'].encode()).hexdigest())
                     self.assertEqual(item['pin']['validation_contract'], templates.ARTIFACTS[name][0] + '/1')
-                    self.assertEqual(item['manifest']['version'], '1.0.0')
+                    self.assertEqual(item['manifest']['version'], '1.1.0' if name=='idea' else '1.0.0')
                     self.assertTrue(item['manifest']['owner'])
-                    self.assertEqual(templates.validate_document(item, item['content']), item['pin'])
+                    self.assertEqual(templates.validate_document(item, item['content'], literal_values=True), item['pin'])
 
     def test_foundation_scaffolds_match_existing_validator_fields(self):
         import re
@@ -114,7 +114,7 @@ class TemplateTests(unittest.TestCase):
             directory = Path(result['epic']['directory'])
             metadata = yaml.safe_load((directory / 'metadata.yaml').read_text())
             self.assertEqual(metadata['template_provenance'], {'schema_version': '0.1', 'idea': templates.resolve('idea')['pin']})
-            self.assertEqual((directory / 'idea.md').read_text(), templates.resolve('idea')['content'].replace('{{problem}}', idea))
+            self.assertEqual((directory / 'idea.md').read_text(), templates.render_idea(templates.resolve('idea'),idea))
             self.assertEqual(metadata['status'], 'discovery')
 
     def test_legacy_idea_without_provenance_remains_readable_without_retroactive_pin(self):

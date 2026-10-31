@@ -1,8 +1,8 @@
 schema_version: '0.1'
 templates:
   idea:
-    version: 1.0.0
-    digest: e1fafb2038d43d623c5ce8dd638e3e106b3f8e3ab62aaa5a0200bffdb2898d4f
+    version: 1.1.0
+    digest: ffffa51bde3750c28f1d75f57b354bcf1f5fa423e9589381b65f655cbfda3139
   business:
     version: 1.0.0
     digest: e751d87744e2cd5e3881d3f5bd1b624d9fcd7a4b06336f41efdbb96a59645702
