@@ -6,6 +6,7 @@ Develop a **reusable Git-native AI SDLC orchestration skill**, not the demo appl
 
 ## Mandatory reading
 
+- [Documentation index](docs/README.md) and [complete CLI inventory](docs/cli-reference.md): current human navigation and operation coverage.
 - [README](README.md): human-facing orientation, setup and current capability boundaries.
 - [Working specification](docs/specification.md): [D] accepted decisions, [P] PoC limitations, [T] target architecture, [O] open design.
 - [Architecture decision register](docs/decisions/architecture-decisions.md): rationale and intentionally deferred approaches.

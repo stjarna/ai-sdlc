@@ -1,5 +1,7 @@
 # Architecture decision register
 
+[Documentation index](../README.md)
+
 For current user behavior, see [the workflow guide](../workflow.md). Entries preserve
 the scope of their original decisions: statements such as “no Analysis in this increment”
 are historical boundaries, not claims that later implemented phases are unavailable.

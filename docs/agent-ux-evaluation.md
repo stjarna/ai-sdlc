@@ -1,5 +1,9 @@
 # Native conversational UX: cross-agent evaluation
 
+[Documentation index](README.md)
+
+> **Reading status:** Historical evaluation protocol. Statements about unimplemented phases, checkout-only discovery and “not yet run” refer to this original evaluation, not current feature/acceptance status. Use [installation](installation-and-adoption.md) and the [current workflow](workflow.md) for normal use; retain this protocol for its evaluation rationale.
+
 The shared [workflow](../orchestrator/skill/SKILL.md) and
 [conversation policy](../orchestrator/skill/conversation.md) support Codex CLI/IDE
 and Claude Code CLI/IDE through thin discovery adapters. All hosts use the same

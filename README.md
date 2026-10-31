@@ -133,30 +133,18 @@ the project, request and stage and invokes deterministic operations internally.
 Select a track when needed: `engineering` or `qa`. Missing or ambiguous context prompts
 a clarification instead of a guess.
 
-| Example | Use it to… | Effect / human decision |
-|---|---|---|
-| `$sdlc new` + your idea | Create a Discovery request. | Writes the idea and identity; no approval. |
-| `$sdlc status` | See current stages, owners and next actions. | Read-only. |
-| `$sdlc start engineering` | Start the available Engineering activity. | Explicitly authorizes that activity after its prerequisites; never approves it. |
-| `$sdlc start qa` | Prepare QA artifacts or run the approved checks at the appropriate stage. | Explicit start; dependency setup may need separate permission. |
-| `$sdlc review qa` | Review the current content, uncertainty and readiness. | Read-only; no approval or advancement. |
-| `$sdlc approve engineering` | Approve the reviewed Design, Plan or code revision. | Requires explicit human consent and any necessary acknowledgements; stage unchanged. |
-| `$sdlc changes qa` + feedback | Record feedback and request a refinement. | Writes the requested decision/revision; cannot silently broaden scope. |
-| `$sdlc advance engineering` | Authorize the next eligible transition. | Separate human decision; gates/evidence must pass. Does not automatically start work. |
-| `$sdlc details` | Inspect full artifacts, history and evidence. | Read-only. |
-| `$sdlc inbox` | See your assignments and handoffs you still own. | Read-only; uses your declared local profile. |
-| `$sdlc pending assignments` | See responsibilities awaiting assignment. | Read-only, project-wide. |
-| `$sdlc assign REQ-0001` | Nominate and confirm the next owner. | Separate confirmation transfers responsibility; no approval or lifecycle change. |
+| Example | Purpose |
+|---|---|
+| `$sdlc new` + idea | Create and clarify a request. |
+| `$sdlc status` / `$sdlc details` | See progress or exact records. |
+| `$sdlc review` / `$sdlc approve` | Review, then explicitly approve the current eligible revision. |
+| `$sdlc advance` | Separately authorize eligible progression. |
+| `$sdlc start engineering` / `$sdlc start qa` | Start only the selected eligible activity. |
 
-Natural language is also supported: “Review the current specification,” “Request these
-changes,” or “Stop asking Discovery questions and show a review.” A vague “looks good”
-is not approval. An explicit approval command applies only to content already presented
-for review; otherwise the assistant first shows the current revision and asks for a decision.
-
-`new` is skill-guided creation shorthand. The shared routing verbs, stage behavior,
-prerequisites and more examples are in the [user guide](docs/getting-started.md#command-reference).
-Claude Code has a thin `/sdlc` adapter, but its runtime behavior has not been accepted
-in this PoC; it is not interchangeable with verified Codex support.
+The [complete command reference](docs/command-reference.md) covers all ten routed verbs,
+creation shorthand, changes, assignment, inboxes and stage/track variants. These are
+conversational skill invocations; [Python CLI operations](docs/cli-reference.md) are a
+separate tool-facing interface. Approval, advancement, assignment and start remain distinct.
 
 ## A change from idea to verified behavior
 
@@ -283,15 +271,14 @@ remain open. See the [workflow limitations](docs/workflow.md#boundaries) and
 
 ## Documentation
 
-| I want to… | Start here |
-|---|---|
-| Install or try the skill | [Getting started](docs/getting-started.md), [installation contract](docs/installation-and-adoption.md) |
-| Use commands and ownership | [User guide](docs/getting-started.md#command-reference), [identity](docs/command-ux.md), [handoffs](docs/ownership.md) |
-| Understand the lifecycle | [Workflow guide](docs/workflow.md), [Engineering/QA contracts](docs/work-tracks.md) |
-| Inspect artifacts and approval history | [Artifact storage](docs/artifact-names.md), [Business](docs/business-approval.md) and [Analysis](docs/analysis-approval.md) gates |
-| Understand the architecture | [Working specification](docs/specification.md), [decision register](docs/decisions/architecture-decisions.md), [PoC scope ADR](docs/decisions/0001-repository-and-poc-scope.md) |
-| Develop or contribute | [Agent instructions](AGENTS.md), [test guide](orchestrator/tests/README.md), [CLI reference](orchestrator/scripts/README.md) |
-| Inspect this documentation refresh | [Audit, changelog and validation](docs/documentation-audit.md) |
+**[Start here](docs/getting-started.md) → [Understand the workflow](docs/workflow.md) →
+[Explore commands](docs/command-reference.md) → [Advanced CLI/contracts](docs/cli-reference.md).**
+
+The [documentation index](docs/README.md) groups user guides, architecture/governance,
+technical contracts and historical decisions. Focused diagrams explain
+[approval versus advancement](docs/business-approval.md#approval-and-advancement-sequence),
+[handoffs](docs/ownership.md#handoff-without-automatic-work) and
+[Engineering/QA synchronization](docs/work-tracks.md#evidence-dependency-between-tracks).
 
 ## Contributing
 

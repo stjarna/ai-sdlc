@@ -1,5 +1,7 @@
 # External installation and existing-project adoption
 
+[Documentation index](README.md)
+
 For the beginner path, see [Getting started](getting-started.md). This page is the
 precise installation, compatibility and recovery contract.
 
@@ -137,3 +139,27 @@ Existing `new` remains compatible with non-Git projects; the Git/baseline check 
 to the explicit existing-project adoption preflight.
 
 See [the demonstration evidence runbook](existing-project-demo.md) for before/after capture.
+
+## Runtime and project boundaries
+
+Installation keeps executable resources outside the existing application's source tree.
+The loader directs the agent to the pinned resources while the project stays explicit.
+
+```mermaid
+flowchart TB
+    H[Human using Codex] --> A[Coding agent]
+    L[Thin user-scoped SDLC loader] --> O[Orchestrator Skill]
+    A --> L
+    subgraph R[External pinned runtime]
+        O --> D[Independent domain skills]
+        O --> T[Versioned artifact templates]
+        O --> C[Deterministic operations and validators]
+    end
+    C --> P[Application requirements and governed QA records]
+    A --> S[Existing application source and tests: authorized activity only]
+```
+
+No runtime is copied into the application, and installation itself does not create
+requests or edit source. A separate local declared identity profile supplies attribution;
+it is not host authentication or enterprise RBAC. Git automation, ticketing, messaging
+and CI/CD integrations remain future work, not omitted boxes that secretly run here.

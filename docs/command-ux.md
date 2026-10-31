@@ -1,6 +1,9 @@
 # Shared SDLC Commands and Local Declared Identity
 
-For a user-oriented walkthrough, start with [Getting started](getting-started.md#command-reference).
+[Documentation index](README.md)
+
+For the authoritative human command manual, use the [command reference](command-reference.md).
+This page owns the detailed routing/profile contract; setup examples are in [Getting started](getting-started.md).
 
 The assistant accepts `status`, `start`, `review`, `approve`, `changes`, `advance`, `details`,
 `inbox`, `pending assignments` and `assign`

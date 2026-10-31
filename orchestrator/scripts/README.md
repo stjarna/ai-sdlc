@@ -1,5 +1,11 @@
 # AI SDLC operation contract
 
+[Documentation index](../../docs/README.md) · [All 50 operations and arguments](../../docs/cli-reference.md) · [Conversational command manual](../../docs/command-reference.md)
+
+This page owns deterministic schemas, persistence and diagnostic conventions. The CLI
+inventory derives every operation and flag from the parser and links stage policies;
+conversational examples belong to the human manual, not this technical contract.
+
 `sdlc.py` is a deterministic Python 3.10+ CLI. It operates on an explicitly selected
 existing project directory, independently of that project's application stack.
 The conversational entrypoint is [SKILL.md](../skill/SKILL.md).
@@ -230,7 +236,7 @@ takes `--actor` and `--approval-id AD-0001`. `analysis-review` now reports
 `approval_implemented: true`, `analysis_approval`, `analysis_open_items` and structural
 `can_approve`. Existing `approval`/`open_items` remain Business fields.
 
-## Six conversational commands and local identity
+## Conversational routing and local identity
 
 See [Command UX and Local Identity](../../docs/command-ux.md) for routing, profile
 setup/editing, attribution compatibility, diagnostics and manual Codex acceptance.
@@ -319,3 +325,25 @@ approval and separate advancement, then explicitly start Development. Old audit 
 baseline formats remain intact. Plan approval/advancement reject source-stale input.
 Engineering review's additive `development_start` object reports `eligible`, plus `code`
 and `reason` when false. See [recovery contract](../../docs/engineering.md#pre-development-plan-recovery).
+
+## Parser coverage and operation-specific results
+
+The [complete operation inventory](../../docs/cli-reference.md) covers every public
+sdlc.py parser operation plus the installer and standalone preflight. Flags listed there
+are syntax, not a bypass of stage validation. A parser-shared kind may be rejected by
+an individual operation. Human decisions require real wording and applicable acknowledgements.
+
+Review/context/catalog operations return their named review, routing, template or skill
+payloads. Profile operations return declared identity/revision; ownership operations
+return assignment context. Gate operations add recorded decision/transition references;
+Engineering/QA writes add typed artifacts/reviews and exact-replay indicators. Named check
+operations persist their actual status/output, including failure. Re-read the operation's
+stage contract before consuming fields: the envelope does not promise identical payload
+keys across all operations.
+
+Recovery and diagnostics are grouped in the linked Discovery, Business, Analysis,
+Engineering and work-track contracts. Identity uses E_IDENTITY_*; selection uses
+E_CONTEXT_MISSING, E_CONTEXT_AMBIGUOUS and E_TRACK_AMBIGUOUS. Template/catalog failures
+must be resolved against the installed pins, never by editing consumed packages.
+The helper's advance/start mismatch at ready_for_development remains an implementation
+limitation: explicit successful development-start is required before application edits.

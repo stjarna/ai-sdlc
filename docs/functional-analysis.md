@@ -1,11 +1,19 @@
 # Functional Analysis — Increment 5
 
+[Documentation index](README.md)
+
+> **Reading status:** Current Analysis document/source contract, originally Increment 5. Later [Analysis approval](analysis-approval.md) and [work tracks](work-tracks.md) extend the historical scope exclusions below.
+
 Increment 5 drafts and refines one Epic-wide `specification.md` from the immutable
 business baseline selected by the current business advancement. The AI skill writes
 and assesses meaning; the CLI validates structure, evidence links and publication.
 Human review is required. [Increment 6](analysis-approval.md) adds explicit Analysis
 approval and separate onward advancement. Technical Design, Story decomposition and
 application test execution remain excluded.
+
+New document layout is selected from the [pinned template catalog](../orchestrator/templates/README.md).
+The schemas/examples here explain validation and historical compatibility; existing
+validators remain authoritative and legacy records are not reformatted.
 
 ## Workflow and authority
 

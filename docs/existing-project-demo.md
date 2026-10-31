@@ -1,5 +1,7 @@
 # Existing-project demonstration: reproducible evidence capture
 
+[Documentation index](README.md)
+
 This is a procedure, not a claim that a new CRUD acceptance has already been executed.
 The preserved historical due-date demonstrator is not a CRUD application and must remain
 unchanged. Prepare a **separate** standalone CRUD application before SDLC adoption.

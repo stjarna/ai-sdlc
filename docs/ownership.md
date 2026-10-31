@@ -1,5 +1,7 @@
 # Ownership, Assignment and Stage Handoff
 
+[Documentation index](README.md)
+
 For the user journey, start with [Getting started](getting-started.md) and the
 [current workflow guide](workflow.md).
 
@@ -193,3 +195,40 @@ Teams/Entra integration, custom UI, workflow engine or Technical Design executio
 The separately authorized [engineering slice](engineering.md) now consumes the approved Analysis handoff through Technical Design, planning, controlled development, verification, Security review and a final report. Earlier increment scope statements describe their historical boundaries. The extension preserves approval separation, existing audit/baseline formats and declared identity semantics.
 
 For new Analysis advancements, the [Engineering/QA fork](work-tracks.md) now creates two independently owned pending tracks. Existing non-fork records retain their historical contracts; adoption and upstream reconciliation are explicit.
+
+## Handoff without automatic work
+
+Completion/advancement creates a visible pending responsibility. Accountability stays
+with the previous owner until a separately confirmed assignment transfers it.
+
+```mermaid
+sequenceDiagram
+    actor H as Human
+    participant A as SDLC assistant
+    participant R as Request records
+    H->>A: Authorize eligible completion or advancement
+    A->>R: Record transition and pending next-role handoff
+    Note over R: Previous owner retained, no assignee
+    A-->>H: Ask who should take over
+    H->>A: No recipient yet
+    A-->>H: Awaiting Handoff remains in inbox and pending assignments
+    H->>A: Nominate recipient
+    A-->>H: Confirm request, recipient and required role
+    H->>A: Explicitly confirm transfer
+    A->>R: Revalidate revision and append assignment
+    Note over R: Owner and assignee transfer, lifecycle unchanged
+    A-->>H: Assigned, no approval or activity start
+```
+
+No account provisioning, messaging or notified-recipient consent is implied. A track
+assignment affects only that track. Declared roles are informational.
+
+## Worked example: delayed handoff
+
+Illustrative, not a recorded ownership decision: after Discovery completion, decline
+to nominate a Product Owner. `inbox` shows retained Awaiting Handoff and `pending
+assignments` shows the required role; both are read-only. Later say “Assign REQ-0001
+to Jordan,” then separately confirm the named Product Owner transfer. Metadata gains
+assignment history and the pending row clears; the recipient's declared-name inbox can
+show Assigned Work. The state remains ready_for_refinement and business.md has not been
+generated. Approval and starting Business drafting require their own applicable decisions.

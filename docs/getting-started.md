@@ -1,5 +1,7 @@
 # Getting started
 
+[Documentation index](README.md)
+
 [Project overview](../README.md) · [Workflow](workflow.md) · [Installation contract](installation-and-adoption.md)
 
 Use this guide to adopt the skill in **your existing application**, not to generate a
@@ -141,44 +143,25 @@ notify that person or start work.
 
 ## Command reference
 
-Codex uses `$sdlc …`; the unverified Claude adapter uses `/sdlc …`. These examples are
-**conversational text**. There is no promise of identical host argument parsing.
+See the [complete conversational command reference](command-reference.md) for all
+commands, request/track selectors, effects and stage-specific examples. Use `$sdlc …`
+in Codex; the Claude adapter uses `/sdlc …` with runtime acceptance still outside PoC.
+For tool arguments, see the separate [CLI inventory](cli-reference.md).
 
-All request actions need an explicit application context and an unambiguous active
-request; a title or ID can select it. Track actions also need Engineering or QA context.
-The profile is required for routine attributed decisions and inbox views. The assistant
-manages revision hashes, operation IDs, current stage and low-level flags internally.
+## Worked example: first requirement
 
-| Example | Prerequisite / when to use | Result and decision boundary |
+This is an illustrative exchange, not preserved human approval evidence.
+
+| User action | Outcome / persisted change | Next human decision |
 |---|---|---|
-| `$sdlc new` + description | Adoption checked, declared requester supplied; no existing request required. | Creates a new Discovery record; does not approve or advance. |
-| `$sdlc status` | Active request, or a fresh application to see that none exists. | Read-only state/owners/next action; missing context does not create a request. |
-| `$sdlc review` | Current request; add `engineering` or `qa` when ambiguous. | Read-only summary, uncertainty and readiness; reports absent drafts honestly. |
-| `$sdlc details` | Current request; optional track. | Full exact-file links, history and evidence; no mutation. |
-| `$sdlc start engineering` | Design/Plan readiness, approved Development readiness, or current review/verification activity as supported. | Starts only the requested activity after checking prerequisites; no approval/advancement. Development edits require a successful deterministic start. |
-| `$sdlc start qa` | Current QA stage and its required inputs/approvals. | Drafts strategy/scenarios or automation, or executes approved checks at readiness; package/browser setup requires its own authorization. |
-| `$sdlc approve qa` | Exact current artifacts reviewed; required uncertainty acknowledged. | Approves strategy/scenarios together or automation at its gate; lifecycle unchanged. |
-| `$sdlc approve engineering` | Reviewed Design, Engineering Plan or code revision; current source where required. | Records that gate's approval only. Observable prototype limitations need separate explicit consent; acknowledgement is not consent. |
-| `$sdlc changes engineering` + feedback | Current artifact or eligible pre-development Plan; clarify unspecified feedback first. | Records actual feedback and authorized refinement. Plan feedback before Development starts can return to planning; fresh approval is required. Business scope changes need upstream reopening. |
-| `$sdlc advance` | Explicit Discovery completion, or current Business/Analysis approval. | Records the separately authorized transition. Add a track downstream. |
-| `$sdlc advance qa` | Current QA approval, or current passing checks for completion. | Advances that track / explicitly completes QA verification. Does not advance Engineering. |
-| `$sdlc advance engineering` | Current stage's approvals and evidence. | Advances only that track; joined verification needs current QA completion. Finalization marks Engineering Verified, not Released. |
-| `$sdlc inbox` | Application context and local profile; no active request needed. | Read-only assigned work and owned pending handoffs. |
-| `$sdlc pending assignments` | Application context; no active request needed. | Read-only project view of responsibilities awaiting assignment. |
-| `$sdlc assign qa REQ-0001` | Request/track and recipient resolved; explicit confirmation naming person/role. | Transfers that responsibility with audit history. No approval, advancement or work start. |
+| “Create a requirement for exporting saved results as CSV.” | New Discovery metadata and original idea; no existing application code changes. | Supply identity setup if missing, then answer the consequential question. |
+| “Only the currently filtered results; no scheduled exports.” | Sourced answer in append-only Discovery history; assumptions remain separate. | Continue clarification or ask for review. |
+| “Stop asking and show the Discovery review.” | Derived summary only; state remains Discovery, no new approval. | Correct gaps or explicitly complete. |
+| “Discovery is complete; authorize Business Refinement readiness.” | Completion/lifecycle event; ready_for_refinement, owner retained pending handoff. | Nominate/confirm a PO separately, or leave handoff pending. |
 
-`status`, `start`, `review`, `approve`, `changes`, `advance`, `details`, `inbox`,
-`pending assignments` and `assign` are the shared routing vocabulary. Creation (`new`)
-and requests to reopen/read/validate a request are handled by skill guidance and existing
-CLI operations; they are not extra `command-context` enum values. `open` and `validate`
-are deterministic CLI operations, not a reason to ask users for technical arguments.
-Stories, `move-story`, release commands and automatic Git publishing are not implemented.
-
-The low-level routing helper still offers `development-start` for `advance` at
-`ready_for_development`; this does not override the conversational policy requiring
-an explicit start instruction. Use `start engineering` at that point. This existing
-routing inconsistency is recorded in the [documentation audit](documentation-audit.md#remaining-gaps);
-it has not been changed in this documentation refresh.
+Unknowns can remain visible. There is no fixed question count, automatic completeness
+score, or approval implied by stopping questions. Preparation of business.md is a later
+explicit request, using the pinned scaffold and confirmed evidence.
 
 ## If something blocks progress
 

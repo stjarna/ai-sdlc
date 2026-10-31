@@ -1,5 +1,9 @@
 # Engineering vertical slice and legacy sequential contract
 
+[Documentation index](README.md)
+
+> **Reading status:** Mixed-status technical contract: the original sequential workflow and 1.0.0 package examples are retained for legacy records. New forked cycles follow [work tracks](work-tracks.md); current recovery and governance addenda below apply as stated. New storage uses [canonical filenames](artifact-names.md), not the legacy bundle illustration.
+
 The original engineering increment adds a fixed, agent-native sequence after explicitly advanced Functional
 Analysis. The orchestrator owns identity, ownership, lifecycle, audit and persistence;
 versioned domain packages supply the expertise. The CLI does not generate designs or
@@ -31,15 +35,15 @@ must present both responsibilities before obtaining the respective decisions. Ro
 remain declared responsibilities, not enforced RBAC. Independent review is requested
 through the host when available, not inferred from the author's self-review.
 
-The current implementation is **sequential**. The older parallel engineering/QA target
-in the specification remains a future architecture option; it is not executed by this
-slice. Parallel agents were used to build the orchestrator's domain packages, not to
+The retained original slice is **sequential**. Its original parallel-track target was
+later implemented by the [work-track extension](work-tracks.md); existing non-fork
+records still follow this original sequence. Parallel agents were used to build the orchestrator's domain packages, not to
 orchestrate application development. Security participates in design and again after
 verification. No general workflow engine, Stories or release implementation is added.
 
 ## Domain instruction packages
 
-The initial packages live independently of Epics in `orchestrator/domain-skills/`:
+The original 1.0.0 packages (historical versions, not current catalog selection) live independently of Epics in `orchestrator/domain-skills/`:
 
 | Package | Maintainer responsibility | Usable instruction stages |
 |---|---|---|
@@ -74,6 +78,9 @@ practice updates, deprecation and rollout guidance. A reviewed catalog pin chang
 local consumption decision. No team-management or distribution infrastructure is built.
 
 ## Persistence and compatibility
+
+The bundle illustration below is legacy format0.1. New writes use manifest0.2 and the
+canonical physical filename; see [storage formats](artifact-names.md#explicit-storage-formats).
 
 The first engineering write explicitly upgrades only its Epic to schema `0.6`, adding
 append-only `engineering_history`. Schemas `0.1–0.5` remain readable; existing baseline

@@ -1,5 +1,9 @@
 # Discovery Completion and Business Refinement — Increment 3
 
+[Documentation index](README.md)
+
+> **Reading status:** Current Business drafting/source contract, originally Increment 3. For approval and onward progression use [Business approval](business-approval.md); its original increment boundary remains documented below.
+
 Increment 3 ends with a reviewed business draft. It does **not** approve business
 requirements or begin Functional Analysis. The Requester explicitly completes
 Discovery; a Product Owner then refines `business.md`. The same person may fill both
@@ -7,6 +11,10 @@ roles, but completion is not approval. The human declares an identity; the PoC d
 not authenticate it and cannot prevent an unrestricted agent from calling operations.
 The separately implemented [Increment 4 approval gate](business-approval.md) extends
 this workflow with explicit PO decisions and independently authorized advancement.
+
+New document layout is selected from the [pinned template catalog](../orchestrator/templates/README.md).
+The schemas/examples here explain validation and historical compatibility; existing
+validators remain authoritative and legacy records are not reformatted.
 
 ## Lifecycle and artifacts
 

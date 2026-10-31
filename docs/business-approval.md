@@ -1,5 +1,7 @@
 # Procedural Human Business Approval Gate — Increment 4
 
+[Documentation index](README.md)
+
 Increment 4 records explicit Product Owner decisions and separately advances an Epic
 to `ready_for_analysis`. Functional Analysis drafting is separately implemented in
 [Increment 5](functional-analysis.md). The human
@@ -217,3 +219,57 @@ corruption, not a coordinated rewrite of the audit and every digest. Semantic fi
 and whether deferred issues are acceptable require human judgment. Full snapshots and
 retained histories increase storage and validation time; no compaction, external
 identity service, workflow engine or independent-clone coordination is added.
+
+## Approval and advancement sequence
+
+A human approves what was actually reviewed. Persistence enforces the exact revision;
+the orchestrator does not treat the approval as permission to start the next stage.
+The sequence also applies to Analysis and eligible Engineering/QA artifact gates.
+
+```mermaid
+sequenceDiagram
+    actor H as Human reviewer
+    participant A as AI agent
+    participant O as Orchestrator
+    participant V as Validation / persistence
+    participant R as Artifact records
+    H->>A: Request draft or revision
+    A->>O: Submit revision
+    O->>V: Check structure<br/>and revision
+    V->>R: Save revision
+    H->>A: Review
+    A->>O: Read review
+    O->>R: Load current input
+    R-->>A: Review context
+    A-->>H: Present content<br/>and open items
+    H->>A: Explicit approval<br/>and acknowledgements
+    A->>O: Record exact decision
+    O->>V: Recheck revision<br/>and consent
+    alt Stale or missing consent
+        V-->>A: Reject, no approval
+        A-->>H: Explain blocker
+    else Current and eligible
+        V->>R: Save baseline<br/>and append decision
+        A-->>H: Approved,<br/>state unchanged
+        H->>A: Separate advance instruction
+        A->>O: Request advancement
+        O->>V: Recheck gates
+        V->>R: Save transition
+        A-->>H: Ready,<br/>not started
+    end
+```
+
+The local profile supplies declared attribution, not authenticated identity. Observable
+prototype effects require explicit limitation consent at the Design gate, separately
+from acknowledging uncertainty. A stale rejection must not be bypassed with manual state edits.
+
+## Worked example: revise, approve, then advance
+
+Illustrative inputs and outcomes, not a recorded approval:
+
+| User action | System outcome / changed records | Next decision |
+|---|---|---|
+| “Review the Business specification.” | Current business.md, scope and uncertainty shown; no write. | Request refinement or approve that revision. |
+| “Clarify that scheduled exports are excluded.” | Actual feedback recorded, then authorized wording revision in business.md/history; prior approval superseded. New business scope would require Discovery reopening instead. | Review revised content. |
+| “I approve the reviewed Business specification and acknowledge the listed open question.” | Exact baseline and PO decision recorded; still business_refinement. | Separately authorize advancement. |
+| “Advance to Analysis readiness.” | Revalidated transition/ownership handoff; ready_for_analysis. No specification.md is created yet. | Assign responsibility and explicitly request Analysis drafting. |

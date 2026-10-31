@@ -1,5 +1,9 @@
 # Interactive Discovery — Increment 2
 
+[Documentation index](README.md)
+
+> **Reading status:** Current typed-record persistence contract, originally Increment 2. Later completion and approval operations are separate extensions; old increment exclusions below are not the current product scope. For installed use, follow [Getting started](getting-started.md), not the original checkout-only instructions.
+
 This increment uses the Codex skill for conversational reasoning and deterministic
 local scripts for persistence. Load [the skill](../orchestrator/skill/SKILL.md) from
 this checkout, then describe a business idea, ask to continue a request, or request
@@ -7,6 +11,10 @@ a Discovery review. Host catalog installation is not supplied by this increment.
 For example: "Help me clarify this idea", "Continue Discovery for REQ-0001", or
 "Review what we have learned so far". These are natural-language requests, not a
 new host command API. The assistant selects one consequential question at a time.
+
+New document layout is selected from the [pinned template catalog](../orchestrator/templates/README.md).
+The schemas/examples here explain validation and historical compatibility; existing
+validators remain authoritative and legacy records are not reformatted.
 
 ## Storage and compatibility
 

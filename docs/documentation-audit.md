@@ -1,140 +1,159 @@
-# Documentation audit and refresh
+# Documentation audit and command coverage
 
-**Reviewed:** 2026-10-31. Scope: human-facing documentation only in
-[stjarna/ai-sdlc](https://github.com/stjarna/ai-sdlc). The separate Littlelist repository,
-source presentation projects, executable code, consumed instruction/template packages,
-approved records and historical evidence are outside the edit scope.
+[Documentation index](README.md)
 
-## Inventory and authority
+**Second pass: 2026-10-31.** Editing baseline: `41256c5f443f4591b30dc42a05c6772049ec607c`,
+clean main in `git@github.com:stjarna/ai-sdlc.git`, matching the supplied published baseline.
+No unrelated edits were present. Runtime, skill instructions/adapters, domain/template
+packages, tests, approved artifacts, the 448-file archive and the Littlelist repository
+are outside the edit scope. Maintainers own this audit; domain owners review their contracts.
 
-The audit used the CLI parser/help and routing code, the shared skill/adapters and
-conversation policy, installation/preflight code, ownership/work-track contracts,
-domain/template catalogs, and preservation/test evidence. A planning statement or a
-presentation caption alone was not treated as an implemented feature.
+## Complete docs inventory
 
-| Classification | Current finding | Authority / evidence |
-|---|---|---|
-| Implemented and demonstrated | Local external runtime installation, Codex discovery, read-only adoption, request creation and Discovery through verified Engineering/QA. | [Installer](../orchestrator/scripts/install.py), [shared skill](../orchestrator/skill/SKILL.md), [work tracks](work-tracks.md), isolated installation smoke and existing acceptance evidence. |
-| Implemented, deterministic regression protected | Revision-bound approval, immutable baseline/integrity checks, local locking, retries/recovery, ownership, template validation and canonical filenames. | [CLI reference](../orchestrator/scripts/README.md), [tests](../orchestrator/tests/README.md), [artifact storage](artifact-names.md), [template catalog](../orchestrator/templates/catalog.yaml). |
-| Implemented, not fully host-validated | Thin Claude Code adapter; cross-host/native IDE behavior depends on the host/version/permissions. | [.claude adapter](../.claude/skills/sdlc/SKILL.md); availability is distinct from runtime acceptance. Codex app-server discovery is not a visual IDE interaction test. |
-| Procedural / semantic | Human attribution is a local declaration; Discovery readiness and semantic conformance depend on agent/human judgment. | [Conversation policy](../orchestrator/skill/conversation.md), [identity contract](command-ux.md), [governance](engineering.md#governance-corrections-contract-01). |
-| Planned / incomplete | Story/Release execution, automatic Git/PR publication and cross-role sync, enterprise connectors/identity, distributed coordination and production operations. | Current parser has no Story/Release operations; [decision register](decisions/architecture-decisions.md) retains the target design. |
-| Outdated / conflicting | Root README led with increment history; ownership and command guides said Technical Design was unavailable; specification tables mixed initial scope/target architecture with current execution. | Corrected current-facing prose; historical decisions and detailed contracts retained with current-status navigation. |
-| Missing beginner context | Separate source/runtime/application locations; shell versus agent instructions; meanings of review/approve/advance/start/assign; real versus illustrative examples. | New [getting-started guide](getting-started.md), [workflow guide](workflow.md) and rewritten [README](../README.md). |
+Every file under docs/ was inspected, including the SVG. Audience, current/historical
+status, overlap and action are recorded below. Contract examples can be historical
+without being obsolete validators; current generation also resolves the pinned template.
+Stable paths avoid breaking pinned resource links. No file was moved, removed or archived.
 
-## Changelog
+| Path under docs/ | Audience | Purpose | Authority/status | Duplication, gap or reference issue | Action |
+|---|---|---|---|---|---|
+| [README.md](README.md) | All readers | Navigation, audience tasks and maintenance ownership | Current | Root navigation overlaps; index provides depth | Create |
+| [command-reference.md](command-reference.md) | Users / POs / analysts / engineers | Complete conversational vocabulary, selectors, gates and examples | Current | Replaces tutorial tables; routing mechanics stay in command-ux | Create |
+| [cli-reference.md](cli-reference.md) | Integrators / maintainers | Parser-derived 50-operation coverage and required/optional arguments | Current technical | Links schemas/diagnostics rather than copying them | Create |
+| [getting-started.md](getting-started.md) | First-time users | Install, adopt, clarify, decide and troubleshoot | Current | Removed long duplicate command table; keep anchor and worked example | Revise |
+| [workflow.md](workflow.md) | All readers | Shared path, roles, separate track states and decision boundaries | Current | SVG overview retained; three focused state models added | Revise |
+| [command-ux.md](command-ux.md) | Maintainers / advanced users | Routing, identity/profile and conversational contract | Current technical | Links command manual; retains unique profile/retry semantics | Revise |
+| [ownership.md](ownership.md) | Owners / leads / maintainers | Accountability, pending handoffs, assignment schema and recovery | Current technical | Handoff diagram/example; no duplicate command catalog | Revise |
+| [artifact-names.md](artifact-names.md) | Readers / maintainers | Artifact discovery, physical names, manifest compatibility and traceability | Current technical | Links workflow purposes and template authority | Revise |
+| [installation-and-adoption.md](installation-and-adoption.md) | Operators / integrators | External pinning, registration, read-only preflight and recovery | Current technical | Complements beginner guide; adds boundary diagram | Revise |
+| [existing-project-demo.md](existing-project-demo.md) | Presenters / adopters | Reproducible authentic before/after capture procedure | Current procedure | Distinct from preserved old acceptance and Littlelist outcome | Keep; add navigation |
+| [interactive-discovery.md](interactive-discovery.md) | Maintainers / evaluators | Typed history, provenance, retries and original acceptance protocol | Current data contract; historical increment scope | Original no-install/no-later-phase exclusions labelled, current installation linked | Revise orientation |
+| [business-refinement.md](business-refinement.md) | Analysts / maintainers | Business source/document schema, reconciliation and journal recovery | Current data contract; historical increment scope | Approval and template authority linked; exact schema retained | Revise orientation |
+| [business-approval.md](business-approval.md) | POs / maintainers | Business gate, immutable baseline, revision semantics and recovery | Current contract with dated examples | Add decision sequence and worked example; actor/profile detail stays in identity contract | Revise |
+| [functional-analysis.md](functional-analysis.md) | Business analysts / maintainers | FR/UC/BR/AC/AQ/AP schema and approved-input drafting | Current data contract; historical increment scope | Historical exclusions labelled; no invention of separate Analysis domain package | Revise orientation |
+| [analysis-approval.md](analysis-approval.md) | Reviewers / maintainers | Shared gate, Analysis input binding and separate advancement | Current contract with dated increment examples | Links shared approval example; retains unique baseline schema and acknowledgements | Keep; add navigation |
+| [engineering.md](engineering.md) | Maintainers / Engineering leads | Legacy sequential contract plus current Plan recovery and governance addenda | Mixed legacy/current | Prominent status; original combined Plan/QA and old package versions kept; current fork linked | Revise classification |
+| [work-tracks.md](work-tracks.md) | Engineering / QA leads / maintainers | Current independent tracks, synchronization, schemas and reconciliation | Current technical plus legacy adoption protocol | Evidence-join diagram and worked example; unique policies retained | Revise |
+| [agent-ux-evaluation.md](agent-ux-evaluation.md) | Host evaluators | Original cross-host conversational evaluation protocol | Historical protocol; not current host status matrix | Outdated unimplemented/not-run claims explicitly scoped; current guides linked | Retain and label |
+| [demo-finalization.md](demo-finalization.md) | Presenters / auditors | Dated preservation/rehearsal results and original proposed commits | Historical preparation evidence narrative | Old pending-commit and suite-count context labelled; evidence links retained | Retain and label |
+| [specification.md](specification.md) | Architecture reviewers | Original accepted decisions, target design and later addenda | Mixed historical/target/current addenda | Story/Release/Docker/old catalogs not executable matrix; current authority linked | Retain and label |
+| [decisions/architecture-decisions.md](decisions/architecture-decisions.md) | Architecture reviewers | Append-only rationale and increment scope decisions | Historical decisions plus later accepted extensions | Do not replace with current command manual | Retain; add navigation |
+| [decisions/0001-repository-and-poc-scope.md](decisions/0001-repository-and-poc-scope.md) | Architecture reviewers | Original public repository/demo/scope rationale | Historical accepted ADR | Release/Docker/old-demo intent is not current feature status | Retain; add navigation |
+| [assets/workflow-overview.svg](assets/workflow-overview.svg) | All readers | Primary full-system visual overview | Current overview asset | Smaller Mermaid diagrams explain distinct behaviors, do not replace it | Keep byte-identical |
+| [documentation-audit.md](documentation-audit.md) | Maintainers / reviewers | Complete per-file inventory, coverage, verification and known gaps | Current audit; prior pass results labelled | Prior work remains in Git history; this pass records only executed results | Revise |
 
-- Rewrote the README around purpose, practical value, workflow, setup, commands,
-  artifacts, domain skills, demonstration, limitations and documentation navigation.
-- Added a progressive setup/user guide with the actual installer, verification and
-  read-only preflight arguments. It uses generic application paths and natural-language
-  identity/request setup instead of hand-edited YAML or revision flags.
-- Added a workflow guide separating shared stages, Engineering, QA, evidence dependencies,
-  ownership and revision decisions. Only implemented states are presented as executable.
-- Added one editable SVG overview in `docs/assets/`, adapted from the approved workflow's
-  stage order, connectors, palette and icons for README readability. Current required-role
-  names replace presentation role shorthand; conceptual future skill/integration panels,
-  presentation title/navigation and production footers are omitted. The SVG records its
-  reference source digest without a personal filesystem path. Its dashed QA connection
-  is an evidence prerequisite at Engineering Verification, not a backward transition.
-- Updated AGENTS.md with README orientation and actual verification commands; replaced
-  the stale “first Codex task” instruction with reusable safeguards. Archive preservation,
-  no implicit approvals, human responsibility and no unauthorized Git operations remain.
-- Corrected stale status/command descriptions in ownership and command documentation;
-  linked the human skill README to the beginner path; clarified historical test counts.
-- Added current-implementation notes to the specification/register instead of rewriting
-  accepted historical decisions or pretending target Story/Release models were implemented.
-- Kept Littlelist and the older in-repository acceptance distinct. No video copied into Git.
+## Supporting-source audit
 
-### Files changed
+| Source | Inspection and action |
+|---|---|
+| Root README.md | Retain welcoming entry, short Quick Start, unchanged SVG and compact command cheat sheet; link complete manuals. |
+| Root AGENTS.md | Add current documentation/CLI navigation only; retain agent safeguards. |
+| Shared SKILL.md, commands.md, conversation.md | Inspect actual intent, consent, source and track rules; unchanged agent execution instructions. |
+| Codex / Claude adapters | Inspect native invocation distinctions and resource links; unchanged. No claim of new runtime acceptance. |
+| scripts/README.md | Retain schema/diagnostic contract, add complete parser inventory links, result guidance and current routing terminology. |
+| sdlc.py, command_ux.py, Engineering/QA/ownership/approval code | Authority for verbs, selectors, argparse flags, lifecycle, writes and failure behavior; no executable edits. |
+| install.py / adoption.py | Authority for bootstrap flags, non-overwriting registration and read-only preflight; unchanged. |
+| Domain catalog / package and template manifests / validators | Confirm four domain pins, eleven template types, independent versions and canonical names; unchanged consumed bytes. |
+| Relevant command/track/approval/Plan recovery/template/install tests | Regression evidence for implemented contracts, not live human authorization. |
+| Preserved acceptance / demo manifest | Check 448 original files, stored pins, actual evidence bindings and both Verified states; never regenerate tests or evidence. |
 
-Rewritten/updated: `README.md`, `AGENTS.md`, `docs/command-ux.md`,
-`docs/ownership.md`, `docs/installation-and-adoption.md`, `docs/specification.md`,
-`docs/decisions/architecture-decisions.md`, `orchestrator/skill/README.md` and
-`orchestrator/tests/README.md`.
+## Coverage, information architecture and consolidation
 
-Added: `docs/getting-started.md`, `docs/workflow.md`, `docs/documentation-audit.md`
-and `docs/assets/workflow-overview.svg`.
+- Ten conversational routing values from command_ux.COMMANDS, plus skill-guided new
+  shorthand, have individual entries covering context, selection, reads/writes, records,
+  human actions, approval/lifecycle/ownership effects, blockers and illustrative examples.
+- The actual argparse tree yields **50 sdlc.py operations**. Every operation has one
+  source-to-documentation coverage row and a complete required/optional argument entry
+  in [the CLI inventory](cli-reference.md). Installer install/verify and standalone
+  adoption preflight are separately covered, not hidden inside that count.
+- CLI syntax is separate from conversational input; parser acceptance is separate from
+  semantic gate eligibility. Current shared routing and explicit start policy are both
+  documented, including their known inconsistency below.
+- A task-oriented index separates introductory use, architecture/governance, advanced
+  schemas/recovery and historical intent. Technical contracts retain unique information.
+- Removed duplicate detailed command table from Getting started and shortened the root
+  cheat sheet. Both link the single human manual; command-ux retains profile/routing
+  mechanics. No historical rationale, evidence or acceptance criteria were deleted.
+- Early evaluation and preparation documents are explicitly historical. The specification
+  remains mixed-status; original decisions and future Story/Release diagrams are not
+  silently relabelled implemented. Engineering is mixed legacy/current; its original
+  combined QA plan and format0.1 illustration are scoped, current extensions linked.
 
-## Validation
+## New diagrams
 
-The exact current results are recorded below after execution; no conversational or
-production acceptance is inferred from automated fixtures.
+The original SVG remains byte-identical and is the primary workflow overview. Eight
+focused Mermaid blocks were added, using labels, shapes and prose rather than custom colors:
 
-- Git remote confirmed as `git@github.com:stjarna/ai-sdlc.git`; initial working tree clean.
-- CLI help inspected for installation, verification, preflight and lifecycle operations.
-  Runtime `skills` inspection needs an explicit project; `templates` is also inspectable
-  without one. Four actual domain pins and all 11 template entries resolved successfully.
-- The documented installation/verification/preflight behavior was executed using the
-  existing isolated smoke, a committed runtime base and temporary path overrides.
-  Installation and preflight passed, `baseline_ready` was true, and actual Codex CLI
-  **0.165.0** `skills/list` discovered one enabled user-scoped `sdlc` loader. The fixture's
-  source/instructions/Git data remained unchanged before normal `new` added only two
-  Discovery files. No real user loader/profile changed, no model turn or new human
-  approval occurred, and temporary fixtures were removed. Clone/default-home commands
-  were syntax/source checked rather than run against the operator's existing setup.
-- Read-only archived-demo verification passed: **448 preserved files**, both tracks
-  Verified, **7 retained skill pins** and **51 referenced evidence files** validated.
-  No archived application tests/evidence were regenerated.
-- README rendered locally with Markdown-it and Chromium at an **880 px content width**.
-  Inspected the opening, diagram and full document; no page overflow, missing image or
-  SVG text clipped outside the canvas. Four tables and the heading structure rendered.
-  This approximates GitHub Markdown; it is not a screenshot of an already published README.
-- Local Markdown/anchor/image links and public HTTP links were checked; final counts and
-  regression-suite result are recorded in the completion block below.
+| Location | Distinct behavior |
+|---|---|
+| workflow.md | Three stateDiagram-v2 blocks: shared path, Engineering projection, independent QA state. |
+| business-approval.md | Exact-revision preparation/review/approval, rejection, unchanged lifecycle and separate advancement. |
+| ownership.md | Pending handoff, retained owner, nomination and separate confirmed transfer, no automatic start. |
+| work-tracks.md | Independent Analysis inputs, automation interfaces and current QA evidence prerequisite for Engineering verification. |
+| artifact-names.md | Revisions → human decision → immutable baseline → current source/checks → scoped report; Git separate. |
+| installation-and-adoption.md | External complete runtime, user loader, existing app and project-local management artifacts. |
 
-### Completion results
+Illustrative worked examples cover first request, Business refinement/approval, independent
+tracks, delayed handoff and stale Plan/failed-check recovery. They are not fabricated
+transcripts or new approvals. All stage changes still require their existing human gates.
 
-- **Full regression suite:** `python -m unittest discover -s orchestrator/tests -v`
-  executed in the project virtual environment: **433 tests, 676.688 seconds, OK**.
-  Fixture commits/decisions were isolated test construction, not repository commits
-  or human acceptance. No production source/Git mutation was performed.
-- **Links:** **24 Markdown files, 189 parsed link/image references**, zero missing
-  local targets or anchors. **7 distinct external HTTP URLs returned 200**, including
-  both GitHub repositories, the published MP4 (`video/mp4`), and existing host-doc links.
-- **Diff/integrity:** `git diff --check` passed; all executable scripts, domain/template
-  package bytes and archived-demo files match the pre-edit snapshot. Git HEAD/tags and
-  the empty staging index remain unchanged. Only documentation and one SVG are pending.
-- **Visuals:** the 1280×800 SVG was inspected at 880 px width inside the rendered README;
-  current human roles, separate tracks, decision gates and dashed QA prerequisite are
-  legible. No new screenshot gallery or embedded MP4 was added.
+## Verification for this pass
 
-Raw test/help/smoke/link/render output was retained only in ignored local scratch space,
-not published with machine paths, synthetic profiles or dependencies. The smoke's temporary
-external fixture/runtime/home were removed after inspection. No test was claimed passed
-unless executed.
+Actual executed checks for this pass:
+
+- **Full regression suite:** `.venv/bin/python -m unittest discover -s orchestrator/tests -v`:
+  **433 tests passed in 687.539 seconds**, exit 0. No new live conversational acceptance,
+  application tests or production approval were inferred from these automated fixtures.
+- **Command coverage:** all ten routing values plus creation shorthand have manual entries.
+  The captured argparse tree contains 50 operations; all 50 have coverage rows, argument
+  entries and successfully executed `--help` checks. Required/optional flags were compared
+  against the parser, and semantic kind/lifecycle restrictions inspected in source/tests.
+- **Links:** 27 Markdown documents, 389 parsed link/image references; zero missing local
+  targets or anchors. No files moved or deleted, so inbound paths remain stable. Existing
+  external reference URLs were retained; no new external host-documentation validation
+  or visual host runtime test is claimed by this pass.
+- **Mermaid:** all eight new blocks parsed and rendered using local Mermaid 11.12.0 in
+  default/light and dark themes: **16 successful renders**. Inspected rendered diagrams;
+  shortened sequence labels and moved crowded recovery paths to explanatory prose.
+  This is local compatibility checking, not an already-published GitHub rendering test.
+- **Markdown:** rendered root README, documentation index, command manual, CLI inventory
+  and audit in Chromium at 880 px content width. No page overflow; long tables scroll
+  where necessary. Existing SVG remained unchanged and rendered successfully.
+- **Historical integrity:** read-only demo verification passed for **448 preserved files**,
+  seven historical domain skill pins, 51 referenced evidence files and both Verified
+  states. No archived checks or historical evidence were regenerated.
+- **Scope/integrity:** **616 protected tracked files** outside the documentation allowlist
+  are SHA-256-identical to the initial snapshot, including executable code, skills,
+  templates, tests and demonstration assets. The master SVG is also unchanged. Final
+  diff and new guides reviewed; `git diff --check` passed. HEAD remains the supplied
+  baseline; staging is empty. No commit/push, runtime update or Littlelist modification.
+
+Scratch outputs are ignored local files, not new authoritative evidence. Earlier-pass
+results remain in Git history; no old suite count or smoke result is presented as a
+fresh run. The docs tree now contains 23 Markdown files and the retained SVG, all
+represented in the inventory above. In total this pass updates 23 existing documentation
+files and adds three guides (26 files); no document was removed or relocated.
 
 ## Remaining gaps
 
-1. **No license file:** the public source repository has no LICENSE/LICENCE file.
-   A maintainer must choose its reuse terms; this refresh does not invent a license
-   or advertise an established open-source license.
-2. **Routing inconsistency:** `command_ux.route("advance", "ready_for_development")`
-   exposes `development-start`, including the Engineering track projection. The shared
-   conversation policy requires a separate explicit start. The user guide documents
-   `start engineering`; the inconsistency needs a focused implementation decision,
-   not a silent behavioral change in documentation work.
-3. **Historical design sections:** the specification/ADR preserve Story/Release models,
-   Docker-first planning, initial skill-count sketches and earlier increment boundaries.
-   Current-status notices and guides distinguish them from the current executable scope.
-   They have not been translated/recast as a new approved architecture.
-4. **Host acceptance:** Claude runtime, visual IDE interactions in every current host
-   version, native Windows and enterprise environments remain unverified. The new smoke
-   establishes local Codex backend discovery, not universal portability.
-5. **Governance trust boundary:** procedural identities, informational roles and local
-   file protections do not authenticate the decision maker or sandbox an unrestricted
-   coding agent. Human/semantic review and host infrastructure remain necessary.
-6. **Adoption constraints:** fixed `requirements/` / `qa/` namespaces and conservative
-   source fingerprints can conflict with existing projects. Presentation files and
-   ignored outputs may stale approval; no blanket exclusions or automatic relocations
-   were added.
-7. **Distribution:** no automatic registration replacement, package upgrade/uninstaller,
-   enterprise registry or release automation. An installed runtime is an execution bundle,
-   not the complete contributor checkout; examples/development-test links should be read
-   in the source repository.
-8. **Independent review:** independent QA input authority/work tracks do not guarantee
-   different reviewers or isolated AI execution. The real demonstration used multiple roles;
-   semantic completeness and exhaustive security are not established by passing checks.
+1. `command_ux.route("advance", "ready_for_development")` suggests development-start,
+   including track projection, while conversation policy requires explicit start. The
+   user/manual and CLI inventory preserve this known defect; no routing fix was made.
+2. Shared Business/Analysis start resolves read context; explicit draft-generation intent
+   invokes the existing writer. Do not claim a universal deterministic start mutation.
+3. Shared argparse kind choices exceed some operation-specific policies. The CLI inventory
+   states valid kinds separately; parser acceptance does not authorize an unsupported action.
+4. Historical specification/ADR and legacy contracts retain original language and scope;
+   status banners and current navigation prevent treating target commands as implemented.
+5. Local profile names/roles and claimed review independence are procedural, unauthenticated
+   and bypassable with unrestricted tools. Semantic conformance/completeness remain human/AI
+   responsibilities, not deterministic semantic guarantees.
+6. Claude runtime, visual IDE parity, Windows and distributed coordination remain unverified.
+   Static adapter/link checks and automated fixtures do not establish conversational acceptance.
+7. No LICENSE/LICENCE defines reuse terms. Maintainers must decide; no license was invented.
+8. Installed runtimes omit contributor tests/examples; source-repository docs are the complete
+   reference. New documentation is not installed into an existing pinned runtime automatically.
+9. Future Git automation, ticketing, messaging, IAM/RBAC, CI/CD, Story and Release execution
+   remain future concepts. Verified is limited to stated evidence/scope, not production readiness.
 
-No implementation defects were fixed in this documentation-only refresh. Preserved
-baselines, audit records, domain/template pins and archived evidence remain authoritative.
+No runtime defect, domain package, authoritative artifact or historical hash was changed.

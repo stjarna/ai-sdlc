@@ -1,5 +1,7 @@
 # ADR-0001 — Repository and PoC scope
 
+[Documentation index](../README.md)
+
 **Date:** 2026-10-28  
 **Status:** Accepted
 

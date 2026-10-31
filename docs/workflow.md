@@ -1,5 +1,7 @@
 # The implemented workflow
 
+[Documentation index](README.md)
+
 [Project overview](../README.md) · [Getting started](getting-started.md) · [Detailed work-track contract](work-tracks.md)
 
 A request moves from business intent to a verified change through three shared stages,
@@ -125,3 +127,85 @@ For authoritative operation details, see [work tracks](work-tracks.md),
 [Engineering and governance](engineering.md), [Business approval](business-approval.md),
 [Analysis approval](analysis-approval.md), [ownership](ownership.md) and
 [artifact storage](artifact-names.md).
+
+## Persisted shared lifecycle
+
+The state names below are stored values. Approval is a decision within a state, not
+an invented “approved” lifecycle. Each advancement label means a separate explicit
+human instruction after the required gate. Drafting must be explicitly requested.
+
+```mermaid
+stateDiagram-v2
+    [*] --> discovery: new request
+    discovery --> ready_for_refinement: Requester completes Discovery
+    ready_for_refinement --> business_refinement: request Business draft
+    business_refinement --> ready_for_analysis: human advance after Business approval
+    ready_for_analysis --> functional_analysis: request Analysis draft
+    functional_analysis --> ready_for_technical_design: human advance after Analysis approval
+    ready_for_refinement --> discovery: explicit reopen
+    business_refinement --> discovery: explicit reopen
+    ready_for_analysis --> discovery: explicit reopen
+    functional_analysis --> discovery: explicit reopen
+    ready_for_technical_design --> discovery: explicit reopen
+    note right of ready_for_technical_design
+        New Analysis handoff creates Engineering and QA tracks.
+        Neither starts automatically.
+    end note
+```
+
+Cancelled legacy records remain readable and reserve IDs; no cancellation operation
+is implemented. Reopening from eligible downstream stages starts a new upstream cycle
+without deleting old track history. See the two track models below.
+
+## Persisted Engineering lifecycle
+
+This is the scalar Engineering projection used by current tracks and legacy records.
+Independent QA gates add prerequisites; they are not extra Engineering lifecycle states.
+
+```mermaid
+stateDiagram-v2
+    [*] --> ready_for_technical_design: approved Analysis handoff
+    ready_for_technical_design --> technical_design: request Design draft
+    technical_design --> ready_for_implementation_planning: advance after Design approval
+    ready_for_implementation_planning --> implementation_planning: request Plan draft
+    implementation_planning --> ready_for_development: advance after Plan approval
+    ready_for_development --> implementation_planning: explicit Plan changes before Development starts
+    ready_for_development --> development: separate successful start
+    development --> verification: advance after code approval
+    verification --> security_review: human advance with current QA completion
+    security_review --> final_verification: human advance with clean current Security review
+    final_verification --> verified: explicit finalization
+    verified --> [*]
+```
+
+Approvals do not travel along those arrows: they bind exact artifact/source revisions
+before a separate advancement. Verified has no onward Engineering transition; this is
+not a Release state. Upstream reopening is a separate shared operation omitted from
+this focused graph. For readability, remediation arrows are omitted: authorized
+failed-check remediation
+returns verification to development; supported Security remediation can return
+security_review or final_verification to development. These operations preserve prior
+findings and require renewed applicable reviews/checks; they are never automatic retries.
+
+## Persisted QA lifecycle
+
+QA has its own status and audit. Starting actual verification checks leaves readiness
+unchanged until explicit completion; the implementation does not persist a separate
+QA “verification running” lifecycle state.
+
+```mermaid
+stateDiagram-v2
+    [*] --> ready_for_test_design: new Analysis track
+    ready_for_test_design --> test_design: request strategy and scenarios
+    test_design --> test_automation: advance after scenario approval
+    test_automation --> ready_for_verification: advance after automation approval
+    ready_for_verification --> verified: current passing checks and explicit completion
+    verified --> [*]
+```
+
+Finalized Engineering freezes ordinary QA mutation for that cycle. A new cycle requires
+upstream authority and explicit reconciliation. Rework arrows are omitted for clarity:
+scenario feedback on an existing scenario
+revision returns to test_design; automation feedback from test_automation,
+ready_for_verification or verified returns to test_automation. Neither authorizes
+changing approved product expectations. For the evidence join and check execution prerequisites, see [track synchronization](work-tracks.md#evidence-dependency-between-tracks).

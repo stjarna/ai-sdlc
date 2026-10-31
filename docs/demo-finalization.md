@@ -1,5 +1,9 @@
 # Final PoC preparation and proposed commits
 
+[Documentation index](README.md)
+
+> **Reading status:** Historical preparation record dated 2026-10-28. Its pending-commit proposal, source HEAD and suite counts describe that preparation, not the current working tree. Rehearsal remains documented in the [preserved demo runbook](../examples/todo-app/README.md).
+
 Preparation date: 2026-10-28. No staging, commits, pushes or new SDLC stages are authorized
 by this preparation. The real Task Due Date Management request already completed explicit
 human finalization: both Engineering and QA are Verified.

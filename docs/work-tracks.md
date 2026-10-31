@@ -1,5 +1,7 @@
 # Engineering and QA work tracks
 
+[Documentation index](README.md)
+
 New explicit Functional Analysis advancement atomically creates two pending work tracks
 bound to the same approved Analysis baseline and advancement event. Engineering owns
 Technical Design, Implementation Planning, application code, unit tests and build checks.
@@ -298,3 +300,48 @@ product `cases`. Every authorized limitation must have a supplemental check; unk
 or claims outside the affected requirements are rejected. Results are source-bound and
 required at the joined gate, but never contribute to product case/AC coverage. The
 independent Analysis-derived QA strategy/scenarios remain unchanged by a limitation.
+
+## Evidence dependency between tracks
+
+The common authority is approved Functional Analysis. QA expectations are independent
+of Design; concrete automation may later consume its reviewed interface. The evidence
+arrow below is a prerequisite, never a reverse lifecycle transition.
+
+```mermaid
+flowchart TB
+    A[Approved Analysis baseline] --> E[Engineering Lead: Design and Engineering Plan]
+    A --> Q[QA Lead / Tester: strategy and scenarios]
+    E --> C[Development, unit/build and human code approval]
+    Q --> S[Human scenario approval and separate advance]
+    S --> T[QA automation and human approval]
+    E -. reviewed Design interfaces .-> T
+    T --> X[Separate readiness, actual integration/UI runs]
+    C -. current reviewed implementation required .-> X
+    X --> V[Explicit QA completion: QA Verified]
+    C --> J[Engineering Verification gate]
+    V -. current QA evidence prerequisite .-> J
+    J --> H[Separate human advance to Security Review]
+    H --> F[Current clean Security review and separate advance]
+    F --> R[Final Verification and explicit finalization]
+    R --> Z[Engineering Verified]
+```
+
+No edge launches an agent or implies automatic advancement. The fixed join rechecks
+current sources, approvals and actual passing checks; missing/failed/stale QA blocks it.
+Security/finalization also recheck that join. See [persisted states](workflow.md#persisted-qa-lifecycle).
+
+## Worked example: independent preparation, joined verification
+
+Illustrative, not new acceptance evidence: after explicit Analysis advancement, request
+`start qa` to prepare test-strategy.md/test-scenarios.md and independently request
+`start engineering` to prepare technical-design.md. Each writes only its eligible track
+artifacts and history. Review/approve each eligible revision and advance separately;
+assigning the same person to both tracks does not combine their gates.
+
+Engineering Plan approval leads to readiness, then a successful explicit Development
+start permits scoped code/unit/build work. QA scenario approval leads separately to
+automation preparation, approval and readiness. Current reviewed implementation plus
+approved automation permit actual checks. Review actual results and explicitly complete
+QA; only a separate Engineering advancement can pass the joined gate into Security.
+The generated verification-report.md later discloses actual checks, blocked/excluded
+scope, unresolved questions and authorized limitations. Verified is not Released.

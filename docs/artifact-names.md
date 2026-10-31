@@ -1,5 +1,7 @@
 # Canonical artifact filenames and legacy compatibility
 
+[Documentation index](README.md)
+
 New Engineering/QA snapshots use manifest format **0.2** and canonical physical files.
 The displayed filename, link label and actual target basename agree. No duplicate files,
 symlinks, export aliases or generic document-management layer are introduced.
@@ -80,3 +82,39 @@ storage contract governs new publication, without rewriting those approved packa
 There is no new export command: links/opening existing files use the exact canonical or
 explicit legacy target. Paths are local and refreshed after project relocation; no
 custom viewer, service or duplicate human-facing folder is added.
+
+## How documents become evidence
+
+Use `details` to find a revision's actual file. A draft, an approved baseline and a
+passed test are different records; none can substitute for another.
+
+```mermaid
+flowchart TB
+    Q[Confirmed requirement and inherited uncertainty] --> D[Template-bound document revision]
+    D --> H[Human review of exact revision]
+    H --> A[Explicit approval decision]
+    A --> B[Immutable approved baseline]
+    B --> P[Approved Plan and current implementation review]
+    S[Application source fingerprint] --> P
+    P --> C[Actually executed named checks]
+    S --> C
+    C --> V[Verification report: scope and actual evidence]
+    B --> V
+    G[Git repository and human-authorized commits] -. preserves files and history .-> D
+    G -. preserves baseline bytes .-> B
+```
+
+Git commits and content-addressed baselines have separate identities and purposes.
+The orchestrator never commits/pushes automatically. Changes can stale authority/evidence
+without deleting historical records. The diagram is a conceptual traceability view;
+exact Business/Analysis/Engineering/QA bundle schemas are in their technical contracts.
+
+## Reading the artifact set
+
+The original idea, structured Discovery and Business/Analysis drafts live in the request
+root. Engineering/QA prose lives once per immutable revision bundle, not in additional
+mutable alias files. [The workflow tables](workflow.md) explain each canonical document's
+business purpose; [template manifests](../orchestrator/templates/README.md) own required
+sections. Raw logs, screenshots and check JSON remain execution evidence, not templated
+requirements or proof of human approval. Preserve template and domain-skill pins when
+copying complete evidence; never attach today's provenance to an old document.

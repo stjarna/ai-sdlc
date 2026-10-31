@@ -1,5 +1,7 @@
 # Shared Approval Infrastructure and Analysis Approval — Increment 6
 
+[Documentation index](README.md)
+
 Increment 6 reuses the procedural Business gate infrastructure for Functional Analysis.
 The skill assesses meaning and captures the human's actual decision; the CLI enforces
 structure, exact revision bindings, acknowledgement, persistence and lifecycle.
