@@ -9,7 +9,9 @@ then independently governed Engineering and QA tracks. This page describes the c
 PoC. The [working specification](specification.md) also contains historical planning and
 future Story/Release architecture; those are not additional executable stages.
 
-[![Shared Discovery, Business Refinement and Functional Analysis lead to separate Engineering and QA tracks. Current QA evidence feeds the Engineering verification gate before Security Review and Final Verification. Both tracks have distinct Verified outcomes.](assets/workflow-overview.svg)](assets/workflow-overview.svg)
+[![Shared Discovery, Business Refinement and Functional Analysis lead to separate Engineering and QA tracks. Current QA evidence feeds the Engineering verification gate before Security Review and Final Verification. Both tracks have distinct Verified outcomes.](assets/workflow-overview.svg)](assets/workflow-detailed.svg)
+
+[Expanded workflow with artifact names](assets/workflow-detailed.svg) · [Diagram source and visual verification](workflow-diagram.md)
 
 ## Who does what?
 

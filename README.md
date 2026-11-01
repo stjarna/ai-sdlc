@@ -44,7 +44,9 @@ pending until their exact reviewed integration is verified. Legacy local use is 
 
 ## How the workflow works
 
-[![Implemented SDLC: Discovery, Business Refinement and Functional Analysis feed separate Engineering and QA tracks. Current QA evidence is required at Engineering verification before Security Review and Final Verification. Approval and advancement are separate human decisions.](docs/assets/workflow-overview.svg)](docs/assets/workflow-overview.svg)
+[![Implemented SDLC: Discovery, Business Refinement and Functional Analysis feed separate Engineering and QA tracks. Current QA evidence is required at Engineering verification before Security Review and Final Verification. Approval and advancement are separate human decisions.](docs/assets/workflow-overview.svg)](docs/assets/workflow-detailed.svg)
+
+[Expanded workflow with artifact names](docs/assets/workflow-detailed.svg) · [Diagram source and visual verification](docs/workflow-diagram.md)
 
 AI prepares work; humans review and decide. **Review, approval, advancement and work
 initiation are separate human decisions.** Assignment transfers responsibility without

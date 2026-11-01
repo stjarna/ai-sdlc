@@ -20,6 +20,7 @@ are illustrative unless a page links preserved execution evidence.
 
 - [Complete conversational command reference](command-reference.md): all ten routed commands, creation shorthand, selectors, gates and examples.
 - [Workflow](workflow.md): roles, persisted states, separate tracks and evidence dependencies.
+- [Workflow diagram](workflow-diagram.md): compact and expanded vectors, generator, runtime mapping and visual verification.
 - [Business approval](business-approval.md) and [Analysis approval](analysis-approval.md): exact revision decisions, uncertainty and separate advancement.
 - [Ownership and handoffs](ownership.md): retained accountability, inboxes, nomination and confirmed assignment.
 - [Artifact guide](artifact-names.md): document purposes, physical filenames, history and baseline discovery.
