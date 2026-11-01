@@ -55,7 +55,7 @@ class TemplateTests(unittest.TestCase):
     def test_foundation_scaffolds_match_existing_validator_fields(self):
         import re
         import functional_analysis as analysis
-        self.assertEqual(templates.resolve('idea')['manifest']['required_sections'], list(sdlc.SECTIONS))
+        self.assertEqual(templates.resolve('idea')['manifest']['required_sections'], list(sdlc.idea_sections()))
         self.assertEqual(templates.resolve('business')['manifest']['required_sections'], list(business.CATEGORIES))
         item = templates.resolve('specification')
         self.assertEqual(item['manifest']['required_sections'], list(analysis.SECTIONS))
@@ -106,6 +106,31 @@ class TemplateTests(unittest.TestCase):
             changed['pin']['digest'] = '0' * 64
             self.reject('E_TEMPLATE_STALE', lambda: templates.assert_current(changed))
             templates.assert_current(selected)
+
+    def test_discovery_completeness_uses_current_catalog_sections(self):
+        # A future package exists only in this disposable fixture. Selection must
+        # follow its reviewed pin, not a cached heading list or hardcoded version.
+        version = self.root / 'versions' / 'idea' / '1.2.0'
+        shutil.copytree(self.root / 'versions' / 'idea' / '1.1.0', version)
+        document = version / 'document.md'
+        document.write_text(document.read_text() + '\n## Fixture detail\n\nFixture-only explanatory text.\n')
+        manifest = yaml.safe_load((version / 'manifest.yaml').read_text())
+        manifest.update(version='1.2.0', content_digest=templates.digest(document.read_bytes()))
+        manifest['required_sections'].append('Fixture detail')
+        (version / 'manifest.yaml').write_text(yaml.safe_dump(manifest, sort_keys=False))
+        pin = templates.package('idea', '1.2.0', self.root)['pin']
+        catalog = yaml.safe_load((self.root / 'catalog.yaml').read_text())
+        catalog['templates']['idea'] = {'version': pin['version'], 'digest': pin['digest']}
+        (self.root / 'catalog.yaml').write_text(yaml.safe_dump(catalog, sort_keys=False))
+        with patch.object(templates, 'ROOT', self.root):
+            self.assertEqual(sdlc.idea_sections(), tuple(manifest['required_sections']))
+            warnings = sdlc.business_warnings(self.project / 'idea.md', '## Problem\n\nKnown.')
+            self.assertTrue(any("'Fixture detail'" in item.message for item in warnings))
+            created = sdlc.new_epic(self.project, 'Catalog fixture', 'Original idea.', requester='Fixture Requester')
+            self.assertEqual(created['epic']['metadata']['template_provenance']['idea'], pin)
+            self.assertIn('## Fixture detail', created['epic']['idea'])
+            self.reject('E_TEMPLATE_DOCUMENT', lambda: templates.validate_document(
+                templates.resolve('idea'), created['epic']['idea'].replace('## Problem', '### Problem', 1)))
 
     def test_new_idea_records_exact_pin_and_preserves_original_statement(self):
         idea = 'Fictional users need a simpler way to organize shared requests.'

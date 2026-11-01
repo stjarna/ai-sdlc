@@ -41,8 +41,6 @@ SCHEMA_VERSION = "0.1"
 ORCHESTRATOR_VERSION = "0.17.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
-TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
-SECTIONS = tuple(templates.headings(TEMPLATE.read_text(encoding="utf-8")))
 
 
 @dataclass
@@ -151,6 +149,11 @@ class Epic:
         }
 
 
+def idea_sections() -> tuple[str, ...]:
+    """Resolve completeness headings lazily through the validated current catalog."""
+    return tuple(templates.resolve("idea")["manifest"]["required_sections"])
+
+
 def business_warnings(path: Path, content: str, unknown_marker=None) -> list[Diagnostic]:
     """Check template sections mechanically; never judge business readiness."""
     parts = re.split(r"(?m)^##[ \t]+([^\n]+)\n?", content)
@@ -163,7 +166,7 @@ def business_warnings(path: Path, content: str, unknown_marker=None) -> list[Dia
             "warning", "W_DISCOVERY_INCOMPLETE", str(path),
             f"Discovery section '{name}' is missing or empty; clarification may be needed.",
         )
-        for name in SECTIONS if not sections.get(name.casefold()) or (unknown_marker is not None and sections.get(name.casefold())==unknown_marker)
+        for name in idea_sections() if not sections.get(name.casefold()) or (unknown_marker is not None and sections.get(name.casefold())==unknown_marker)
     ]
 
 

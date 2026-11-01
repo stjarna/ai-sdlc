@@ -57,8 +57,12 @@ Pins contain template ID, version, package digest, content digest and validation
 Canonical physical filenames remain authoritative. Machine histories, approval records
 and raw test evidence are not templated. Existing manifest formats, approvals and baseline
 hashes remain valid. Legacy artifacts without pins remain readable; never retrospectively
-assign provenance or rewrite approved documents. The unversioned `idea.md` file remains
-only a legacy compatibility reference, not selection authority for new documents.
+assign provenance or rewrite approved documents. All template selection, including Idea
+creation and Discovery completeness headings, resolves through the validated versioned
+catalog. There is no root-level Idea scaffold or fallback outside that catalog. The
+project artifact remains `requirements/<request-directory>/idea.md`; it is generated
+content, distinct from a template package's `document.md`. Retained versioned packages
+support historical pins without an unversioned compatibility copy.
 
 Most documents are drafted by the agent from their scaffold. Final Verification uses a
 small deterministic exact-slot renderer: its fixed named slots project structured current

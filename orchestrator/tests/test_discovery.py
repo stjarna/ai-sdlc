@@ -103,7 +103,7 @@ class DiscoveryTests(unittest.TestCase):
     def test_valid_metadata_and_complete_content_have_no_diagnostics(self):
         created = self.create()
         idea_path = Path(created["epic"]["directory"]) / "idea.md"
-        idea_path.write_text("\n\n".join(f"## {name}\n\nKnown answer." for name in sdlc.SECTIONS))
+        idea_path.write_text("\n\n".join(f"## {name}\n\nKnown answer." for name in sdlc.idea_sections()))
         before = snapshot(self.project)
         output = self.cli("validate", "REQ-0001")
         self.assertTrue(output["ok"])
