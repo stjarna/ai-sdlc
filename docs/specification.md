@@ -437,3 +437,14 @@ artifact contracts remain unchanged. Explicit preview snapshots identify their G
 base and exact content rather than claiming a clean release. Installation never
 commits, pushes, overwrites registrations or changes historical evidence. See the
 [installation contract](installation-and-adoption.md) and [demo runbook](existing-project-demo.md).
+
+
+## Git-native publication — 2026-11-01
+
+**[D/P]** Explicit opt-in native Git collaboration wraps existing lifecycle operations;
+one configurable remote branch is shared authority. Immutable commit/path/event
+references supplement, without rewriting, existing baseline/source/package contracts.
+Local decisions, commits, publication, protected integration and advancement remain
+separate; pending publication blocks dependent work. See [implemented scope, event
+mapping and failure recovery](git-native-collaboration.md). No enterprise authentication,
+automatic PR/merge or general orchestration engine is added.

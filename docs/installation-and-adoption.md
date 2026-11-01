@@ -157,3 +157,12 @@ managed work. Historical loaders only instructed the runtime/environment check; 
 verify with `--skill-root` checks registration too. These are procedural agent steps,
 not Codex-enforced hooks. See [runtime selection and promotion](runtime-version-management.md).
 The installer still registers Codex only and performs no automatic upgrade.
+
+## Optional remote collaboration
+
+Install the complete committed runtime as usual; `git_collaboration.py` travels with
+its scripts, domains, templates and documentation. At an explicit adoption boundary,
+review/commit `.sdlc-git.yaml` in the application and follow [Git-native setup](git-native-collaboration.md).
+Installation/preflight never creates that config or mutates application Git. Existing
+requests may need governed source reconciliation after adopting the config. Configure
+real server policy separately. The loader still uses the same pinned runtime resolver.

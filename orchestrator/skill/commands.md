@@ -286,3 +286,16 @@ back the default” is administrative and never downgrades the request's effecti
 Handle expected revisions, operation IDs and fresh-context receipts internally. A host
 context carrying another runtime requires a fresh conversation, not silently invented
 fresh-context evidence. Keep responses concise and actual decisions attributable.
+
+
+## Optional Git publication
+
+The conversational vocabulary is unchanged. A configured `.sdlc-git.yaml` routes
+writes through the effective runtime's Git bridge after resolving the existing command
+and human decision. See [publication contract](../../docs/git-native-collaboration.md).
+Stage context/revisions still come from the existing CLI; remote OIDs and exact staging
+scopes are internal. `review` is read-only. `approve`, `advance` and `start` remain
+separate; pending proposal/publication is not completion. Report “recorded locally;
+publication pending” accurately and stop before dependent work. Never repeat a decision
+under a new ID to repair a push. Existing projects without config do not gain automatic
+Git actions. Runtime and human authorization must be valid before publication.

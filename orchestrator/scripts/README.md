@@ -354,7 +354,7 @@ limitation: explicit successful development-start is required before application
 
 [Runtime management](../../docs/runtime-version-management.md) defines explicit snapshot
 preparation, default update/rollback, request/track selection, compatibility and recovery.
-The CLI is 0.16.0; metadata/manifest/domain/template contract versions stay independent.
+The CLI is 0.17.0; metadata/manifest/domain/template contract versions stay independent.
 Seven new tool operations are runtime-probe (internal read), runtime-status, runtime-session,
 runtime-check, runtime-bind, runtime-promote and runtime-recover. Global --runtime-session
 binds governed writes to the exact effective snapshot/context. Ordinary source-checkout
@@ -389,3 +389,14 @@ new writes/approvals reject unresolved tokens without retrospectively scanning h
 approvals. `new --idea-details-file` optionally supplies six explicit section strings;
 Idea 1.1.0 represents absent values as `Not provided.` and retains warning-only Discovery
 completeness. Literal source/evidence braces are data. See [template contracts](../templates/README.md).
+
+## Opt-in Git publication entrypoint
+
+`git_collaboration.py --project APP` wraps existing public operations; it does not add
+SDLC stages or alter the core CLI argument contract. Actions: `status`, `sync`, `run`,
+`publish`, `recover`, `confirm`, `abandon`, `integration-check`, `baseline`. See the
+[full config, JSON, diagnostic and recovery contract](../../docs/git-native-collaboration.md).
+No config means existing local-only writes. Configured writes require the bridge and
+managed `git-native/1` runtime capability. Diagnostics use `E_GIT_*`; SDLC diagnostics
+remain in pending journal `diagnostics` and keep original core codes. Baseline references
+use Git OIDs; legacy manifests/source and non-Git runtime integrity digests remain.

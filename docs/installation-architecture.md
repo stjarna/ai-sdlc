@@ -347,8 +347,8 @@ adapter in the runtime but does not install it under a Claude discovery root or 
 Claude. `/sdlc` is that adapter's conversational entry convention, not evidence that
 this Codex install also registered Claude. Claude runtime acceptance remains outside
 this PoC; local POSIX behavior does not establish native Windows/network-filesystem
-support. No enterprise IAM/RBAC, remote skill registry, automatic Git publication or
-parallel-agent scheduler is introduced.
+support. No enterprise IAM/RBAC, remote skill registry or parallel-agent scheduler is
+introduced. Git publication is an explicit optional workflow, separate from installation.
 
 ## Implementation references
 
@@ -357,3 +357,12 @@ parallel-agent scheduler is introduced.
 - [Shared workflow](../orchestrator/skill/SKILL.md): actual instruction loading and stage decisions; [Codex](../.agents/skills/sdlc/SKILL.md) / [Claude](../.claude/skills/sdlc/SKILL.md) are the source-checkout adapters.
 - [Domain package resolver](../orchestrator/scripts/domain_skills.py), [Engineering selection](../orchestrator/scripts/engineering.py), [QA selection](../orchestrator/scripts/qa_track.py): fixed stage selection, dependency validation and recorded pins.
 - [Template resolver](../orchestrator/scripts/artifact_templates.py) and [template contract](../orchestrator/templates/README.md): deterministic selection, structural validation and provenance.
+
+## Git collaboration boundary
+
+The optional [Git bridge](git-native-collaboration.md) is bundled with the same external
+runtime. It calls native Git and the existing CLI, enforcing publication preconditions
+without duplicating stage semantics. External per-checkout operation journals are
+recovery receipts, not SDLC authority. Authority is the configured remote branch;
+Git identity is not a human authorization provider. Old installed runtimes are not
+automatically upgraded; configured managed writes require `git-native/1` capability.

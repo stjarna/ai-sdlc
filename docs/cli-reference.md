@@ -708,3 +708,13 @@ helper, not a product operation or an automatic approval mechanism.
 The read-only helper's known `advance` → `development-start` suggestion at Development
 readiness conflicts with shared conversation policy. Use explicit `start engineering`
 and inspect its successful result before edits. No executable change fixes it here.
+
+
+## Optional Git collaboration entrypoint
+
+`git_collaboration.py` is a separate deterministic publication wrapper, leaving the
+57 existing core parser operations intact. Its configuration, strict request envelopes,
+event mapping, status/sync, run/publish, recover/confirm/abandon, baseline and read-only
+integration check are documented in [Git-native collaboration](git-native-collaboration.md).
+It is bundled with the external runtime. Existing local CLI calls stay unchanged when
+unconfigured; configured writes require bridge context and existing runtime sessions.

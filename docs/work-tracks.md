@@ -278,7 +278,8 @@ Limits remain procedural identities, local POSIX execution, no OS sandbox or cro
 locking, source fingerprints excluding dependency directories, snapshot storage growth,
 and semantic/human review responsibility. The reserved `qa/` path is a deliberate PoC
 constraint, not a module/team model. There is no remote registry, enterprise RBAC, Teams,
-custom UI, automatic parallel AI execution, release automation or automatic Git operation.
+custom UI, automatic parallel AI execution or release automation. Git publication is
+now explicitly opt-in through the bounded bridge described below.
 
 ## Document discovery
 
@@ -345,3 +346,11 @@ approved automation permit actual checks. Review actual results and explicitly c
 QA; only a separate Engineering advancement can pass the joined gate into Security.
 The generated verification-report.md later discloses actual checks, blocked/excluded
 scope, unresolved questions and authorized limitations. Verified is not Released.
+
+## Git workstreams
+
+Opt-in [Git collaboration](git-native-collaboration.md) supports separate Engineering/QA
+clones or worktrees. There remains one shared lifecycle on the configured integration
+branch. Feature output is working material; QA evidence cites the tested commit. Any
+upstream reopen blocks stale downstream approval/integration pending impact review,
+even with no text conflicts. Native Git merge is not track reconciliation or approval.

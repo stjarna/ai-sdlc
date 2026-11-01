@@ -65,7 +65,9 @@ project and a declared requester/profile. It preserves the user's original idea 
 the pinned idea template, allocates the next local ID and creates `metadata.yaml` and
 `idea.md`; the first conversational update creates `discovery.yaml`.
 
-No approval, downstream draft, Git action or automatic advancement occurs. The typical
+No approval, downstream draft or automatic advancement occurs. Git publication is
+absent by default; an explicitly configured collaboration workflow publishes creation
+as a separate recorded event. The typical
 result identifies the request and asks one consequential clarification question. Missing
 identity, namespace conflicts, malformed existing records, duplicate IDs and exhaustion
 block creation; existing files are never overwritten. See [first-request example](getting-started.md#worked-example-first-requirement).

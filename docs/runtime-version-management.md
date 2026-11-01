@@ -366,3 +366,13 @@ Idea 1.1.0 and Discovery guidance 1.1.0 add named creation slots and explicit un
 markers. They are selected for new requests in a runtime that pins them. Older requests
 keep their original idea file and template/domain pins; runtime promotion does not
 regenerate it. See [placeholder and generation contracts](../orchestrator/templates/README.md#named-placeholders-and-missing-information).
+
+## Opt-in Git execution compatibility
+
+Configured Git projects add the `collaboration_contract: git-native/1` capability;
+legacy runtimes without it cannot be managed write targets. For unconfigured projects,
+a missing capability is interpreted as `legacy-local/1` for compatibility assessment.
+All historical package/source/baseline hashes and approvals retain their contracts.
+Follow [Git-native adoption and publication recovery](git-native-collaboration.md),
+not an unprotected old CLI fallback. `runtime-bind/promote` remains explicit, separately
+revision-bound and session-protected; the Git envelope only publishes its existing event.

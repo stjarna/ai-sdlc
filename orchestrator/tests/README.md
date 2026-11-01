@@ -146,3 +146,12 @@ a failed or pending Development start and verify the agent awaits completion, in
 exit code/JSON/lifecycle, and makes no application edits unless all success conditions
 hold. Skill instructions require this behavior; Python tests do not sandbox unrestricted
 host editing tools or prove agent compliance.
+
+
+`test_git_collaboration.py` exercises native commits/pushes using isolated local bare
+remotes and independent clones: creation, exact-file Git references, real Business gate
+and separate advancement, competing lifecycle writes, dirty/index preservation,
+protected proposals/integration, upstream reopen blocking disjoint QA work, exact
+implementation bindings, fetch/push failure, interrupted commit/receipt recovery,
+idempotency and runtime capability compatibility. Authentication denial is injected,
+not a hosted identity acceptance result. Historical validators remain regression authority.

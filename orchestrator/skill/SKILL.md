@@ -19,6 +19,43 @@ when drafting/revising, and the [Approval guide](../../docs/business-approval.md
 PO decisions or advancement. These define artifact/operation contracts; the conversation
 policy defines default presentation. Handle commands and technical parameters internally.
 
+## Opt-in Git collaboration
+
+Before a write inspect the application's `.sdlc-git.yaml`. When present, read the
+[Git-native contract](../../docs/git-native-collaboration.md) and use the effective
+runtime's `git_collaboration.py`; direct local SDLC writes are blocked. Without config
+preserve the local-only workflow and obtain separate authorization for Git mutations.
+Do not silently opt in, change remote/policy, or promote an old runtime to evade a guard.
+
+At a new phase/workstream start inspect workspace, fetch and synchronize only a clean
+integration checkout with `sync` (fast-forward only); never pull in the middle of work.
+Before approval/advancement/integration, fetch authority and re-read current approved
+upstream inputs and the existing stage review. Construct a `run` envelope internally
+with expected remote OID, actual CLI decision/revisions/session, unique persistent
+operation ID, and only bounded request/QA paths. Preserve actual human wording and
+separate approval/advancement/start. Domain/template pins remain selected by the runtime.
+`run` performs native Git publication only for the configured opt-in events. Review its
+JSON exit/result: local persistence or commit is not successful remote publication.
+`pr_pending` is not approval authority, advancement completion or permission to start.
+For Development require the actual successful start **and** verified authoritative
+publication/integration before touching application source.
+
+Source/QA work in progress uses explicitly authorized filenames on separate workstream
+branches (`publish`), never a second authoritative requirement history. QA/check execution
+must cite the exact tested commit and preserve actual core evidence. Before integration
+use `integration-check` and separately authorized native repository review/protection;
+a clean textual merge is not semantic approval. No automatic merge/PR or policy bypass.
+When upstream Discovery reopens, preserve branches and require impact review/existing
+reconciliation before stale downstream decisions or integration. Do not silently discard
+work, rebase, stash, reset, force-push or exclude source files.
+
+On publication failure stop and state the specific local/pending result. Inspect
+`status`/diagnostics, then use the original ID with `recover`; never create duplicate
+human decisions. Protected proposals require external expected-base integration and
+`confirm`. Uncertain creation/core recovery or conflicts require explicit inspection;
+keep work intact. Keep journal/input scratch outside the application source boundary.
+Technical OIDs/paths stay internal except when resolving a blocker or on request.
+
 ## Present identifiable artifacts
 
 Follow the [canonical storage contract](../../docs/artifact-names.md). New Engineering/QA
@@ -329,8 +366,10 @@ inspect pending/orphan data and any abandoned lock before an exact retry. Missin
 corrupt approved baselines require known-good restoration, never replacement from the
 draft. Do not silently repair malformed artifacts or report an uncertain write as success.
 
-No automatic Git actions, automatic skill installation, external AI APIs, custom UI or unapproved downstream
-implementation are part of this skill. Respect the user's explicit task boundaries.
+Only explicitly opted-in Git publication follows the bounded bridge contract above;
+otherwise Git mutations need separate authorization. Automatic skill installation,
+external AI APIs, custom UI and unapproved downstream implementation remain excluded.
+Respect the user's explicit task boundaries.
 
 ## Engineering and QA with domain skills
 

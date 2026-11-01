@@ -121,8 +121,9 @@ or rename immutable files by hand.
 
 The current endpoint is **Verified for the stated scope**, not `ready_for_release` or
 `approved_for_deployment`. Story decomposition and Release Planning/execution are future
-architecture. CI/CD integrations, automatic Git publication, enterprise identity/RBAC,
-notifications, cross-clone concurrency and operational monitoring are not implemented.
+architecture. CI/CD integrations, automatic PR/merge, enterprise identity/RBAC,
+notifications and operational monitoring are not implemented. Opt-in Git publication
+adds remote optimistic concurrency, not a general distributed coordination service.
 
 Local locks and revision checks protect managed writes, not unrestricted host tools.
 Checks have actual captured results, but semantic correctness, exhaustive security and
@@ -248,3 +249,11 @@ Domain teams own content practices; the coordinator still owns every explicit co
 approval, advancement and handoff. [Package contracts](../orchestrator/domain-skills/README.md)
 explain stage routing, exact provenance and legacy compatibility. A passing structural
 check does not establish business completeness or semantic correctness.
+
+## Shared Git authority (opt-in)
+
+[Git-native publication](git-native-collaboration.md) wraps existing events. Human
+approval, local recording, commit, publication/integration and advancement are distinct.
+No configured write is globally complete until its authoritative receipt is verified.
+Read-only views remain local; check shared authority before consequential decisions.
+Unconfigured local-only behavior and every existing lifecycle gate are unchanged.

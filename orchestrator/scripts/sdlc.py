@@ -1,4 +1,4 @@
-"""Deterministic local SDLC artifact operations. No AI, Git or host-agent integration."""
+"""Deterministic local SDLC artifact operations. No AI or host-agent interpretation."""
 
 from __future__ import annotations
 
@@ -32,12 +32,13 @@ import engineering
 import domain_skills
 import work_tracks
 import runtime_selection
+import git_collaboration
 import install as runtime_installer
 from engineering_contract import STAGES as ENGINEERING_STAGES
 
 
 SCHEMA_VERSION = "0.1"
-ORCHESTRATOR_VERSION = "0.16.0"
+ORCHESTRATOR_VERSION = "0.17.0"
 EPIC_ID = re.compile(r"REQ-[0-9]{4}\Z")
 FIELDS = {"schema_version", "id", "title", "status", "artifacts"}
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "idea.md"
@@ -136,6 +137,7 @@ class Epic:
     def payload(self) -> dict:
         return {
             "directory": str(self.directory), "metadata": self.metadata,
+            "git_publication": git_collaboration.authority_view(self.directory.parent.parent),
             "documents": artifact_names.epic_documents(self),
             "idea": self.idea,
             "revision": self.revision, "discovery": self.discovery,
@@ -434,8 +436,9 @@ def project_lock(root: Path):
     except FileExistsError:
         raise Rejected([error("E_PROJECT_BUSY", lock, "Another write may be running; inspect the lock before retrying.")]) from None
     try:
-        with runtime_selection.managed_write(root):
-            yield
+        with git_collaboration.guard(root):
+            with runtime_selection.managed_write(root):
+                yield
     finally:
         lock.rmdir()
 

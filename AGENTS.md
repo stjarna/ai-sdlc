@@ -45,3 +45,15 @@ Read these before changing code. Flag conflicting requirements instead of silent
 - For documentation-only work, verify commands against source/help, check links/anchors and render graphics/Markdown at a normal reading width. Do not edit pinned domain packages or templates merely to fix prose; consumed versions are immutable.
 - Inspect the complete diff and `git diff --check`. Report actual executed checks and limitations; never turn an unexecuted check into a pass.
 - Preserve unrelated working-tree changes. Do not stage, commit or push unless explicitly authorized. Keep temporary validation assets in ignored scratch space; do not add videos, dependencies, secrets or local identity profiles to Git.
+
+
+## Opt-in Git collaboration
+
+Read [Git-native publication](docs/git-native-collaboration.md) before changing it or
+using an application's `.sdlc-git.yaml`. Configured writes use the pinned runtime bridge;
+fetch/CAS, exact paths, human wording, pending states and separate advancement are
+mandatory. No config preserves local-only behavior. Never treat feature work or a local
+commit as shared lifecycle authority. Keep source scanners and historical digests; no
+blanket exclusions. Git authorship is not human authentication. No policy bypass,
+stash/reset/force push or automatic conflict resolution. Project/remote configuration
+requires explicit adoption; do not modify historical demos or user profiles.

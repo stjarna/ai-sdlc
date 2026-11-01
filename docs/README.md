@@ -14,6 +14,8 @@ are illustrative unless a page links preserved execution evidence.
 - [Installation and adoption](installation-and-adoption.md): pinned external runtime, loader, preflight and operator recovery.
 - [Existing-project demo runbook](existing-project-demo.md): authentic before/after evidence capture outside governed source.
 
+- [Git-native collaboration](git-native-collaboration.md): opt-in remote authority, native publication, working branches, protected integration, Git baseline references and recovery.
+
 ## Using AI SDLC
 
 - [Complete conversational command reference](command-reference.md): all ten routed commands, creation shorthand, selectors, gates and examples.

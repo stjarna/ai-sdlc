@@ -128,9 +128,9 @@ def revision(project,epic,value):
 
 
 def capabilities(project,epic_id=None):
-    import sdlc,domain_skills,artifact_templates,engineering,engineering_contract,qa_track
+    import sdlc,domain_skills,artifact_templates,engineering,engineering_contract,qa_track,git_collaboration
     skills=domain_skills.catalog(sdlc.StrictLoader);templates=artifact_templates.catalog()
-    result={'protocol':PROTOCOL,'metadata':['0.1','0.2','0.3','0.4','0.5','0.6'],
+    result={'collaboration_contract':'git-native/1' if git_collaboration.config(project) else 'legacy-local/1','protocol':PROTOCOL,'metadata':['0.1','0.2','0.3','0.4','0.5','0.6'],
         'storage':['business/0.1','analysis/0.1','engineering/0.1','engineering/0.2','discovery/0.2','business-history/0.3','analysis-history/0.3'],
         'governance':['legacy','governance/0.1'],'work_track_schemas':['0.1','0.2'],
         'approval_contracts':['business/1','analysis/1','engineering/1','qa/1'],
@@ -182,12 +182,13 @@ def boundary(epic,track):
 
 # Additive reader/package support is compatible; changes to an existing contract are
 # not. Actual candidate readers still validate the entire current request and inputs.
-CONTRACTS=('protocol','metadata','storage','governance','work_track_schemas','approval_contracts','evidence_contract','recovery_contract','engineering_transitions','qa_states','source_fingerprint','domain_contracts','template_contracts')
+CONTRACTS=('collaboration_contract','protocol','metadata','storage','governance','work_track_schemas','approval_contracts','evidence_contract','recovery_contract','engineering_transitions','qa_states','source_fingerprint','domain_contracts','template_contracts')
 
 
 def compatible_contracts(previous, candidate):
     for key in CONTRACTS:
         old,new=previous.get(key),candidate.get(key)
+        if key=='collaboration_contract':old,new=previous.get(key,'legacy-local/1'),candidate.get(key,'legacy-local/1')
         if key in ('metadata','storage','governance','work_track_schemas'):
             if not isinstance(old,list) or not isinstance(new,list) or not set(old)<=set(new):return False
         elif key in ('domain_contracts','template_contracts'):
@@ -201,6 +202,9 @@ def assessment(project,epic_id,candidate,track=None):
     token=revision(project,epic,value);safe,stage=boundary(epic,track)
     try:
         new,new_contract=probe(candidate,project,epic_id)
+        import git_collaboration
+        require(git_collaboration.config(project) is None or new_contract.get('collaboration_contract')=='git-native/1',
+                'Configured Git collaboration requires a compatible runtime guard; legacy write execution is blocked.','E_RUNTIME_CONTRACT')
         old_contract=probe(old['runtime'],project,epic_id)[1] if old else capabilities(project,epic_id)
         stable=CONTRACTS
         same=compatible_contracts(old_contract,new_contract)
@@ -210,7 +214,7 @@ def assessment(project,epic_id,candidate,track=None):
         if same and (not safe or pins_changed):
             classification='requires_reconciliation';reasons=['Defer until a safe work boundary.' if not safe else 'Changed instruction/template content needs explicit future-scope impact assessment.']
         return {'classification':classification,'reasons':reasons,'safe_boundary':safe,'stage':stage,'scope':scope,
-            'previous_runtime':old,'runtime':new,'revision':token,'contracts':{k:new_contract[k] for k in stable if k!='source_fingerprint'},
+            'previous_runtime':old,'runtime':new,'revision':token,'contracts':{k:new_contract.get(k,'legacy-local/1') if k=='collaboration_contract' else new_contract[k] for k in stable if k!='source_fingerprint'},
             'requires_reconciliation':classification=='requires_reconciliation'}
     except (install.InstallError,__import__('business_refinement').BusinessError) as exc:
         return {'classification':'incompatible','reasons':[str(exc)],'safe_boundary':safe,'stage':stage,'scope':scope,

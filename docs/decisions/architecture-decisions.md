@@ -85,3 +85,16 @@ checks Git/baseline state, fixed namespaces, source symlinks/output hazards, ins
 registrations and runtime compatibility without weakening source boundaries. Existing
 `new` initializes Discovery; no init stage, project restructuring, automatic Git action,
 new approval framework or historical migration. See [installation and adoption](../installation-and-adoption.md).
+
+
+## Git-native collaboration — 2026-11-01
+
+**031 [D/P]** Opt-in `.sdlc-git.yaml` selects one remote lifecycle authority and a direct
+or externally protected proposal policy. A native Git bridge wraps existing human/revision
+operations with exact-path commits, optimistic remote publication, external recoverable
+journals and immutable commit/path/event references. Feature work is nonauthoritative;
+protected proposals remain pending until exact expected-base integration is verified.
+No new workflow/approval framework or authentication. Existing baseline, source and
+external package hashes remain necessary for compatibility; no historical migration.
+Managed runtimes require the Git guard capability when configured. See
+[the contract and limitations](../git-native-collaboration.md).

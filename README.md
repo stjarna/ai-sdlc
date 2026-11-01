@@ -38,6 +38,11 @@ Built for an Alza Head of Engineering case study, this is a local proof of conce
 - **Traceable evidence:** preserve approved baselines, revision history, actual check
   results and final reports alongside the application.
 
+Opt-in [Git-native collaboration](docs/git-native-collaboration.md) publishes existing
+SDLC events with explicit path staging, remote revision checks and recoverable receipts.
+Feature work stays separate from shared lifecycle authority; protected proposals remain
+pending until their exact reviewed integration is verified. Legacy local use is unchanged.
+
 ## How the workflow works
 
 [![Implemented SDLC: Discovery, Business Refinement and Functional Analysis feed separate Engineering and QA tracks. Current QA evidence is required at Engineering verification before Security Review and Final Verification. Approval and advancement are separate human decisions.](docs/assets/workflow-overview.svg)](docs/assets/workflow-overview.svg)
@@ -214,8 +219,10 @@ An **approved baseline** freezes exact document bytes and supporting inputs. Cha
 those inputs can make an approval or result stale; new work needs the applicable
 reconciliation and review. Old snapshots and decisions are retained.
 
-A baseline is **not a Git commit**. The CLI does not stage, commit or push. You decide
-when to publish Git checkpoints separately. Also keep changing presentation captures
+Existing approval bundles retain their immutable identity. Without opt-in collaboration,
+the local CLI does not stage, commit or push. With [Git collaboration](docs/git-native-collaboration.md),
+publication also records an immutable repository/commit/path/event reference and verifies
+shared authority; a local commit or feature push alone is not published approval. Also keep changing presentation captures
 outside the application tree: ignored files can still affect source fingerprints.
 
 Read [artifact storage](docs/artifact-names.md), [approval rules](docs/business-approval.md)
@@ -277,11 +284,12 @@ Engineering/QA tracks through Verified. Deterministic scripts validate structure
 revisions, integrity, local concurrency and recorded evidence. AI and human review
 remain responsible for semantic quality and identifying missing requirements.
 
-Not implemented: Story decomposition, release planning/execution, automated Git/PR
-publishing or cross-role synchronization, ticketing/messaging connectors, CI/CD adapters,
-enterprise authentication or role-based access control (RBAC), distributed coordination,
-and operational monitoring. Local roles are declarations, not enforced access grants;
-locking does not coordinate independent Git clones. Named checks run locally; they do
+Not implemented: Story decomposition, release planning/execution, automatic PR creation/merge
+or cross-role synchronization, ticketing/messaging connectors, CI/CD adapters, enterprise
+authentication or role-based access control (RBAC), general distributed coordination,
+and operational monitoring. Local roles are declarations, not enforced access grants.
+Opt-in Git publication uses remote fast-forward checks across clones; local locks alone
+protect only one checkout. Named checks run locally; they do
 not establish complete semantic coverage or exhaustive security testing.
 
 Claude Code runtime acceptance, native Windows support and broader production hardening

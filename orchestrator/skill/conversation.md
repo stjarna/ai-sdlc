@@ -237,3 +237,15 @@ Final review visibly states verified scope, blocked/excluded behavior, all uncer
 and authorized exceptions. Explain “Verified for the stated scope” without implying
 product completeness or release approval. Legacy governance remains explicitly unassessed
 under the new controls; do not rewrite its history.
+
+
+## Shared versus local state
+
+When Git collaboration is explicitly configured, keep the normal concise conversation
+but distinguish local/proposed decisions from published authoritative ones. Fetch and
+validate the current shared baseline before consequential actions. A feature push,
+Git merge, Git author name or successful local CLI result is not a human approval or
+published advancement. Say when remote publication/integration is pending, retain the
+original decision and stop dependent work. Recover the original operation; do not ask
+for or invent replacement approval merely because a push failed. Approval/advancement
+and permission to start work remain separate under the existing conversation policy.
