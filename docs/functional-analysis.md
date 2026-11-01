@@ -1,4 +1,4 @@
-# Functional Analysis — Increment 5
+# Functional Analysis: drafting and refinement
 
 [Documentation index](README.md)
 

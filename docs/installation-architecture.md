@@ -292,7 +292,7 @@ flowchart TB
 |---|---|---|
 | Installation | External runtime and generated user loader; explicit dependency setup is separate. | Modify application source/instructions, initialize requirements, create approvals or change Git history. |
 | Adoption preflight | No managed writes. Inspects Git/baseline, namespaces, outputs/symlinks, instructions, registrations and runtime. | Initialize Git, restructure files, claim existing QA tests, create a request or start work. |
-| Governed execution | `new` creates metadata/idea plus managed runtime provenance; conversational updates add Discovery history. Authorized stage operations later persist documents, approvals, audits and evidence. | Automatically approve, advance, assign, start the next activity or stage/commit/push. |
+| Governed execution | `new` creates metadata/idea plus managed runtime provenance; conversational updates add Discovery history. Authorized stage operations later persist documents, approvals, audits and evidence. | Automatically approve, advance, assign or start the next activity. Git publication requires the separate explicit opt-in bridge. |
 
 Application-local records typically appear here, progressively rather than at install:
 
@@ -331,7 +331,9 @@ effective runtime; explicit compatible promotion binds future work at a supporte
 including separate Engineering/QA selections. See [runtime management](runtime-version-management.md)
 for exact operations, provenance, legacy binding, fresh contexts and recovery.
 
-There is no automatic update, network lookup, uninstaller or project-wide catalog policy.
+Runtime selection does not automatically update or search a remote runtime registry;
+there is no uninstaller or project-wide catalog policy. Optional Git collaboration
+fetches its configured application remote separately.
 Custom roots do not implement host discovery. Rollback selects a default, not application
 or lifecycle history. Old binaries without the execution protocol are not used for managed
 writes through the new resolver. Existing installed snapshots/loaders are never rewritten

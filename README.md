@@ -14,8 +14,8 @@ artifacts and decisions for a change into a shared, versionable project context.
 It coordinates work alongside Git and existing tools; it does not replace a ticketing
 system, continuous integration and delivery (CI/CD), or specialist judgment.
 
-This experimental proof of concept (PoC) explores agent-native, human-governed
-software delivery, with Codex as its tested host. It is not a production SDLC platform.
+Codex is the tested host for this experimental proof of concept (PoC). It is not a
+production SDLC platform.
 
 [Get started](#quick-start)
 · [User commands](#commands-inside-codex)
@@ -29,8 +29,9 @@ software delivery, with Codex as its tested host. It is not a production SDLC pl
   advancement separately. Request changes without losing earlier decisions.
 - **Ownership and handoffs:** keep an accountable owner while the next role is
   unassigned; see pending work and explicitly transfer responsibility.
-- **Specialist assistance:** pinned Architecture, Development, Testing and Security
-  guidance, with versioned document templates.
+- **Specialist assistance:** seven pinned domain packages cover Discovery, Business
+  Requirements, Functional Analysis, Architecture, Development, Testing and Security.
+  Versioned templates provide the document structure.
 - **Two governed work tracks:** Engineering owns implementation; quality assurance
   (QA) derives its expectations from the approved Functional Analysis independently
   of the Technical Design. Verification checks that the current outputs agree.
@@ -140,8 +141,8 @@ Development, Testing and Security packages live **inside that runtime**; install
 does not register these seven packages as separate native skills. The host agent reads the relevant
 guidance as the workflow requires. Existing requests retain their effective runtime;
 [explicit updates, rollback and future-stage promotion](docs/runtime-version-management.md)
-keep default selection separate from governed execution. Your application keeps its own code/tests and later
-stores governed request artifacts under `requirements/`, with QA automation under `qa/`.
+keep default selection separate from governed execution. Your application keeps its own
+code/tests and later stores governed request artifacts under `requirements/`, with QA automation under `qa/`.
 
 [Installation architecture: locations, discovery and domain-skill loading](docs/installation-architecture.md)
 explains what gets installed, why user scope is used, and how this differs from adoption
@@ -223,8 +224,10 @@ reconciliation and review. Old snapshots and decisions are retained.
 Existing approval bundles retain their immutable identity. Without opt-in collaboration,
 the local CLI does not stage, commit or push. With [Git collaboration](docs/git-native-collaboration.md),
 publication also records an immutable repository/commit/path/event reference and verifies
-shared authority; a local commit or feature push alone is not published approval. Also keep changing presentation captures
-outside the application tree: ignored files can still affect source fingerprints.
+shared authority; a local commit or feature push alone is not published approval. Existing
+baseline/source digests and external-runtime integrity hashes remain in use. Keep evolving
+presentation captures outside the application tree: ignored files can still affect
+source fingerprints.
 
 Read [artifact storage](docs/artifact-names.md), [approval rules](docs/business-approval.md)
 and [verification contracts](docs/work-tracks.md#integrated-verification-and-source-binding)
@@ -254,7 +257,9 @@ packages demonstrate this model locally; there is no enterprise skill registry.
 [Domain-team responsibilities and provenance](orchestrator/domain-skills/README.md)
 cover all seven packages. The coordinator retains every human gate. [Templates](orchestrator/templates/README.md)
 define document structure, while skills provide domain judgment and validators enforce
-machine-checkable contracts. Existing approved artifacts retain their original pins.
+machine-checkable contracts. All 11 artifact types resolve through the versioned catalog;
+Idea currently selects 1.1.0. The redundant root-level Idea scaffold has been removed;
+generated request-local `idea.md` remains supported. Existing artifacts retain their pins.
 
 Agent Skills are also distinct from **Model Context Protocol (MCP)** connectors:
 skills supply instructions and expertise; connectors expose external tools and data.
@@ -275,6 +280,21 @@ to that older example or rewrite either history to make them agree.
 
 **Verified means verified for the stated scope.** It does not mean released,
 production-certified, independently audited or reviewed by different people in every role.
+
+## Collaboration and version changes
+
+Local-only use remains the default. Explicitly opting in with `.sdlc-git.yaml` enables
+bounded automatic commits and pushes after supported SDLC events. One configured remote
+integration branch holds shared lifecycle authority. Engineering and QA can use separate
+worktrees or clones for working material; this does not create separate approval authority.
+
+The agent synchronizes only at safe phase boundaries and fetches before consequential
+decisions. A stale remote baseline blocks publication even when edits would merge cleanly.
+Rejected pushes preserve local work for exact retry. Protected proposals stay pending
+until their reviewed integration is verified; PR creation/merge is external.
+[Collaboration setup, examples and recovery](docs/git-native-collaboration.md) explain
+these limits. Updating the default runtime remains separate from explicitly promoting
+future work in an existing request; neither action rewrites historical approvals.
 
 ## Current status and limits
 

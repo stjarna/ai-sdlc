@@ -13,7 +13,6 @@ are illustrative unless a page links preserved execution evidence.
 - [Installation architecture](installation-architecture.md): where the runtime lives, one native loader, specialist guidance and project boundaries.
 - [Installation and adoption](installation-and-adoption.md): pinned external runtime, loader, preflight and operator recovery.
 - [Existing-project demo runbook](existing-project-demo.md): authentic before/after evidence capture outside governed source.
-
 - [Git-native collaboration](git-native-collaboration.md): opt-in remote authority, native publication, working branches, protected integration, Git baseline references and recovery.
 
 ## Using AI SDLC
@@ -26,6 +25,8 @@ are illustrative unless a page links preserved execution evidence.
 - [Artifact guide](artifact-names.md): document purposes, physical filenames, history and baseline discovery.
 
 ## Architecture and governance
+
+- [Current consistency audit](documentation-consistency.md) and [complete documentation inventory](documentation-inventory.md): implementation matrix, actions, checks and remaining gaps.
 
 - [Template placeholder audit](template-placeholder-audit.md): all eleven layouts, deterministic/agent generation, Idea 1.1.0 and historical compatibility.
 
@@ -56,7 +57,7 @@ These records preserve original intent and evidence; they are not the current co
 - [Host UX evaluation](agent-ux-evaluation.md): early cross-host manual protocol, not a current acceptance matrix.
 - [Demo preparation record](demo-finalization.md): dated commit proposal and actual original verification results.
 - [Preserved acceptance](../examples/todo-app/EVIDENCE.md): authoritative old example, kept distinct from Littlelist.
-- [Documentation audit](documentation-audit.md): per-file inventory, coverage, verification and remaining gaps.
+- [Historical documentation audits](documentation-audit.md): dated earlier baselines and actual results, retained without relabelling them current.
 
 ## Ownership and maintenance
 

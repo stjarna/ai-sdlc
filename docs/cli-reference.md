@@ -4,9 +4,9 @@
 
 This is the tool-facing index for engineers maintaining integrations or inspecting a
 failure. Business users normally use the conversational commands. **57 operations**
-were extracted from the actual `sdlc.main` argparse tree at documentation baseline
-`d5009d8aae78be6bfefe5aac466a03f080599fbd` plus this early-domain increment,
-before dispatch, without executing writes.
+were checked against the actual `sdlc.main` argparse tree at source baseline
+`bc6242b33a87aa02d7acd1b5063b1f4e9284f044`, before dispatch and without executing writes.
+[Current audit coverage](documentation-consistency.md) records the verified counts.
 Installer/adoption entrypoints are listed separately below. This inventory complements,
 rather than replaces, the [operation contract](../orchestrator/scripts/README.md) and
 stage-specific schema/recovery contracts. No operation is hidden from the coverage table.
@@ -709,7 +709,6 @@ The read-only helper's known `advance` → `development-start` suggestion at Dev
 readiness conflicts with shared conversation policy. Use explicit `start engineering`
 and inspect its successful result before edits. No executable change fixes it here.
 
-
 ## Optional Git collaboration entrypoint
 
 `git_collaboration.py` is a separate deterministic publication wrapper, leaving the
@@ -717,4 +716,26 @@ and inspect its successful result before edits. No executable change fixes it he
 event mapping, status/sync, run/publish, recover/confirm/abandon, baseline and read-only
 integration check are documented in [Git-native collaboration](git-native-collaboration.md).
 It is bundled with the external runtime. Existing local CLI calls stay unchanged when
-unconfigured; configured writes require bridge context and existing runtime sessions.
+unconfigured; configured writes require bridge context plus the applicable runtime
+selection/session checks. Runtime-selection administration retains its own contracts.
+
+All bridge actions require global `--project PROJECT`. They are internal tools, not
+additional conversational enums. The request file for `run`/`publish` contains exact
+expected authority and bounded paths; the agent prepares it under the existing human
+instructions. No staging directory or default branch is inferred.
+
+| Bridge action | Required action arguments | Optional | Effect and boundary |
+| --- | --- | --- | --- |
+| `status` | None | None | Reads local Git/journal view; does not fetch or certify current remote authority. |
+| `sync` | None | None | Fetches and fast-forwards a clean integration checkout; imports already-published files, creates no new approval or start. |
+| `run` | `--request-file FILE` | None | Runs an allowlisted existing CLI write, commits exact authorized paths and verifies publication; protected proposals remain pending. |
+| `publish` | `--request-file FILE` | None | Commits/pushes explicit working files on a feature branch; no approval authority or coding permission. |
+| `recover` | `--operation-id OP` | None | Resumes the original recorded intent with idempotency and byte/ref checks; ambiguous partial core journals stop. |
+| `confirm` | `--operation-id OP` | None | Fetches and verifies an exact protected proposal's external integration; updates its receipt, never merges. |
+| `abandon` | `--operation-id OP --actor NAME --decision TEXT` | None | Records explicit recovery intent in the external journal; preserves local files, commits and audit. |
+| `integration-check` | `--commit OID --expected-authority OID` | None | Fetches and checks current authority/consumed baseline; advisory, with no integration or SDLC approval. |
+| `baseline` | `--commit OID --path PATH --event-id EVENT` | `--compare` | Reads committed artifact/event binding; optionally compares working bytes. Does not authenticate a human or certify current readiness. |
+
+Transport errors, dirty/staged work, changed remote authority or mismatched intent stop
+publication without resetting/stashing. Git publication is not integration, lifecycle
+advancement or a replacement for the existing structural/governance validators.

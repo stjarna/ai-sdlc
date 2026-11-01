@@ -1,4 +1,11 @@
-# Documentation audit and command coverage
+# Documentation audit history
+
+> **Current audit:** see [the 2026-11-01 consistency report](documentation-consistency.md)
+> and [complete current file inventory](documentation-inventory.md). All pass results,
+> old operation/package counts, pending-commit statements and feature exclusions below
+> describe their dated baselines. Later commits added Git publication, catalog-only Idea
+> lookup and regenerated workflow vectors. This is historical audit evidence, not the
+> current capability matrix.
 
 [Documentation index](README.md)
 

@@ -1,4 +1,4 @@
-# Shared Approval Infrastructure and Analysis Approval — Increment 6
+# Shared approval infrastructure and Analysis approval
 
 [Documentation index](README.md)
 
@@ -196,8 +196,11 @@ Claude runtime verification remains outside PoC acceptance.
 
 ## Limitations
 
-No authenticated identity, signatures, semantic correctness guarantee, external AI API,
-custom UI, Technical Design, Stories, cross-clone locking or automatic Git operations.
+This approval gate adds no authenticated identity, signatures, semantic correctness
+guarantee, external AI API, custom UI or Stories. Technical Design is implemented in the
+separate Engineering track. Local gate locks protect one checkout; opt-in
+[Git publication](git-native-collaboration.md) adds remote optimistic concurrency and
+automatic publication without changing approval or advancement semantics.
 Direct coordinated edits can bypass logical append-only guarantees. Full histories
 and repeated baseline validation favor inspectability over storage/read efficiency;
 there is no pruning or general migration framework. Advancing with uncertainty is an

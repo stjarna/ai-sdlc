@@ -78,7 +78,7 @@ exact CLI invocation, expected remote OID and bounded paths.
 | `check-run`, `qa-check-run` | Publish actual core-generated evidence with exact tested implementation commit trailer |
 | `security-remediate`, `verification-remediate`, `engineering-finalize` | Publish authorized remediation/final verification evidence; retain source/QA joins |
 | `assign`, `ownership-initialize`, `tracks-adopt`, `track-reconcile` | Publish explicit assignment/adoption/reconciliation; no automatic next-stage work |
-| `runtime-bind`, `runtime-promote` | Publish existing explicit future-work runtime decision, with a valid runtime session |
+| `runtime-bind`, `runtime-promote` | Publish the explicit future-work runtime decision, preserving its existing selection and authorization checks |
 | Read-only `review/open/status/details/validate` | No mutation; an approved snapshot is already preserved by its approval operation |
 | Development/QA work in progress (`publish`) | Only explicitly selected source/test files on a feature branch; never authoritative approval |
 
@@ -250,6 +250,40 @@ Analysis rollback. Historical approvals/branches remain available. Existing trac
 reconciliation determines invalidated dependencies; Git never deletes work or declares
 semantic consistency from a successful merge. No general workflow engine, automatic
 agent concurrency, CI execution, notification, enterprise IAM or new lifecycle stage.
+
+## Practical example: Engineering discovers a missing requirement
+
+This is an illustrative operating procedure, not a fabricated acceptance transcript.
+The configured integration branch may be `main`, `master`, `develop` or another reviewed
+branch; replace the example workstream names with your project's conventions.
+
+1. A human approves Functional Analysis A and separately authorizes advancement. Publish
+   those events before dependent work; both work tracks consume the same approved A.
+2. Engineering and QA use separate clean clones/worktrees and short-lived branches such
+   as `feature/REQ-0001-development` and `feature/REQ-0001-qa`. Their selected source/test
+   work can be published as working material, without independent lifecycle authority.
+3. Engineering finds a consequential missing requirement. It preserves its code and
+   requests clarification. Only an actual Requester decision authorizes the supported
+   `discovery-reopen` route; there is no direct Analysis rollback command.
+4. Publish the governed reopen against current remote authority. Existing decisions and
+   branches remain historical evidence; downstream work cannot keep using A as current
+   authority merely because its source files are unchanged.
+5. Clarify the requirement through Discovery and the existing Business/Analysis gates.
+   Preserve earlier revisions. Explicitly approve Analysis B and separately advance the
+   new cycle; do not infer either decision from a successful Git merge.
+6. QA may still have working tests derived from A. Before its approval, advancement or
+   integration, fetch current authority. The old expected authority/consumed baseline
+   must be rejected even if its files would merge without a textual conflict. A passing
+   test of A is not current acceptance evidence for B.
+7. Review impact and use existing eligible track reconciliation or prepare new-cycle
+   outputs from authoritative B. Preserve useful old work, then renew the applicable
+   approvals and source-bound checks before accepting QA evidence as current. Do not
+   reassign people, reapprove unrelated stages or resolve merge conflicts silently.
+
+Publication retries reuse the original intent. A rejected push does not authorize
+changing a decision or rebasing metadata; preserve the pending commit and inspect
+[recovery](#publication-state-and-recovery). Expected-base server policy is still needed
+for external integration: a read-only check cannot eliminate a later integration race.
 
 ## Focused acceptance
 

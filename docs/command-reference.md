@@ -21,8 +21,9 @@ illustrative inputs and outcomes, not recorded transcripts or guaranteed literal
 
 There are **ten routed commands**, plus skill-guided **`new`** creation shorthand.
 `open`/`validate` are available CLI operations the skill can invoke on request; they are
-not additional routing verbs. There are no implemented Story, Release, `move-story`,
-automatic commit/push or deployment commands.
+not additional routing verbs. There are no implemented Story, Release, `move-story` or
+deployment commands. Git publication uses a separate opt-in bridge, not extra routed
+verbs such as `$sdlc commit`, `$sdlc push` or `$sdlc sync`.
 
 Select a request with an ID or an exact title, for example `$sdlc review REQ-0001`
 or “Review Export saved results.” The agent passes this selector internally. IDs take
@@ -272,3 +273,18 @@ the default” changes installation selection only. These natural-language inten
 [implemented runtime operations](runtime-version-management.md), not extra routing enums.
 Approval and advance never imply promotion. A lost/mismatched runtime context requires
 correct instructions and a fresh conversation/receipt before managed writes.
+
+## Git collaboration intentions
+
+“Synchronize before starting the next phase,” “Publish these working test files,” or
+“Recover the rejected publication” use the configured [Git bridge](git-native-collaboration.md).
+They are natural-language intentions, not new `command-context` enum values. The agent
+resolves the remote, branch, exact revision and bounded paths internally. Existing
+approval/advancement/start decisions still apply; no vague positive reply authorizes them.
+
+Without `.sdlc-git.yaml`, the normal local CLI does not commit or push. With explicit
+opt-in, supported managed write events use the bridge's automatic exact-path commit/push.
+A local decision, commit, feature publication and authoritative integration are different
+outcomes. Pending publication stops dependent work; use the original operation on retry.
+See [event mapping](git-native-collaboration.md#event-to-git-actions) and
+[recovery](git-native-collaboration.md#publication-state-and-recovery).

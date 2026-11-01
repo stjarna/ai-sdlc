@@ -129,6 +129,19 @@ start a fresh conversation when requested; changing a loader cannot clear cached
 instructions. Existing unpinned requests need explicit initial future-work binding,
 without inventing which runtime produced their history.
 
+## Optional shared Git collaboration
+
+Start with local-only management unless you explicitly choose remote publication.
+At a safe adoption boundary, review and commit `.sdlc-git.yaml` using your repository's
+normal policy. The [Git collaboration guide](git-native-collaboration.md) explains the
+remote/integration branch, direct versus protected proposals, working branches and
+exact-path commit/push events. The installer never enables it for you.
+
+Configured writes must use the effective runtime's bridge. A local decision or feature
+push is not a completed shared handoff; pending publication blocks dependent work.
+Keep new presentation captures outside governed source. Do not add exclusions, discard
+work or change approval metadata to make a stale fingerprint pass.
+
 ## 6. Review, approve, advance and start
 
 These four actions are different:

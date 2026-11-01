@@ -100,13 +100,15 @@ flowchart TB
     S --> C
     C --> V[Verification report: scope and actual evidence]
     B --> V
-    G[Git repository and human-authorized commits] -. preserves files and history .-> D
+    G[Git history with explicitly configured publication] -. preserves files and history .-> D
     G -. preserves baseline bytes .-> B
 ```
 
 Git commits and content-addressed baselines have separate identities and purposes.
-The orchestrator never commits/pushes automatically. Changes can stale authority/evidence
-without deleting historical records. The diagram is a conceptual traceability view;
+Local-only operations do not commit/push. The explicitly configured
+[Git bridge](git-native-collaboration.md) adds automatic publication at bounded events,
+without replacing the existing baseline/source/package digests. Changes can stale
+authority/evidence without deleting historical records. The diagram is a conceptual traceability view;
 exact Business/Analysis/Engineering/QA bundle schemas are in their technical contracts.
 
 ## Reading the artifact set

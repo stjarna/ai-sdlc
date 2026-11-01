@@ -2,7 +2,7 @@
 
 [Documentation index](README.md)
 
-> **Reading status:** Mixed historical / target architecture record. In particular, the original command lists, Story/Release diagrams and PoC feature table are design intent, not an executable API. Use the [current command reference](command-reference.md) and [workflow](workflow.md) for implemented behavior.
+> **Reading status:** Mixed historical / target architecture record. The opt-in [Git bridge](git-native-collaboration.md) supersedes earlier blanket no-publication statements; unconfigured projects retain local-only behavior. In particular, the original command lists, Story/Release diagrams and PoC feature table are design intent, not an executable API. Use the [current command reference](command-reference.md) and [workflow](workflow.md) for implemented behavior.
 
 > **Current implementation:** start with the English [workflow guide](workflow.md) and
 > [README](../README.md). This working design retains earlier increment scope and future

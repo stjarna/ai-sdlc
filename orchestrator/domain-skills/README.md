@@ -24,7 +24,7 @@ catalog paths to read selected SKILL.md files. Readiness routes to the next acti
 QA is selected independently of Engineering. Resolution does not start work or approve.
 
 The catalog uses schema 0.1, with exact semantic version/content pins. Modern manifests
-use schema 0.2 and `sdlc-domain/1`, independent of CLI 0.16.0 and template contracts.
+use schema 0.2 and `sdlc-domain/1`, independent of the CLI version and template contracts.
 Current packages live at `<name>/`; retained immutable versions live at
 `versions/<name>/<version>/`, following existing repository conventions. Do not modify
 consumed versions. Publish reviewed changes under a new version/pin and preserve old
@@ -65,3 +65,12 @@ gates. Inspect exact skill/template pins and preserve original IDs and idea text
 Repeat Analysis preparation after an explicitly assessed forward runtime promotion;
 compare upstream baseline/audit hashes. Test decisions in automated fixtures are fictional.
 Automated checks do not prove identical AI output or replace conversational human acceptance.
+
+## Retained package documentation links
+
+Some old wrappers under `versions/` retain links written for their original package-root
+location. Eight relative links to shared skill guidance do not resolve when browsing
+those wrappers in today's nested archive layout. Their instruction bytes and digests
+are preserved. Read the matching historical runtime for its original layout; use the
+[current installation guide](../../docs/installation-architecture.md) for today's
+loader and shared guidance. These links do not participate in catalog resource loading.

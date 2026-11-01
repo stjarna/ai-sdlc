@@ -42,9 +42,9 @@ isolated testing. Arbitrary skill roots are not automatically discovered: for no
 retain the standard user location. No global Codex config is edited.
 
 The default install reads exact committed Git bytes, regardless of unrelated working-tree
-changes. The selected revision must include this installation increment. Before that
-increment is committed, an explicitly requested `--preview-working-tree` installation is
-available for review: its base must be HEAD, `preview: true` is recorded, and exact selected
+changes. The selected revision must contain the installer and required runtime resources.
+An explicitly requested `--preview-working-tree` snapshot is available for reviewing
+uncommitted runtime changes: its base must be HEAD, `preview: true` is recorded, and exact selected
 working-tree bytes plus interpreter path are content-pinned. It is never labelled a
 committed release. Do not use a preview as evidence of a subsequently committed release.
 

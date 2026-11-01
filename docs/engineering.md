@@ -62,7 +62,9 @@ minor contract (`0.9`). `catalog.yaml` approves exact versions and SHA-256 packa
 The package digest covers the manifest, SKILL.md and reference files, independent of
 its parent path. Malformed metadata, symlinks, changed bytes, missing/cyclic dependencies
 and incompatible versions/stages fail closed. Architecture depends on Security 1.0.0.
-No remote registry, installation, network discovery or executable plugin loader exists.
+The domain resolver has no remote registry, network discovery or executable plugin
+loader. Complete external runtime installation is implemented separately; see
+[installation architecture](installation-architecture.md).
 
 The bundled packages are usable **instruction-level** PoC skills. Their supporting
 specialties (API/data/ADRs, language guidelines, test data/accessibility/performance,

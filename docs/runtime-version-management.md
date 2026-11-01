@@ -10,7 +10,9 @@ alongside its existing domain/template pins and source/approval bindings.
 
 Updating or rolling back the default does not change an existing request's selection,
 application code, approved artifacts, baselines, decisions, lifecycle or Git history.
-Promotion requires another explicit human decision. Nothing searches for updates online.
+Promotion requires another explicit human decision. Runtime administration never
+searches for updates online; application-remote fetches belong to the separately
+configured Git collaboration bridge.
 
 ## Locations and first installation
 
@@ -302,7 +304,6 @@ absolute runtime/interpreter paths must remain available; relocation/restoration
 explicit operator responsibility. Future work cannot silently substitute another package
 merely because an old pin is missing.
 
-
 ## Focused acceptance rehearsal
 
 Use two committed revisions in disposable local source repositories, an empty external
@@ -337,7 +338,6 @@ the cooperating-writer trust boundary. Deleting an entire runtime sidecar cannot
 cryptographically distinguished from a legacy request: an installed writer requires
 explicit initial binding rather than silently adopting the default or inventing history.
 
-
 ## Adding early-phase domain coverage
 
 The seven-package runtime adds Discovery, Business Requirements and Functional Analysis
@@ -361,7 +361,6 @@ already implements the execution protocol. Protocol presence alone does not mean
 parse newer provenance envelopes. The retained manager resolves a request still pinned
 to the newer runtime; rollback neither downgrades that request nor rewrites its artifacts.
 
-
 Idea 1.1.0 and Discovery guidance 1.1.0 add named creation slots and explicit unknown
 markers. They are selected for new requests in a runtime that pins them. Older requests
 keep their original idea file and template/domain pins; runtime promotion does not
@@ -376,3 +375,9 @@ All historical package/source/baseline hashes and approvals retain their contrac
 Follow [Git-native adoption and publication recovery](git-native-collaboration.md),
 not an unprotected old CLI fallback. `runtime-bind/promote` remains explicit, separately
 revision-bound and session-protected; the Git envelope only publishes its existing event.
+
+Configured applications publish eligible runtime-binding/promotion records through the
+[Git bridge](git-native-collaboration.md). Default registration update/rollback remains
+external administrative state and does not itself commit application files or advance
+requests. Adding collaboration configuration changes the application's source boundary;
+review eligibility before promotion/replanning rather than excluding that file.

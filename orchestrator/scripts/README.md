@@ -303,7 +303,9 @@ formats and lifecycle stages remain in use. New Design approval may include repe
 prototype effects, independently of repeatable `--acknowledge-open-item ID`. The agent
 must obtain the actual human decision before supplying either. Missing required consent
 returns `E_LIMITATION_CONSENT`; unsupported or stale code conformance uses `E_CONFORMANCE`
-or existing revision/approval diagnostics. No automatic Git operations are added.
+or existing revision/approval diagnostics. These governance checks do not themselves
+publish Git history; the separately configured [Git bridge](../../docs/git-native-collaboration.md)
+wraps supported events without changing their gates.
 
 ## External installation and adoption
 
@@ -313,8 +315,8 @@ external runtime and a thin user-scoped Codex loader. `adoption.py --project PRO
 source/output, instruction, registration and environment checks. It does not initialize
 Git or create requests. Existing `new` remains the request-creation operation. See the
 [installation contract](../../docs/installation-and-adoption.md) and
-[before/after demo runbook](../../docs/existing-project-demo.md). Runtime version 0.16.0
-is independent of unchanged lifecycle, artifact and validation-contract versions.
+[before/after demo runbook](../../docs/existing-project-demo.md). The runtime CLI version
+is independent of lifecycle, artifact and validation-contract versions.
 
 
 ### Pre-development Plan recovery

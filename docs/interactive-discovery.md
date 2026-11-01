@@ -1,4 +1,4 @@
-# Interactive Discovery — Increment 2
+# Interactive Discovery: conversation and persistence
 
 [Documentation index](README.md)
 
@@ -243,8 +243,10 @@ tests or the skill format validator does not prove the assistant reasons correct
   small PoC, with no compaction, cryptographic tamper evidence or authenticated quotes.
 - User evidence can contain sensitive material. The public repository must not hold
   proprietary company content; use fictional examples or an appropriately scoped project.
-- No autonomous lifecycle transitions, Analysis, subsequent SDLC stages, external
-  AI service, ticketing integration, automatic Git actions or host skill installation.
+- The Discovery persistence layer performs no autonomous lifecycle transition, Analysis
+  work, external AI call, ticketing integration or host installation. The coordinator
+  supports later governed phases, external runtime installation and opt-in
+  [Git publication](git-native-collaboration.md); those are separate extensions.
 
 
 ## Idea creation context

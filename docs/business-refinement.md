@@ -1,4 +1,4 @@
-# Discovery Completion and Business Refinement — Increment 3
+# Discovery completion and Business Refinement
 
 [Documentation index](README.md)
 
