@@ -8,7 +8,7 @@ are illustrative unless a page links preserved execution evidence.
 
 ## Getting started
 
-- [Six-minute demonstration](assets/ai-sdlc-orchestrator.mp4): see the governed workflow applied to a Littlelist change.
+- [Six-minute demonstration](https://stjarna.github.io/ai-sdlc/demo.html) ([download MP4](https://github.com/stjarna/ai-sdlc/raw/refs/heads/main/docs/assets/ai-sdlc-orchestrator.mp4)): see the governed workflow applied to a Littlelist change.
 - [Getting started](getting-started.md): install, check adoption, create and clarify a request, troubleshoot.
 - [Runtime management](runtime-version-management.md): prepare snapshots, update/roll back the default, resolve requests and explicitly promote compatible future work.
 - [Installation architecture](installation-architecture.md): where the runtime lives, one native loader, specialist guidance and project boundaries.

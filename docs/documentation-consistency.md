@@ -199,9 +199,21 @@ removed a demonstration video URL whose path included organization-specific fram
 Following explicit authorization, the original video was downloaded unchanged and
 published at the neutral repository path
 [`docs/assets/ai-sdlc-orchestrator.mp4`](assets/ai-sdlc-orchestrator.mp4).
-The README and documentation index now link to this six-minute demonstration.
-This changes its storage and discoverability, not the recorded presentation content or
-historical SDLC evidence.
+The README and documentation index now link to the
+[browser player](https://stjarna.github.io/ai-sdlc/demo.html), with separate MP4 download
+links. Repository file-viewer links do not provide inline playback; raw GitHub URLs
+serve the file as `application/octet-stream`.
+
+The minimal player source is [`docs/demo.html`](demo.html). GitHub Pages publishes
+`/docs` from `main`, with `.nojekyll` preserving static files without Jekyll processing.
+The page uses native video controls, no autoplay, external scripts or tracking. The
+published MP4 is served as `video/mp4` and supports byte-range requests. Real Chrome
+checks passed for playback, pause, seeking, volume, fullscreen and a 390 px mobile
+layout. A download through the live page matched the original 31,318,239 bytes and
+SHA-256 `1de10b9a4da41496f3a053524d0df80f7ea5559c7d83f034d9d650b2adf835b9`.
+These checks verify browser media behavior, not human auditory acceptance or physical
+mobile-device coverage. This changes storage and discoverability, not the recorded
+presentation content or historical SDLC evidence.
 
 Read-only object search across accessible Git refs found 46 matching text blobs: eight
 current provenance records and 38 historical-only versions. For example, the pre-cleanup

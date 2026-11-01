@@ -21,8 +21,10 @@ production SDLC platform.
 · [User commands](#commands-inside-codex)
 · [Technical documentation](#documentation)
 
-[Watch the six-minute demonstration](docs/assets/ai-sdlc-orchestrator.mp4): follow a
-Littlelist change through AI-assisted preparation, human decisions and verified delivery.
+[Watch the six-minute demonstration](https://stjarna.github.io/ai-sdlc/demo.html)
+· [Download MP4](https://github.com/stjarna/ai-sdlc/raw/refs/heads/main/docs/assets/ai-sdlc-orchestrator.mp4)
+
+Follow a Littlelist change through AI-assisted preparation, human decisions and verified delivery.
 
 ## What it provides
 
