@@ -35,7 +35,7 @@ Read these before changing code. Flag conflicting requirements instead of silent
 - Published template/domain versions are immutable. Placeholder changes need a new pin, matching named generation context, literal-safe one-pass substitution, and legacy/read/approval regression checks. See [template contracts](orchestrator/templates/README.md).
 - Read [domain coverage](orchestrator/domain-skills/README.md) before changing early-phase guidance or provenance. The seven packages own specialist content; the coordinator retains gates and deterministic writers record exact new pins.
 - Specialist skills are independently owned and must be approved and version-pinned. Bundled `orchestrator/domain-skills/` packages demonstrate the domain-team model locally; their reviewed catalog pins are required and supporting specialties are roadmap outlines. Do not execute arbitrary remote skills. Critical security controls must be enforced by tools and infrastructure, not prompts alone.
-- Never add secrets or internal Alza/company information to this public repository. Do not push, merge, deploy or run destructive commands without appropriate user authorization.
+- Never add secrets or confidential organizational information to this public repository. Do not push, merge, deploy or run destructive commands without appropriate user authorization.
 
 ## Verification and handoff
 

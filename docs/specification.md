@@ -13,7 +13,7 @@
 
 **Verze dokumentu:** 0.13 (Engineering and QA work tracks)
 **Datum:** 2026-10-28  
-**Stav:** návrhový dokument pro PoC a case study; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Increment 6 implementuje sdílenou infrastrukturu a Analysis approval k revizi; sekvenční engineering slice rozšiřuje PoC přes Technical Design, plán, vývoj, ověření a Security Review do verified; Stories a Release execution zůstávají plánované
+**Stav:** návrhový dokument pro experimentální PoC; Discovery, Business Refinement a procedurální Business Approval Gate implementovány k revizi; Functional Analysis Increment 5 implementován k revizi; Increment 6 implementuje sdílenou infrastrukturu a Analysis approval k revizi; sekvenční engineering slice rozšiřuje PoC přes Technical Design, plán, vývoj, ověření a Security Review do verified; Stories a Release execution zůstávají plánované
 **Zdroj:** původní pracovní specifikace AI SDLC (427 řádků), navazující návrhová diskuse a architektonický dodatek.  
 **Čtení dokumentu:** **[D]** potvrzené rozhodnutí, **[P]** zjednodušení PoC, **[T]** cílová architektura, **[O]** otevřený detail. Při změně rozhodnutí se upřednostňuje novější explicitní dohoda.
 
@@ -21,7 +21,7 @@
 
 **[D]** Jeden vstupní AI SDLC *orchestration skill* pro podporu business requestera, Product Ownera, analytika, Tech Leada, developera, QA a release odpovědností. Řídí přechody, artefakty, schvalování, stav, vazby a auditní stopu. **Není** monolitickým balíkem odborných znalostí, novou webovou aplikací ani náhradou Jiry. Využívá schválené externí specializované skilly. Hostitelská platforma pro PoC: Codex; přenositelnost na Claude Code je požadavek, nikoli bez ověření garantovaná vlastnost.
 
-**[D]** Git-native a local-first: soubory YAML/Markdown a zdrojové kódy jsou primární perzistentní kontext. Konverzační paměť není zdroj pravdy. V rámci širší Alza case study jde o část A (AI napříč SDLC); část B (dekompozice monolitu) je samostatná iniciativa. Modul, Story a tým jsou různé koncepty.
+**[D]** Git-native a local-first: soubory YAML/Markdown a zdrojové kódy jsou primární perzistentní kontext. Konverzační paměť není zdroj pravdy. PoC zkoumá využití AI napříč SDLC; dekompozice monolitu je mimo jeho rozsah. Modul, Story a tým jsou různé koncepty.
 
 ## 2. Základní principy
 
@@ -392,7 +392,7 @@ sequenceDiagram
 7. Permission matrix / governance rules pro reálné operace a kritické security aktualizace.
 8. Rozhodnutí o kandidátech Release je nyní úmyslně omezeno na dokončené Epicy; nepovažovat za univerzální business pravidlo.
 
-## 12. Argumentace pro case study
+## 12. Přínosy a vymezení PoC
 
 - AI není jen rychlejší psaní kódu: koordinuje průchod od business potřeby po ověření, podporuje T-shaped engineering a end-to-end odpovědnost.
 - Lidé udržují významná business/architektura/QA/release schválení; AI zvyšuje rychlost a dohledatelnost, neodstraňuje odpovědnost.

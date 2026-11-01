@@ -14,11 +14,10 @@ artifacts and decisions for a change into a shared, versionable project context.
 It coordinates work alongside Git and existing tools; it does not replace a ticketing
 system, continuous integration and delivery (CI/CD), or specialist judgment.
 
-Built for an Alza Head of Engineering case study, this is a local proof of concept
-(PoC), with Codex as its tested host. It is not a production SDLC platform.
+This experimental proof of concept (PoC) explores agent-native, human-governed
+software delivery, with Codex as its tested host. It is not a production SDLC platform.
 
-**[Watch the six-minute demonstration](https://plcconsole.com/downloads/alza-ai-sdlc-orchestrator.mp4)**
-· [Get started](#quick-start)
+[Get started](#quick-start)
 · [User commands](#commands-inside-codex)
 · [Technical documentation](#documentation)
 
@@ -261,12 +260,11 @@ Enterprise connectors are future work here.
 
 ## Demonstration and evidence
 
-[Watch the complete presentation](https://plcconsole.com/downloads/alza-ai-sdlc-orchestrator.mp4)
-for a real small create/read/update/delete (CRUD) application extended with optional
-task due dates. [Littlelist has its own repository](https://github.com/stjarna/ai-sdlc-demo):
+The practical scenario extends an existing create/read/update/delete (CRUD)
+application with optional task due dates.
+[Littlelist has its own repository](https://github.com/stjarna/ai-sdlc-demo):
 its existing code and tests were preserved during external skill adoption, followed by
 requirement clarification, human decisions, Engineering/QA work and actual verification.
-The video combines real application footage with documentary workflow animation.
 
 There is also an **older, separate in-repository acceptance demonstrator** under
 [examples/todo-app](examples/todo-app/README.md). It preserves its original limitations,

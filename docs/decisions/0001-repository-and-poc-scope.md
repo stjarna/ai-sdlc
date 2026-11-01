@@ -7,7 +7,7 @@
 
 ## Context
 
-We need a version-controlled specification and a reusable AI SDLC orchestration proof of concept suitable for a short Head of Engineering case-study presentation. We want to demonstrate workflow orchestration rather than generate an elaborate application from scratch.
+We need a version-controlled specification and a reusable AI SDLC orchestration proof of concept that can be validated through a practical application scenario. We want to demonstrate workflow orchestration rather than generate an elaborate application from scratch.
 
 ## Decision
 
