@@ -196,9 +196,12 @@ this documentation-only audit does not change the router or weaken start control
 
 The example application link remains. The earlier approved public-neutrality cleanup
 removed a demonstration video URL whose path included organization-specific framing.
-No neutral replacement URL has been supplied. This audit retains that omission pending
-an explicit URL/preference decision rather than inventing a link or silently reversing
-the prior cleanup.
+Following explicit authorization, the original video was downloaded unchanged and
+published at the neutral repository path
+[`docs/assets/ai-sdlc-orchestrator.mp4`](assets/ai-sdlc-orchestrator.mp4).
+The README and documentation index now link to this six-minute demonstration.
+This changes its storage and discoverability, not the recorded presentation content or
+historical SDLC evidence.
 
 Read-only object search across accessible Git refs found 46 matching text blobs: eight
 current provenance records and 38 historical-only versions. For example, the pre-cleanup

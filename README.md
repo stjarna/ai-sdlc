@@ -21,6 +21,9 @@ production SDLC platform.
 · [User commands](#commands-inside-codex)
 · [Technical documentation](#documentation)
 
+[Watch the six-minute demonstration](docs/assets/ai-sdlc-orchestrator.mp4): follow a
+Littlelist change through AI-assisted preparation, human decisions and verified delivery.
+
 ## What it provides
 
 - **A guided conversation:** turn an idea into a business specification and testable
